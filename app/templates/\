@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>AIShopping</title>
+<link rel="shortcut icon" href="favicon.png">
+<link rel="icon" href="favicon.png" type="image/x-icon">
+<link type="text/css" rel="stylesheet" href="css/style.css">
+<script type="text/javascript" src="js/jquery.min.js"></script>
+</head>
+
+<body>
+<div class="chatbox">
+  <div class="chat_top fn-clear">
+    <h1 class='project'>AIShoppingGuide</h1>
+  </div>
+  <div class="chat_message fn-clear">
+    <div class="chat_main">
+      <div class="message_box" id="message_box">
+        <div class="msg_item fn-clear">
+        </div>
+        
+        <div class="msg_item fn-clear">
+        </div>
+        <div class="msg_item fn-clear">
+        </div>
+      </div>
+{% block content %}
+      <div class="write_box">
+		{form.usr_message}
+	<div class="facebox fn-clear">
+        	{{form.submit}}
+	
+	</div>
+      </div>
+{% endblock %}
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(e) {
+	$('#message_box').scrollTop($("#message_box")[0].scrollHeight + 20);
+	$('.uname').hover(
+	    function(){
+		    $('.managerbox').stop(true, true).slideDown(100);
+	    },
+		function(){
+		    $('.managerbox').stop(true, true).slideUp(100);
+		}
+	);
+	
+	
+	$('.sub_but').click(function(event){
+	    sendMessage(event);
+	});
+	
+	/*按下按钮或键盘按键*/
+	$("#message").keydown(function(event){
+		var e = window.event || event;
+        var k = e.keyCode || e.which || e.charCode;
+		//按下ctrl+enter发送消息
+		if((event.ctrlKey && (k == 13 || k == 10) )){
+			sendMessage(event);
+		}
+	});
+});
+function sendMessage(evente){
+    var msg = $("#message").val();
+	var htmlData =   '<div class="msg_item fn-clear">'
+                   + '   <div class="uface"><img src="images/user.jpg" width="40" height="40"  alt=""/></div>'
+			       + '   <div class="item_right">'
+			       + '     <div class="msg own">' + msg + '</div>'
+			       + '   </div>'
+			       + '</div>';
+	$("#message_box").append(htmlData);
+	$('#message_box').scrollTop($("#message_box")[0].scrollHeight + 20);
+	$("#message").val('');
+}
+</script>
+</body>
+</htmfcdbnfcdbjh>
