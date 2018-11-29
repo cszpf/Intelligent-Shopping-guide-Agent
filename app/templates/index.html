@@ -23,6 +23,7 @@
 						</div>
 					</div>
 
+
 				</div>
 				<!-- <form action="/index" method="POST"> -->
 					<div class="write_box">
@@ -36,6 +37,20 @@
 				<!-- </form> -->
 			</div>
 		</div>
+
+      	<div class="contacts">
+            <h1>运行详情:</h1>
+            <div style="border-bottom:1px solid #eee;"></div>
+            <ul >
+                <li>品牌：<span id="brand">无</span>  </li>
+                <li>内存:  <span id="memory">无</span>  </li>
+                <li>硬盘:  <span id="disk">无</span>  </li>	  
+                <li>价格:  <span id="price">无</span>  </li>	  
+                <li>处理器:  <span id="cpu">无</span>  </li>
+                <li>显卡:  <span id="gpu">无</span>  </li>	                
+            </ul>
+		</div>
+
 	</div>
 	<script type="text/javascript">
 		$(document).ready(function (e) {
@@ -66,10 +81,10 @@
 		});
 		function sendMessage(evente) {
 			var msg = $("#message").val();
-			var htmlData = '<div class="msg_item fn-clear">'
+			var htmlData = '<div class="msg_item_I fn-clear">'
 				+ '   <div class="uface"><img src="{{ url_for('static', filename='images/user.jpg')}}" width="40" height="40"  alt=""/></div>'
 					+ '   <div class="item_right">'
-					+ '     <div class="msg own">' + msg + '</div>'
+					+ '     <div class="msg ">' + msg + '</div>'
 					+ '   </div>'
 					+ '</div>';
 			$("#message_box").append(htmlData);
@@ -86,6 +101,19 @@
 						+ '</div>';
 				$("#message_box").append(botHtmlData);
 				$('#message_box').scrollTop($("#message_box")[0].scrollHeight + 20);
+				// 侧边栏处理
+				if(response['brand']!=null)
+					$('#brand').text(response['brand']);
+				if(response['memory']!=null)
+					$('#memory').text(response['memory']);
+				if(response['disk']!=null)
+					$('#disk').text(response['disk']);
+				if(response['price']!=null)
+					$('#price').text(response['price']);
+				if(response['cpu']!=null)
+					$('#cpu').text(response['cpu']);
+				if(response['gpu']!=null)
+					$('#gpu').text(response['gpu']);
 			});
 		}
 	</script>
