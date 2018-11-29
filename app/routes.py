@@ -22,4 +22,6 @@ def index():
 def message():
     msg = request.form['message']
     bot_response = dialog.Dialogue_manager(msg)
-    return jsonify({'text': bot_response})
+    res = dialog.get_slot_table()
+    res['text'] = bot_response
+    return jsonify(res)
