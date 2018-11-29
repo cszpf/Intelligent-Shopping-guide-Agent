@@ -13,7 +13,7 @@ os.chdir('./app/backend')
 # Fixme: 这里最好使用一个配置文件，不用全局变量
 brands_list = []
 file_path = './data/coumters_brands_list.txt'
-with open(file_path) as f:
+with open(file_path, encoding='utf-8') as f:
     line = f.readline().strip()
     while line:
         brands_list.append(line)
@@ -89,8 +89,8 @@ def get_computer_brands_list():
             print(brand)
             # 存在中英两文
             brand_split = re.split(r'[（()）]', brand)
-            brands_list.append(brand_split[0]) # 中文
-            brands_list.append(brand_split[1]) # 英文
+            brands_list.append(brand_split[0])  # 中文
+            brands_list.append(brand_split[1])  # 英文
         else:
             # 只有一个（中文或英文）
             brands_list.append(brand)
@@ -124,8 +124,9 @@ def get_tags(data):
     """
     # 初始化tag，text：title + content
     # data['text'] = data.apply(lambda x: x['title'] + ' ' + x['content'], axis=1)
-    data['tag'] = data['text'].apply(lambda x: ['O']*len(x))
-
+    data['tag'] = data['text'].apply(lambda x: ['O'] * len(x))
+    # ['brand', 'memory', 'disk', 'price', 'cpu', 'gpu']
+    # ['品牌', '内存', '硬盘', '价格', '处理器', '显卡']
     # 获得brand的tag
     data['tag'] = data[['tag', 'text']].apply(lambda x: get_brand(x), axis=1)
 
@@ -165,26 +166,19 @@ def get_tags_single_text(data):
     tag_list = get_disk(data)
     data['tag'] = tag_list
 
-
-
     # get price
     tag_list = get_price(data)
     data['tag'] = tag_list
 
-
     # get CPU
     tag_list = get_cpu(data)
     data['tag'] = tag_list
-
 
     # get GPU
     tag_list = get_gpu(data)
     data['tag'] = tag_list
 
     return data['tag']
-
-
-
 
 
 def get_brand(data):
@@ -198,12 +192,12 @@ def get_brand(data):
 
     # 判断text中是否出现任意一个品牌
     for brand in brands_list:
-        brand = brand.lower() # 变成全部小写
-        text = text.lower() # 变成全部小写
+        brand = brand.lower()  # 变成全部小写
+        text = text.lower()  # 变成全部小写
         find_index = 0  # 表示text.find 的下标
         start_index = text.find(brand, find_index)
         while start_index != -1:  # 发现到了brand
-            end_index = start_index + len(brand)   # 末尾下标的下一个字符
+            end_index = start_index + len(brand)  # 末尾下标的下一个字符
             assert end_index - start_index > 1
             # Fixme：这里没有考虑到与tag中的其他标签0冲突的情况。
             if is_brand_chinese(brand):  # Fixme：这里没有考虑中文brand的一些情况：如“一台电脑”，"台电"是一个牌子
@@ -224,7 +218,7 @@ def get_brand(data):
                         tag[start_index] = 'B-Brand'
                         for i in range(start_index + 1, end_index):
                             tag[i] = 'I-Brand'
-            find_index = start_index + 1    # 继续寻找后文是否存在另外的brand
+            find_index = start_index + 1  # 继续寻找后文是否存在另外的brand
             start_index = text.find(brand, find_index)
             # print(brand)
     # print('output brand')
@@ -268,7 +262,7 @@ def get_memory(data):
         match_end = match.start() + second_match.end()
         tag[match_start] = 'B-Memory'
         # tag[match_end - 1] = 'I-Meamory'
-        for i in range(match_start + 1, match_end): # 注意这里的match_end 小彪
+        for i in range(match_start + 1, match_end):  # 注意这里的match_end 小彪
             tag[i] = 'I-Memory'
     ## 使用re中的finditer函数来重构下面代码
     # end_index_record = 0  # 记录字符串截断的位置83+998799842+7
