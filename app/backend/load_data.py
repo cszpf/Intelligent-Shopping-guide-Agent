@@ -54,13 +54,28 @@ def load_text_file(data_path, flags = 0):
     """
     if flags == 0:
         result = list()
-        with open(data_path) as f:
+        with open(data_path, encoding='utf-8') as f:
             line = f.readline()
             while line:
                 result.append(line.strip())
                 line = f.readline()
         return result
 
+
+def load_game_list(data_path):
+    """
+    加载游戏列表
+    :param data_path:
+    :return:
+    """
+
+
+def load_game_configurations(data_path):
+    """
+    加载游戏配置列表
+    :param data_path:
+    :return:
+    """
 
 if __name__ == '__main__':
    # test
