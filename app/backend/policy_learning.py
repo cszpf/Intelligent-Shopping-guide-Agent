@@ -276,7 +276,7 @@ class Policy_learner():
         :param game_request: list
         :return:
         """
-        self.game_list = list(set(self.game_list) | set(game_request))
+        self.game_request = list(set(self.game_request) | set(game_request))
 
     def define_policy_return(self, state, **data):
         """
