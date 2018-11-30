@@ -3,7 +3,7 @@ import re
 from product_manger import ProductManager
 from ReplyTemplet import Reply
 from NLU import NLU_interface
-from policy_learning import Policy_learner
+from .policy_learning import Policy_learner
 
 slotList = ['brand', 'memory', 'price', 'disk', 'cpu', 'gpu']
 # 规定最少需要获取price、cpu和memory信息才能进行推荐
