@@ -32,6 +32,8 @@ class ProductManager:
         for i in range(len(slot_values)):
             slot_type = slot_types[i]
             slot_value = slot_values[i]
+            if len(data) == 0:
+                return list()
             if slot_type == 'price':
                 theta = 500
                 price_low = float(slot_value) - theta
