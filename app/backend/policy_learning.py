@@ -291,8 +291,8 @@ class Policy_learner():
         :param **data: 用于传入一些特殊的，需要返回的值
         :return:
         """
-        print(state)
-        print(data)
+        # print(state)
+        # print(data)
         if state in ['init', 'end']:
             return state, None
         elif state in ['slot_ask', 'slot_query']:
@@ -300,9 +300,9 @@ class Policy_learner():
         elif state in ['game_ask', 'game_query']:
             return state, self.game_list
         elif state in ['buy']:
-            print('fuck')
+
             if 'ids' in data.keys():
-                print('fukcyou')
+
                 return state, data['ids']
             else:
                 print('输入数据有问题')
