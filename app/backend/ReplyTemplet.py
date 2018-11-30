@@ -38,10 +38,10 @@ class Reply:
         return self._init[int(random()*len(self._init))]
 
     def end(self, productList, ids):
-        print(productList)
-        print(ids)
+        # print(productList)
+        # print(ids)
         ids = int(ids)
-        return self._end.safe_substitute(productName=productList[ids]['name'], price=productList[ids]['price'])
+        return self._end.safe_substitute(productName=productList.loc[ids, 'name'], price=productList.loc[ids, 'price'])
 
     def qry(self, productList, action=None):
         """
