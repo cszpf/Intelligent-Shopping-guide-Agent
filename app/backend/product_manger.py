@@ -48,9 +48,11 @@ class ProductManager:
         if length == 0:
             return list()
         elif length > 5:  # 显示5个就好
-            return data[0:5].to_json(orient='records')
+            result = data[0:5].reset_index(drop=True)
+            return result
         else:
-            return data.to_json(orient='records')
+            result = data.reset_index(drop=True)
+            return result
 
     def get_product(self, tag_name, tag_type):
         """
@@ -159,4 +161,3 @@ if __name__ == '__main__':
     # print(type(suning))
     # print(suning.columns)
     # print(len(suning))
-
