@@ -265,7 +265,7 @@ def main(_):
 
 
 if __name__ == "__main__":
-    tf.app.run(main)
+    tf.app.run(main, host='0.0.0.0', port=5000)
 
 
 
