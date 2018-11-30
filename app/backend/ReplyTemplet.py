@@ -61,14 +61,16 @@ class Reply:
             reslut_string = ''
             # for i, j in enumerate(productList):
             #     string += str(i) + '. ' + str(j) + '\n'
-            for index, product in enumerate(productList):
-                reslut_string += str(index) + ': ' + str(product)+ '\n'
+            for index, product in productList.iterrows():
+                reslut_string += str(index) + ': ' + product.to_string() + '\n'
             return reslut_string
         return self._qry.safe_substitute(productString=productFormat(productList))
 
     def buy(self, productList, ids):
         ids = int(ids)
-        return self._buy.safe_substitute(productName=productList[ids]['name'], price=productList[ids]['price'])
+        # print(type(productList))
+        # print(productList)
+        return self._buy.safe_substitute(productName=productList.loc[ids, 'name'], price=productList.loc[ids, 'price'])
 
     def game_ask(self):
         return self._game_ask[int(random()*len(self._game_ask))]
