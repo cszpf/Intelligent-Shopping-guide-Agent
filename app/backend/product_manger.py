@@ -42,6 +42,7 @@ class ProductManager:
                 # print(slot_value)
                 # print(type(slot_value))
                 # print(data.dtypes)
+
                 data = data[data[slot_type].apply(lambda x: slot_value.lower() in str(x).lower())]
 
         length = len(data)
