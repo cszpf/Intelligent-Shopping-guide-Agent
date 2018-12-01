@@ -41,6 +41,11 @@ class ProductManager:
                 price_high = float(slot_value) + theta
                 data = data[(data['price'] > price_low) & (data['price'] < price_high)]
             elif slot_type in ['brand', 'cpu', 'disk', 'memory', 'gpu']:
+                # print(slot_type)
+                # print(slot_value)
+                # print(type(slot_value))
+                # print(data.dtypes)
+
                 data = data[data[slot_type].apply(lambda x: slot_value.lower() in str(x).lower())]
         length = len(data)
         if length == 0:
