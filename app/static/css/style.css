@@ -122,7 +122,7 @@ i.logout:before{ content:'\e804';}
 .msg_item{ margin-bottom:20px; position:relative;}
 .msg_item .uface{float:left; height: 40px; position:absolute; bottom:0px;}
 .msg_item .item_right{ margin-left:45px; float:left; margin-right:15px;}
-.msg_item .msg{ background-color:#bdbdbd; padding:10px 15px; line-height:24px; -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px; color:#2E4059; position: relative; margin-bottom:5px; white-space: pre}
+.msg_item .msg{ background-color:#bdbdbd; padding:10px 15px; line-height:24px; -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px; color:#2E4059; position: relative; margin-bottom:5px; white-space: pre-wrap;}
 .msg.own{ background-color:#E0F1FC;}/*自己的聊天记录显示为蓝色*/
 .msg_item .msg:before {
 content: "";
@@ -144,7 +144,7 @@ width: 0;
 .msg_item_I{ margin-bottom:20px; margin-right: 5px; position:relative;}
 .msg_item_I .uface{float:right; height: 40px; position:absolute;  bottom:0px; right: 0px}
 .msg_item_I .item_right{ margin-left:15px; float:right; margin-right:45px;}
-.msg_item_I .msg{ background-color:#E0F1FC; padding:10px 15px; line-height:24px; -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px; color:#2E4059; position: relative; margin-bottom:5px; white-space: pre}
+.msg_item_I .msg{ background-color:#E0F1FC; padding:10px 15px; line-height:24px; -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px; color:#2E4059; position: relative; margin-bottom:5px}
 .msg.own{ background-color:#E0F1FC;}/*自己的聊天记录显示为蓝色*/
 .msg_item_I .msg:before {
 content: "";

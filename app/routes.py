@@ -11,7 +11,7 @@ dialog = Dialogue()
 def index():
     #form = ChatForm(request.form)
     # print(session['sid'])
-    if 'sid' not in session.keys() :    
+    if 'sid' not in session.keys():
         session['sid'] = uuid4()       
     # if form.is_submitted():
         # return Response('text')
@@ -21,6 +21,7 @@ def index():
 @bot_app.route('/message', methods=['GET', 'POST'])
 def message():
     msg = request.form['message']
+    print(msg+'\n')
     bot_response = dialog.Dialogue_manager(msg)
     res = dialog.get_slot_table()
     res['text'] = bot_response

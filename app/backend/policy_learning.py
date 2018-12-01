@@ -127,9 +127,14 @@ class Policy_learner():
         self.update_review_label_request(review_label)
         # Fixme: slot 和 game 之间的逻辑还没实现
         if current_state in 'init':  # 判断走游戏模糊匹配还是走正常的电脑购买路线
+            print('init stae ::::::::::::')
             game_request = self.get_game_request(request)
+            print(game_request)
             self.update_slot_Table(nlu_slots)  # 更新当前slot_table
             self.update_game_list(game_request)  # 更新当前用户对游戏要求列表
+            print(self.slotTable)
+            print(self.slotRemain)
+
             # 更新状态机状态：假如有slot，也有game，则都转为game_ask
             if self.is_game_request(request):
                 if len(self.game_request) == 0:  # 没有提到游戏
