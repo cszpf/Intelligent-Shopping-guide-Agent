@@ -1,6 +1,7 @@
 from string import Template
 from product_manger import ProductManager
 from random import random
+import pandas as pd
 
 
 class Reply:
@@ -23,7 +24,6 @@ class Reply:
         self._qry = Template('根据您的描述，下列产品或许满足您的需求:\n$productString\n(请选择对应的产品编号进行购买）')
         self._game_ask = ['请问您对什么游戏有要求呢？\n（如:英雄联盟等）', '请问您平时玩什么游戏呢?']
 
-
     def askValues(self, slot='price'):
         """找到约 46
         :param slot: str, in ('price', 'memory', 'brand', 'disk', 'cpu', 'gpu'), default is 'price'
@@ -32,7 +32,7 @@ class Reply:
         return eval('self._{0}[int(random()*len(self._{0}))]'.format(slot))
 
     def ask(self):
-            return self._ask.safe_substitute(command='您还有其他要求吗')
+        return self._ask.safe_substitute(command='您还有其他要求吗')
 
     def init(self):
         return self._init[int(random()*len(self._init))]
@@ -48,7 +48,7 @@ class Reply:
         :param productList:产品列表,形如[{'name':产品名称,'price':产品价格,'cpu':处理器,'disk':硬盘容量,'memory':内存大小},...]
         :return:
         """
-        print(productList)
+        # print(productList)
         if len(productList) == 0:
             if action == 'slot_query':
                 return "不好意思，根据你的要求在，数据库中没有找到相应的产品。\n请更新下配置要求，以便能帮您找到对应的产品"
@@ -58,6 +58,7 @@ class Reply:
                 return "不好意思，没能找到相应的产品。\n请重新描述下您的要求。"
 
         def productFormat(productList):
+            # pd.set_option('max_colwidth', 50)
             reslut_string = ''
             # for i, j in enumerate(productList):
             #     string += str(i) + '. ' + str(j) + '\n'
