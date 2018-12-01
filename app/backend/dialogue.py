@@ -31,6 +31,8 @@ class Dialogue:
         self.ids = None  # 用于记录选择的商品
         # 初始化NLU模型
         self.state_tracker = Policy_learner()  # 追踪当前对话状态
+        # Fixme: 写死，关于review部分，会出现一次
+        self.review_flag = True
 
     def NLU(self, request):
         """
@@ -62,6 +64,12 @@ class Dialogue:
                 _state = [i for i, j in slot_table.items() if j is not None]
                 self.slotRemain = list(set(slotneeded) - set(_state))
                 slot = self.slotRemain[int(random.random() * len(self.slotRemain))]
+                # Fixme:关于review部分，暂时写死
+                if self.review_flag == True:
+                    review_label = self.get_review_label()
+                    if len(review_label) != 0:
+                        review_reply = self.get_review_reply()
+                        return review_reply+self.NLG(action=action, slot=slot)
                 return self.NLG(action=action, slot=slot)
             else:
                 return self.NLG(action=action, slot_table=slot_table)
@@ -173,8 +181,34 @@ class Dialogue:
             return ids
         return -1
 
+    def get_review_reply(self):
+        """
+        根据用户提出用户体验的列表的回应修改，暂时在这里写死
+        :return:
+        """
+        # Fixme:hard coding 时间来不及了
+        if self.review_flag != True:
+            return ''
+        else:
+            review_label = self.get_review_label()
+            label_string = ','.join(review_label)
+            result = '好的，除了'+label_string+'外，'
+            self.review_flag = False
+            return result
+
     def get_slot_table(self):
+        """
+        实时获得用户提出的配置要求列表
+        :return:
+        """
         return self.state_tracker.slotTable
+
+    def get_review_label(self):
+        """
+        实时获得用户对用户体验的要求列表
+        :return:
+        """
+        return self.state_tracker.review_label_request
 
 
 if __name__ == '__main__':

@@ -106,6 +106,8 @@ class Policy_learner():
         # self.game_list = ['英雄联盟', 'lol', '荒野求生', '吃鸡', 'gta', '玩游戏', '坦克大战']  # hard code for test
         self.game_list = load_data.load_text_file('./data/game_list.txt')
         self.game_request = []
+        self.review_label_list = pd.read_csv('./data/label_productId.csv', encoding='utf-8')['label'].tolist()
+        self.review_label_request = []
 
     def learn_policy(self, nlu_slots, request):
         """
@@ -120,6 +122,9 @@ class Policy_learner():
         """
         current_state = self.state_tracker.state  # 获得当前state状态
         self.actions.append(current_state)  # 记录当下状态
+        # Fixme：这里暂时使用最简单的用户体验流程
+        review_label = self.get_review_label(request)
+        self.update_review_label_request(review_label)
         # Fixme: slot 和 game 之间的逻辑还没实现
         if current_state in 'init':  # 判断走游戏模糊匹配还是走正常的电脑购买路线
             game_request = self.get_game_request(request)
@@ -220,6 +225,21 @@ class Policy_learner():
                 game_request.append(game)  # 找到了一款游戏
         return game_request
 
+    def get_review_label(self, request):
+        """
+        :param request:
+        :return:
+        """
+        # Fixme 这里暂时直接匹配
+        review_label = []
+        for label in self.review_label_list:
+            label = label.lower()
+            request = request.lower()
+            start_index = request.find(label, 0)
+            if start_index != -1:
+                review_label.append(label)  # 找到一个label要求
+        return review_label
+
     def is_game_request(self, request):
         """
         判断是否有游戏请求
@@ -239,6 +259,14 @@ class Policy_learner():
             if start_index == 0 or request[start_index - 1] not in ['不', '少']:
                 return True
         return False
+
+    def is_review_tag(selff, request):
+        """
+        判断用户的句子，有没有给出关于电脑的一些标签。
+        如：【简单方便，轻薄精巧，小巧轻便】等
+        :param request:
+        :return:
+        """
 
     def update_slot_Table(self, new_slot_table):
         """
@@ -277,6 +305,9 @@ class Policy_learner():
         :return:
         """
         self.game_request = list(set(self.game_request) | set(game_request))
+
+    def update_review_label_request(self, review_label):
+        self.review_label_request = list(set(self.review_label_request) | set(review_label))
 
     def define_policy_return(self, state, **data):
         """
@@ -348,7 +379,7 @@ class Policy_learner():
             self.state_tracker.to_slot_ask()
             # Fixme
         elif current_state == 'game_query':
-            print()
+            # print()
             self.state_tracker.to_game_ask()  # 换游戏？
             # fixme
         else:

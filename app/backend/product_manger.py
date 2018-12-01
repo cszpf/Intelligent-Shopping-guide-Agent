@@ -141,8 +141,8 @@ class ProductManager:
     def get_higher_config(self, config, num=5):
         """
         获得比输入配置更高配置
-        :param config:
-        :
+        :param config: 基础配置
+        :param num: 设置最多选取多少个更高配置
         :return:
         """
         # Fixme

@@ -66,6 +66,7 @@ def get_slot_re(text):
             while end_index < len(tag_list) and tag_list[end_index] != 'O' :  # 直到标签结束
                 end_index += 1
             word = text[start_index:end_index]
+            word = word.strip()
             i = end_index
             result['entities'].append({'word':word, 'start':start_index, 'end':end_index, 'type':tag_type})
         else:
