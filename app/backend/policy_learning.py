@@ -2,7 +2,7 @@ import re
 import random
 import load_data
 from transitions import Machine
-
+import pandas as pd
 
 class State_machine():
     """
