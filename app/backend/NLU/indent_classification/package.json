@@ -1,0 +1,30 @@
+{
+  "name": "indent",
+  "version": "0.1.0",
+  "description": "",
+  "main": "train.js",
+  "license": "jinraol",
+  "private": true,
+  "dependencies": {
+    "@tensorflow/tfjs": "^0.15.3",
+    "argparse": "^1.0.10",
+    "babel-core": "^6.26.3",
+    "babel-preset-node6": "^11.0.0",
+    "babel-runtime": "^6.26.0",
+    "csvtojson": "^2.0.8",
+    "shelljs": "^0.8.3"
+  },
+  "scripts": {
+    "train": "babel-node train.js",
+    "data": "babel-node data.js"
+  },
+  "author": "jinraol",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "babel-register": "^6.26.0"
+  }
+}
