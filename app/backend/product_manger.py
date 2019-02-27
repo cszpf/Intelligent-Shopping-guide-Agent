@@ -11,9 +11,9 @@ class ProductManager:
         初始化，加载产品数据
         """
         # FixMe:暂时写死，
-        FILE_PATH = './data/'
-        self.product_brief_info = pd.read_csv(
-                os.path.join('data', 'jingdong_extract_attrs_add_part_laptop_with_id.csv'), encoding='utf-8')
+        temp = pd.read_csv(
+            os.path.join('data', 'jingdong_extract_attrs_add_part_laptop_with_id.csv'), encoding='utf-8')
+        self.product_brief_info = temp.fillna('缺失')
         self.product_brands_list = load_data.load_text_file(os.path.join('data', 'coumters_brands_list.txt'))
         self.game_configurations_table = pd.read_csv(os.path.join('data', 'game_config.csv'), encoding='utf-8')
         self.review_product = pd.read_csv(os.path.join('data', 'label_productId.csv'), encoding='utf-8')
@@ -34,9 +34,10 @@ class ProductManager:
 
         ###################
         # 讲slotTable中的占位符,替换成None
+        slot_table = {}
         for slot, value in slotTable.items():
-            if value == config.SLOT_PLACE_HOLDER:
-                slotTable[slot] = None
+            if value is not None and value != config.SLOT_PLACE_HOLDER:
+                slot_table[slot] = value
 
         ###################
         # 体验的产品
@@ -53,11 +54,11 @@ class ProductManager:
             all_suitable_config = self.get_higher_config(game_config)  # 获得所有可行配置
             for g_config in all_suitable_config:
                 slotTable.update(g_config)  # 将游戏的slot,融入到slotTable中,
-                products = self.get_product_list(slot_list=slotTable)
+                products = self.get_product_list(slot_list=slot_table)
                 product_list = product_list.append(products)
             product_list = product_list.reset_index(drop=True)
         else:
-            product_list = self.get_product_list(slot_list=slotTable)
+            product_list = self.get_product_list(slot_list=slot_table)
         # print('slot table product length: ', len(product_list))
         slotTable_resutl = product_list.to_dict('record')
         # 结合产品体验

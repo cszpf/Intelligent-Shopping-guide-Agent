@@ -248,6 +248,7 @@ class phoneDialog():
         if self.state == 'done':
             sentenceList = ["本次服务已结束，谢谢您的使用"]
             self.finish = True
+            self.reset()
             return getRandomSentence(sentenceList)
 
     def doChoice(self):
