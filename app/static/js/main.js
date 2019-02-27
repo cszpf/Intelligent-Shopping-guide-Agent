@@ -23,29 +23,35 @@ $(document).ready(function (e) {
             sendMessage(event);
         }
     });
-
+    let  storage=window.localStorage;
+    storage['domain'] = '';
+    $.get('/resetDialog');
 });
 
-var domain = ''
 
-function getDomain(sentence) {
+function getDomain(){
+    let  storage=window.localStorage;
+    let domain = storage['domain'];
+    if (!domain) return '';
+    else return domain;
+}
+
+function domainClassifier(sentence) {
+    let  storage=window.localStorage;
     if (sentence.indexOf('手机') != -1) {
-        domain = 'phone';
-        return;
+        storage['domain'] =  'phone';
     }
     if (sentence.indexOf('电脑') != -1) {
-        domain = 'computer';
-        return;
+        storage['domain'] =  'computer';
     }
     if (sentence.indexOf('相机') != -1) {
-        domain = 'camera';
-        return;
+        storage['domain'] =  'camera';
     }
 }
 
 function changeDomainDetail() {
     $("#detail").empty()
-    if (domain == 'computer') {
+    if (getDomain() == 'computer') {
         id_name = {
             'brand': '品牌',
             'memory': '内存',
@@ -58,45 +64,55 @@ function changeDomainDetail() {
             $("#detail").append("<li>" + id_name[item] + "：<span id=" + item + ">无</span>  </li>")
         }
     }
-    if (domain == 'phone') {
+    if (getDomain() == 'phone') {
         id_name = {
             'brand': '品牌',
             'price': '价格',
             'memory': '机身内存',
             'ram': '运行内存',
             'size': '屏幕大小',
-            'backca': '像素'
+            'backca': '像素',
+            'experience':'体验属性',
+            'function':'配置要求'
         }
         for (item in id_name) {
             $("#detail").append("<li>" + id_name[item] + "：<span id=" + item + ">无</span>  </li>")
         }
     }
-    if (domain == 'camera') {
+    if (getDomain() == 'camera') {
 
     }
 }
 
 function setDetail(slot_value) {
-    if (domain == 'phone') {
-        if (response['brand'] != null)
-            $('#brand').text(response['brand']);
-        if (response['memory'] != null)
-            $('#memory').text(response['memory']);
-        if (response['price'] != null)
-            $('#price').text(response['price']);
-        if (response['ram'] != null)
-            $('#ram').text(response['ram']);
-        if (response['size'] != null)
-            $('#size').text(response['size']);
-        if (response['backca'] != null)
-            $('#backca').text(response['backca']);
+    console.log(slot_value)
+    if (getDomain() == 'phone') {
+        if (slot_value['name'] != null)
+            $('#brand').text(slot_value['brand']);
+        if (slot_value['memory'] != null)
+            $('#memory').text(slot_value['memory']);
+        if (slot_value['price'] != null)
+            $('#price').text(slot_value['price']);
+        if (slot_value['ram'] != null)
+            $('#ram').text(slot_value['ram']);
+        if (slot_value['size'] != null)
+            $('#size').text(slot_value['size']);
+        if (slot_value['backca'] != null)
+            $('#backca').text(slot_value['backca']);
+        if (slot_value['experience'] != null)
+            $('#experience').text(slot_value['experience']);
+        if (slot_value['function'] != null){
+            let text = slot_value['function'].split(',');
+            $('#function').html('<br/>'+text[0]+'<br/>'+text[1]);
+        }
     }
 }
 
 function showResult(result) {
-    if (domain == 'phone') {
+    console.log(result)
+    if (getDomain() == 'phone') {
         let domData = $(`<div class="msg_item fn-clear">
-        <div class="uface"><img src="{{ url_for('static', filename='images/bot2.jpg')}}" width="40" height="40" alt="" /></div>
+        <div class="uface"><img src='/static/images/bot2.jpg' width="40" height="40" alt="" /></div>
         <div class="item_right">
             <table class="table table-striped">
                 <tbody>
@@ -112,15 +128,17 @@ function showResult(result) {
             </table>
         </div>
     </div>`)
-        let insertDom = domData.children('tbody');
+        let insertDom = domData.find('tbody');
+        console.log(insertDom);
         for (res in result) {
+            res = result[res];
             let row = `<tr>
-            <td>${res['name']}</td>
-            <td>${res['price']}</td>
-            <td>${res['backca']}</td>
-            <td>${res['memory']}</td>
-            <td>${res['ram']}</td>
-            <td>${res['size']}</td>
+            <td>${res['name']?res['name']:'暂无数据'}</td>
+            <td>${res['price']?res['price']+'元':'暂无数据'}</td>
+            <td>${res['backca']?res['backca']+'万':'暂无数据'}</td>
+            <td>${res['rom']?res['rom']+'GB':'暂无数据'}</td>
+            <td>${res['ram']?res['ram']+'GB':'暂无数据'}</td>
+            <td>${res['size']?res['size']+'英寸':'暂无数据'}</td>
         </tr>`
             insertDom.append(row)
         }
@@ -130,37 +148,43 @@ function showResult(result) {
 
 function sendMessage(evente) {
     var msg = $("#message").val();
-    var htmlData = '<div class="msg_item_I fn-clear">' +
-        '<div class="uface"><img src="{{ url_for(' + "'static'" + ", filename='images/user.jpg')}}" + ' width="40" height="40"  alt=""/></div>' +
-        '   <div class="item_right">' +
-        '     <div class="msg ">' + msg + '</div>' +
-        '   </div>' +
-        '</div>';
+    $("message").text('');
+    var htmlData = `<div class="msg_item_I fn-clear">
+        <div class="uface">
+        <img src="/static/images/user.jpg"
+         width="40" height="40"  alt=""/>
+         </div>
+           <div class="item_right"> 
+             <div class="msg ">  ${msg}  </div> 
+           </div> 
+        </div>`;
     $("#message_box").append(htmlData);
     $('#message_box').scrollTop($("#message_box")[0].scrollHeight + 20);
     $("#message").val('');
-    if (domain == '') {
-        domain = getDomain(msg);
+    if (getDomain() == '') {
+        domainClassifier(msg);
         changeDomainDetail();
     }
-    $.post('/dialog', {
+    $.get('/dialog', {
         message: msg,
-        domain: domain
+        domain: getDomain()
     }).done(function (response) {
         var msg_bot = response['response']
         console.log(msg_bot)
-        var botHtmlData = '<div class="msg_item fn-clear">' +
-            '   <div class="uface"><img src="{{ url_for(' + "'static', filename='images/bot2.jpg')}}" + ' width="40" height="40"  alt=""/></div>' +
-            '   <div class="item_right">' +
-            '     <div class="msg">' + msg_bot + '</div>' +
-            '   </div>' +
-            '</div>';
+        var botHtmlData = `<div class="msg_item fn-clear"> 
+               <div class="uface"><img src="/static/images/bot2.jpg"
+             width="40" height="40"  alt=""/></div>
+               <div class="item_right"> 
+                 <div class="msg">  ${msg_bot}  </div> 
+               </div> 
+            </div>`;
         $("#message_box").append(botHtmlData);
         $('#message_box').scrollTop($("#message_box")[0].scrollHeight + 20);
         // 侧边栏处理
         setDetail(response['slot_value'])
         if (response['showResult']) {
-            showResult(response['result'])
+            showResult(response['result']);
+            $('#message_box').scrollTop($("#message_box")[0].scrollHeight + 20);
         }
     });
 }
