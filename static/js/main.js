@@ -218,6 +218,7 @@ function sendMessage(evente) {
         message: msg,
         domain: getDomain()
     }).done(function (response) {
+        console.log(response);
         var msg_bot = response['response']
         console.log(msg_bot)
         var botHtmlData = `<div class="msg_item fn-clear"> 
