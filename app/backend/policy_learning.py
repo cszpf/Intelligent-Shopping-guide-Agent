@@ -4,7 +4,7 @@ import load_data
 import pandas as pd
 import config
 from transitions import Machine
-import pandas as pd
+
 
 class State_machine():
     """
@@ -591,7 +591,7 @@ class Policy_learner():
         """
         if self.slot_current_ask in nlu_slots: # 识别出有值
             return None
-        pattern= re.compile('((都行)|(无所谓)|(都可以)|(没要求)|(没什么要求)|(无要求))')
+        pattern = re.compile('((都行)|(无所谓)|(都可以)|(没要求)|(没什么要求)|(无要求))')
         match = re.search(pattern, request)
         if match is not None: # 识别成功
             self.slotTable[self.slot_current_ask] = config.SLOT_PLACE_HOLDER
@@ -791,7 +791,7 @@ class Policy_learner():
         :return:
         """
         exit_choice = self.detect_exit_chocie(request=request)
-        reset()
+        self.reset()
         if exit_choice == 1:  # 退出
             self.to_end()
         else:

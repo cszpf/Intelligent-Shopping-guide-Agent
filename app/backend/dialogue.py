@@ -19,9 +19,9 @@ class Computer_Dialogue:
         self.slot_product_list = list()
         self.game_product_list = list()
         self.review_product_list = list()
-        self.max_num_product = 5  # 设置产品查询的最大数量
-        self.ids = None  # 用于记录选择的商品
-        # 初始化NLU模型
+        # self.max_num_product = 5  # 设置产品查询的最大数量
+        # self.ids = None  # 用于记录选择的商品
+        # 初始化NLU模型我对cpu没要求
         self.state_tracker = Policy_learner()  # 追踪当前对话状态
         self.init_time = 0  # 用于记录用户停留在init状态的次数
         self.show_result = False  # 用来表示,是否需要展示
@@ -88,6 +88,9 @@ class Computer_Dialogue:
         self.state_tracker.show_system_state()
         print('=====================================\ncurrent_product_part_show:\n', self.product_show_part)
         current_state = self.state_tracker.state
+        # Fixme：
+        if current_state != 'query':
+            self.show_result = False
         if current_state in ['init', 'end', 'exit_ask']:
             if current_state == 'init':
                 self.init_time += 1
@@ -123,7 +126,7 @@ class Computer_Dialogue:
                     self.state_tracker.review_request,
                     self.state_tracker.slotTable)
             # Fixme: 这里需要处理没检索到商品,需要引导用户更改条件
-            print('product_result number is:', len(self.product_list))
+            # print('product_result number is:', len(self.product_list))
             self.product_choice()
             return self.NLG(action=current_state, product_list=self.product_show_part)
         elif current_state == 'change_confirm':
@@ -312,14 +315,14 @@ class Computer_Dialogue:
         random.shuffle(self.product_list)
         sample_number = config.PRODUCT_SHOW_NUM
         self.product_show_part = list()
-        self.show_reuslt = False
+        self.show_result = False
         while len(self.product_list) > 0 and sample_number > 0:
             sample_number -= 1
             product = self.product_list.pop()
             # print(product)
             self.product_show_part.append(product)
         if len(self.product_show_part) > 0:
-            self.show_reuslt = True
+            self.show_result = True
 
 
     def get_result(self):
@@ -328,6 +331,22 @@ class Computer_Dialogue:
         :return:
         """
         return self.product_show_part
+
+
+    def get_review_request(self):
+        """
+        获取用户关于用户体验的要求
+        :return:
+        """
+        return self.state_tracker.review_request
+
+    def show_dialogue_state(self):
+        print('=======================')
+        print('dialogue state:\n')
+        # print('ids         : {}'.format(self.ids))
+        print('init_time   : {}'.format(self.init_time))
+        print('show_result : {}'.format(self.show_result))
+        print('product show: {}'.format(self.product_show_part))
 
 
 if __name__ == '__main__':
