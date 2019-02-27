@@ -4,7 +4,7 @@ import load_data
 import pandas as pd
 import config
 from transitions import Machine
-
+import pandas as pd
 
 class State_machine():
     """
