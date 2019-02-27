@@ -14,6 +14,7 @@ def index():
 def dialog():
     domain = request.args.get('domain')
     sentence = request.args.get('message')
+    sentence = sentence.strip()
     manager.user(domain,sentence)
     res = manager.response()
     return jsonify(res)
