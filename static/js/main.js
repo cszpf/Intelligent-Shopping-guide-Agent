@@ -88,7 +88,7 @@ function setDetail(slot_value) {
     console.log(slot_value)
     if (getDomain() == 'phone') {
         if (slot_value['name'] != null)
-            $('#brand').text(slot_value['brand']);
+            $('#brand').text(slot_value['name']);
         if (slot_value['memory'] != null)
             $('#memory').text(slot_value['memory']);
         if (slot_value['price'] != null)
@@ -236,9 +236,11 @@ function sendMessage(evente) {
             showResult(response['result']);
             $('#message_box').scrollTop($("#message_box")[0].scrollHeight + 20);
         }
-    }).fail(function (response){
+    }).fail(function (XMLHttpRequest, textStatus, errorThrown){
         alert("fail!")
         console.log("fail:")
-        console.log(response)
+        console.log(XMLHttpRequest)
+        console.log(textStatus)
+        console.log(errorThrown)
     });
 }
