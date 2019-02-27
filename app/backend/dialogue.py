@@ -25,8 +25,8 @@ class Computer_Dialogue:
         self.state_tracker = Policy_learner()  # 追踪当前对话状态
         self.init_time = 0  # 用于记录用户停留在init状态的次数
         self.show_result = False  # 用来表示,是否需要展示
-        # Fixme: 写死，关于review部分，会出现一次
-        self.review_flag = True
+        # # Fixme: 写死，关于review部分，会出现一次
+        # self.review_flag = True
 
     def nlu(self, request):
         """
@@ -37,42 +37,6 @@ class Computer_Dialogue:
         slot_table = NLU_interface.get_slot_table(request)
         return slot_table
 
-    # def Dialogue_manager(self, request):
-    #     """
-    #     :param request:
-    #     :return:
-    #     """
-    #     # stateTracking
-    #     new_slotTable = self.NLU(request)
-    #
-    #     # action = self.policy_learning(new_slotTable)
-    #     policy = self.state_tracker.learn_policy(new_slotTable, request)  # 获得action和对应的信息
-    #     action = policy[0]
-    #     data = policy[1]
-    #
-    #     if action in ['init', 'end']:
-    #         return self.NLG(action=action)
-    #     elif action in ['slot_ask', 'slot_query']:  # slot 任务
-    #         slot_table = data
-    #         if action == 'slot_ask':
-    #             _state = [i for i, j in slot_table.items() if j is not None]
-    #             self.slotRemain = list(set(slotneeded) - set(_state))
-    #             slot = self.slotRemain[int(random.random() * len(self.slotRemain))]
-    #             # Fixme:关于review部分，暂时写死
-    #             if self.review_flag == True:
-    #                 review_label = self.get_review_label()
-    #                 if len(review_label) != 0:
-    #                     review_reply = self.get_review_reply()
-    #                     return review_reply+self.NLG(action=action, slot=slot)
-    #             return self
-    #         else:
-    #             return self.NLG(action=action, slot_table=slot_table)
-    #     elif action in ['game_ask', 'game_query']:  # 游戏任务
-    #         game_list = data
-    #         return self.NLG(action=action, game_list=game_list)
-    #     elif action in ['buy']:
-    #         ids = data
-    #         return self.NLG(action=action, ids=ids)
 
     def get_response(self, request):
         """
@@ -172,44 +136,6 @@ class Computer_Dialogue:
         else:
             return 'NLG state Wrong in System!!!'
 
-    # def NLG(self, action, **kgs):
-    #     """
-    #     回复生成模块：根据动作生成回复
-    #     :param action:1. 继续询问其他配置 2. 展示数据库中查询结果 3. 确认用户需求及选择结果
-    #     :return:
-    #     """
-    #     if action in ['init']:  #
-    #         return self.reply.init()
-    #     elif action in ['slot_ask', 'review_ask']:
-    #         if 'slot' in kgs.keys():
-    #             return self.reply.askValues(kgs['slot'])
-    #         else:
-    #             return self.reply.ask()
-    #     elif action == 'game_ask':
-    #         return self.reply.game_ask()
-    #         # if 'game_list' in kgs.keys() and len(kgs['game_list']) > 0:  # 已经有一个game
-    #     elif action == 'slot_query':
-    #         assert 'slot_table' in kgs.keys()  # 需要查询的slot列表
-    #         self.product_list = self.slot_search(slot_table=kgs['slot_table'])
-    #         if len(self.product_list) == 0:  # 没有产品列表，需要告诉state_tracking
-    #             # Fixme:这里没有检索到相应的产品怎么办
-    #             # self.product_list = [{'name':'product test', 'price':'1234'}]  # 这里需要
-    #             self.state_tracker.have_not_product()
-    #         return self.reply.qry(self.product_list, action)
-    #     elif action == 'game_query':
-    #         assert 'game_list' in kgs.keys()  # 需要搜索的有些表
-    #         self.product_list = self.game_search(game_list=kgs['game_list'])
-    #         if len(self.product_list) == 0:  # 没有产品列表，需要告诉state_tracking
-    #             # Fixme:这里没有检索到相应的产品怎么办
-    #             # self.product_list = [{'name':'product test', 'price':'1234'}] # 这里需要
-    #             self.state_tracker.have_not_product()
-    #         return self.reply.qry(self.product_list, action)
-    #     elif action == 'buy':
-    #         assert 'ids' in kgs.keys()  # 选择商品的id
-    #         self.ids = kgs['ids']
-    #         return self.reply.buy(self.product_list, ids=kgs['ids'])
-    #     elif action == 'end':
-    #         return self.reply.end(self.product_list, ids=self.ids)
 
     def slot_search(self, slot_table):
         product_list = self.product_manager.get_product_list(slot_table)
@@ -324,7 +250,6 @@ class Computer_Dialogue:
         if len(self.product_show_part) > 0:
             self.show_result = True
 
-
     def get_result(self):
         """
 
@@ -348,6 +273,22 @@ class Computer_Dialogue:
         print('show_result : {}'.format(self.show_result))
         print('product show: {}'.format(self.product_show_part))
 
+    def reset_system(self):
+        """
+        重置系统
+        :return:
+        """
+        # dialogue
+        self.product_list = list()
+        self.product_show_part = list()
+        self.slot_product_list = list()
+        self.game_product_list = list()
+        self.review_product_list = list()
+        self.init_time = 0
+        self.show_result = False
+
+        # state_tracker reset
+        self.state_tracker.reset()
 
 if __name__ == '__main__':
     Task = Computer_Dialogue()
