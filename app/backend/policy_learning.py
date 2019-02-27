@@ -204,8 +204,6 @@ class Policy_learner():
         if self.state in ['slot_ask', 'review_ask']:
             self.fix_nlu_slot_miss(nlu_slots, request)
             self.detect_slot_ask_answer(nlu_slots, request)
-        else:
-            print('没有进入识别特殊情况slot的函数')
         ########################################
         # 更新slotTable:除了query状态(需要改slot的值)
         if self.state != 'query':
@@ -565,24 +563,21 @@ class Policy_learner():
         :param request:
         :return:
         """
-        print('go in to the slot miss Fix')
-        print('nlu_slots is :', nlu_slots)
-        print('request is :', nlu_slots)
         if self.slot_current_ask == 'memory':
             memory_pattern = re.compile('\d+[Gg]')
-            match = re.match(memory_pattern, request)
+            match = re.search(memory_pattern, request)
             if match is not None and self.slot_current_ask not in nlu_slots:
                 nlu_slots[self.slot_current_ask] = match[0]
                 self.slotTable[self.slot_current_ask] = match[0]
         elif self.slot_current_ask == 'disk':
             dick_pattern = re.compile('\d+[GgTt]')
-            match = re.match(dick_pattern, request)
+            match = re.search(dick_pattern, request)
             if match is not None and self.slot_current_ask not in nlu_slots:
                 nlu_slots[self.slot_current_ask] = match[0]
                 self.slotTable[self.slot_current_ask] = match[0]
         elif self.slot_current_ask == 'price':
             price_pattern = re.compile('\d+')
-            match = re.match(price_pattern, request)
+            match = re.search(price_pattern, request)
             if match is not None and self.slot_current_ask not in nlu_slots:
                 nlu_slots[self.slot_current_ask] = match[0]
                 self.slotTable[self.slot_current_ask] = match[0]

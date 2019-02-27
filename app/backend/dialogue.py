@@ -239,6 +239,7 @@ class Computer_Dialogue:
         self.review_product_list = list()
         self.init_time = 0
         self.show_result = False
+
         # state_tracker reset
         self.state_tracker.to_init()  # 重置系统状态
         self.state_tracker.reset()
