@@ -175,7 +175,11 @@ class Computer_Dialogue:
         实时获得用户提出的配置要求列表
         :return:
         """
-        return self.state_tracker.slotTable
+        result = {}
+        for key, item in self.state_tracker.slotTable.items():
+            if item is not None:
+                result[key] = item
+        return result
 
     def get_review_label(self):
         """
@@ -204,7 +208,6 @@ class Computer_Dialogue:
 
     def get_result(self):
         """
-
         :return:
         """
         return self.product_show_part
