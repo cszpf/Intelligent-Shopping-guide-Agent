@@ -1,7 +1,8 @@
 import pandas as pd
 import load_data
 import re
-
+import os
+import config
 
 class ProductManager:
 
@@ -10,9 +11,82 @@ class ProductManager:
         初始化，加载产品数据
         """
         # FixMe:暂时写死，
-        self.product_brief_info = pd.read_csv('./data/jingdong_extract_attrs', encoding='utf-8')
-        self.product_brands_list = load_data.load_text_file('./data/coumters_brands_list.txt')
-        self.game_configurations_table = pd.read_csv('./data/game_config.csv', encoding='utf-8')
+        self.product_brief_info = pd.read_csv(
+            os.path.join('data', 'jingdong_extract_attrs_add_part_laptop_with_id.csv'), encoding='utf-8')
+        self.product_brands_list = load_data.load_text_file(os.path.join('data', 'coumters_brands_list.txt'))
+        self.game_configurations_table = pd.read_csv(os.path.join('data', 'game_config.csv'), encoding='utf-8')
+        self.review_product = pd.read_csv(os.path.join('data', 'label_productId.csv'), encoding='utf-8')
+
+    def query(self, game_request, review_request, slotTable):
+        """
+        根据
+        :param game_request:   游戏的要求
+        :param review_request: Review_request要求
+        :param slotTable:
+        :return: 4个list
+        """
+        ###################
+        # 定义回复的内容
+        review_result = list()  # 产品id的list
+        # game_result = list()  # 游戏id的list
+        slotTable_resutl = list()  #
+
+        ###################
+        # 讲slotTable中的占位符,替换成None
+        for slot, value in slotTable.items():
+            if value == config.SLOT_PLACE_HOLDER:
+                slotTable[slot] = None
+
+        ###################
+        # 体验的产品
+        if len(review_request) > 0:
+            id_str_list = self.review_product[self.review_product['label'].isin(review_request)]['productId'].tolist()
+            for id_str in id_str_list:
+                ids = eval(id_str)
+                review_result.extend(ids)
+
+        # 有提到游戏的检索
+        product_list = pd.DataFrame()
+        if len(game_request) > 0:
+            game_config = self.get_configuration_requirements(game_request)
+            all_suitable_config = self.get_higher_config(game_config)  # 获得所有可行配置
+            for g_config in all_suitable_config:
+                slotTable.update(g_config)  # 将游戏的slot,融入到slotTable中,
+                products = self.get_product_list(slot_list=slotTable)
+                product_list = product_list.append(products)
+            product_list = product_list.reset_index(drop=True)
+        else:
+            product_list = self.get_product_list(slot_list=slotTable)
+        # print('slot table product length: ', len(product_list))
+        slotTable_resutl = product_list.to_dict('record')
+        # 结合产品体验
+        if len(product_list) > 0 and len(review_result) > 0:
+            product_result = product_list[product_list['productId'].isin(review_result)].to_dict('record')
+        else:
+            product_result = slotTable_resutl
+
+        return review_result, slotTable_resutl, product_result
+        # slot_table
+
+    def get_game_product_list(self, game_request):
+        """
+        根据给出的游戏，找出配置符合这些游戏的电脑产品
+        :param game_request: list 一系列游戏的配置要求
+        :return:
+        """
+        # Fixme
+        product_list = pd.DataFrame()
+        game_config = self.get_configuration_requirements(game_request)
+        all_suitable_config = self.get_higher_config(game_config)  # 获得所有可行配置
+        for config in all_suitable_config:
+            products = self.get_product_list(slot_list=config)
+            # print(type(products))
+            # print(type(products))
+            product_list = product_list.append(products)
+        product_list = product_list.reset_index(drop=True)
+        # if len(product_list) > 5:
+        #     return product_list[0:5]
+        return product_list
 
     def get_product_list(self, slot_list):  # , game_flag=False, game_list=None
         """
@@ -30,32 +104,20 @@ class ProductManager:
                 slot_types.append(key)
                 slot_values.append(value)
         data = self.product_brief_info.copy()
+        print(len(data))
         for i in range(len(slot_values)):
             slot_type = slot_types[i]
             slot_value = slot_values[i]
             if len(data) == 0:
-                return list()
+                return pd.DataFrame()
             if slot_type == 'price':
-                theta = 500
-                price_low = float(slot_value) - theta
-                price_high = float(slot_value) + theta
+                price_low = float(slot_value) - config.PRICE_THRESHOLD
+                price_high = float(slot_value) + config.PRICE_THRESHOLD
                 data = data[(data['price'] > price_low) & (data['price'] < price_high)]
             elif slot_type in ['brand', 'cpu', 'disk', 'memory', 'gpu']:
-                # print(slot_type)
-                # print(slot_value)
-                # print(type(slot_value))
-                # print(data.dtypes)
-
                 data = data[data[slot_type].apply(lambda x: slot_value.lower() in str(x).lower())]
-        length = len(data)
-        if length == 0:
-            return data
-        elif length > 5:  # 显示5个就好
-            result = data[0:5].reset_index(drop=True)
-            return result
-        else:
-            result = data.reset_index(drop=True)
-            return result
+        result = data.reset_index(drop=True)
+        return result
 
     def get_product(self, tag_name, tag_type):
         """
@@ -99,26 +161,6 @@ class ProductManager:
             data_result = self.product_brief_info[
                 self.product_brief_info[tag_type].apply(lambda x: tag_name.lower() == x.lower())]
             return data_result
-
-    def get_game_product_list(self, game_request):
-        """
-        根据给出的游戏，找出配置符合这些游戏的电脑产品
-        :param game_request: list 一系列游戏的配置要求
-        :return:
-        """
-        # Fixme
-        product_list = pd.DataFrame()
-        game_config = self.get_configuration_requirements(game_request)
-        all_suitable_config = self.get_higher_config(game_config)  # 获得所有可行配置
-        for config in all_suitable_config:
-            products = self.get_product_list(slot_list=config)
-            # print(type(products))
-            # print(type(products))
-            product_list = product_list.append(products)
-        product_list = product_list.reset_index(drop=True)
-        if len(product_list) > 5:
-            return product_list[0:5]
-        return product_list
 
     def get_configuration_requirements(self, game_request):
         """
@@ -254,18 +296,18 @@ from collections import Counter
 
 if __name__ == '__main__':
     print('hello, 不要随便运行这个文件')
-    product_brief_info = pd.read_csv('./data/jingdong_extract_attrs')
-    print(product_brief_info.dtypes)
-    cpu = product_brief_info['cpu'].values
-    print(len(product_brief_info))
-    print(Counter(cpu))
-    print(Counter(product_brief_info['gpu']))
-    data = product_brief_info.copy()
-    slot_type = 'brand'
-    slot_value = '联想'
-
-    print(data.dtypes)
-    data = data[data[slot_type].apply(lambda x: slot_value.lower() in str(x).lower())]
+    # product_brief_info = pd.read_csv('./data/jingdong_extract_attrs')
+    # print(product_brief_info.dtypes)
+    # cpu = product_brief_info['cpu'].values
+    # print(len(product_brief_info))
+    # print(Counter(cpu))
+    # print(Counter(product_brief_info['gpu']))
+    # data = product_brief_info.copy()
+    # slot_type = 'brand'
+    # slot_value = '联想'
+    #
+    # print(data.dtypes)
+    # data = data[data[slot_type].apply(lambda x: slot_value.lower() in str(x).lower())]
 
     # print(product_brief_info.columns)
     # print(product_brief_info.head())
@@ -279,3 +321,10 @@ if __name__ == '__main__':
     # print(type(suning))
     # print(suning.columns)
     # print(len(suning))
+
+    test = ProductManager()
+    config = {'cpu': 'i7', 'memory': '8G', 'gpu': 'GTX980ti'}
+    config_higer = test.get_higher_config(config)
+    for config in config_higer:
+        print(config)
+    # print(config_higer)
