@@ -7,7 +7,7 @@ import pandas as pd
 class Reply:
     # 避免程序回复生硬死板，多准备几个模板，到时候程序随机使用
     def __init__(self):
-        self._price = ['请问您的最低预算是多少？', '请问您对电脑的价格有什么 要求？']
+        self._price = ['请问您的想要买什么价位的呢？', '请问您对电脑的价格有什么要求？']
         # self._price = ['请问您的想要买什么价位的呢？', '请问您对产品的价格有什么要求？']
         # self._price = ['请问您的最高预算是多少呢？', '请问您对产品的价格有什么要求？']
         self._memory = ['请问您需要多大的内存空间？', '请问您对产品的内存有什么要求?']
@@ -19,8 +19,8 @@ class Reply:
         self._init_1 = ['您好,请问有什么能帮助您？']
         self._init_2 = ['不好意思,我们暂时只支持电脑的导购功能.']
         self._buy = Template('请问确定购买一台价格$price的$productName吗？\n（是否确定购买，请输入“是”或“不是”)')
-        self._exit_ask_1 = Template('已为您选购一台$productName,共需支付$price。感谢您的支持!\n请问您是否退出系统?')
-        self._exit_ask_2 = ['请问您是否退出系统\n(请输入"是"或"不是")?']
+        self._exit_ask_1 = Template('已为您选购一台$productName,共需支付$price。感谢您的支持!\n请问您是否退出系统?(请输入"是"或"不是")')
+        self._exit_ask_2 = ['请问您是否退出系统?\n(请输入"是"或"不是")']
         self._end = ['感谢您的支持,欢迎再次使用,再见!']
         self._ask = Template('请问$command？')
 
@@ -41,9 +41,9 @@ class Reply:
         return self._ask.safe_substitute(command='您还有其他要求吗')
 
     def init(self, times):
-        if times > 1:
-            return self._init_2[int(random()*len(self._init_2))]
-        return self._init_1[int(random()*len(self._init_1))]
+        if times > 2:
+            return self._init_2[int(random() * len(self._init_2))]
+        return self._init_1[int(random() * len(self._init_1))]
 
     def exit_ask(self, productList, ids, buy_done):
         """
@@ -54,12 +54,13 @@ class Reply:
         """
         if buy_done == True:
             ids = int(ids)
-            return self._exit_ask_1.safe_substitute(productName=productList.loc[ids, 'name'], price=productList.loc[ids, 'price'])
+            return self._exit_ask_1.safe_substitute(productName=productList[ids]['name'],
+                                                    price=productList[ids]['price'])
         else:
             return self._exit_ask_2[0]
 
     def end(self):
-        return self._end[int(random()*len(self._end))]
+        return self._end[int(random() * len(self._end))]
 
     def qry(self, productList, action=None):
         """
@@ -86,7 +87,7 @@ class Reply:
         #     return reslut_string
         if len(productList) > 0:
             return self._qry[0]
-        else :
+        else:
             # Fixme: 这里需要区分:游戏\slot
             return self._qry[1]
         # return self._qry.safe_substitute(productString=productFormat(productList))
