@@ -6,6 +6,8 @@
 	<title>AIShopping</title>
 	<link type="text/css" rel="stylesheet" href="{{ url_for('static',filename='css/style.css')}}">
 	<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.min.js')}}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/main.js')}}"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 
 <body>
@@ -23,12 +25,11 @@
 						</div>
 					</div>
 
-
 				</div>
 				<!-- <form action="/index" method="POST"> -->
 					<div class="write_box">
 						<!--form.usr_message(class_='write_area', placeholder='请描述您对电脑配置的需求')-->
-						<textarea id="message" class="write_area" placeholder="请描述您对电脑配置的需求"></textarea>
+						<textarea id="message" class="write_area" placeholder="请描述您的需求"></textarea>
 						<div class="facebox fn-clear">
 						<button class="sub_but">发送</button>
 							<!-- form.submit(class_='sub_but')-->
@@ -41,82 +42,13 @@
       	<div class="contacts">
             <h1>运行详情:</h1>
             <div style="border-bottom:1px solid #eee;"></div>
-            <ul >
-                <li>品牌：<span id="brand">无</span>  </li>
-                <li>内存:  <span id="memory">无</span>  </li>
-                <li>硬盘:  <span id="disk">无</span>  </li>	  
-                <li>价格:  <span id="price">无</span>  </li>	  
-                <li>处理器:  <span id="cpu">无</span>  </li>
-                <li>显卡:  <span id="gpu">无</span>  </li>	                
+            <ul id = 'detail'>
+                                
             </ul>
 		</div>
 
 	</div>
-	<script type="text/javascript">
-		$(document).ready(function (e) {
-			$('#message_box').scrollTop($("#message_box")[0].scrollHeight + 20);
-			$('.uname').hover(
-				function () {
-					$('.managerbox').stop(true, true).slideDown(100);
-				},
-				function () {
-					$('.managerbox').stop(true, true).slideUp(100);
-				}
-			);
 
-
-			$('.sub_but').click(function (event) {
-				sendMessage(event);
-			});
-
-			/*按下按钮或键盘按键*/
-			$("#message").keydown(function (event) {
-				var e = window.event || event;
-				var k = e.keyCode || e.which || e.charCode;
-				//按下ctrl+enter发送消息
-				if ((event.ctrlKey && (k == 13 || k == 10))) {
-					sendMessage(event);
-				}
-			});
-		});
-		function sendMessage(evente) {
-			var msg = $("#message").val();
-			var htmlData = '<div class="msg_item_I fn-clear">'
-				+ '   <div class="uface"><img src="{{ url_for('static', filename='images/user.jpg')}}" width="40" height="40"  alt=""/></div>'
-					+ '   <div class="item_right">'
-					+ '     <div class="msg ">' + msg + '</div>'
-					+ '   </div>'
-					+ '</div>';
-			$("#message_box").append(htmlData);
-			$('#message_box').scrollTop($("#message_box")[0].scrollHeight + 20);
-			$("#message").val('');
-			$.post('/message', {message: msg}).done(function(response) {
-				var msg_bot = response['text']
-				console.log(msg_bot)
-				var botHtmlData = '<div class="msg_item fn-clear">'
-					+ '   <div class="uface"><img src="{{ url_for('static', filename='images/bot2.jpg')}}" width="40" height="40"  alt=""/></div>'
-						+ '   <div class="item_right">'
-						+ '     <div class="msg">' + msg_bot + '</div>'
-						+ '   </div>'
-						+ '</div>';
-				$("#message_box").append(botHtmlData);
-				$('#message_box').scrollTop($("#message_box")[0].scrollHeight + 20);
-				// 侧边栏处理
-				if(response['brand']!=null)
-					$('#brand').text(response['brand']);
-				if(response['memory']!=null)
-					$('#memory').text(response['memory']);
-				if(response['disk']!=null)
-					$('#disk').text(response['disk']);
-				if(response['price']!=null)
-					$('#price').text(response['price']);
-				if(response['cpu']!=null)
-					$('#cpu').text(response['cpu']);
-				if(response['gpu']!=null)
-					$('#gpu').text(response['gpu']);
-			});
-		}
-	</script>
 </body>
 
 </html>
