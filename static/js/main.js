@@ -215,7 +215,7 @@ function sendMessage(evente) {
         changeDomainDetail();
     }
     $.get('/dialog', {
-        message: msg,
+        message: msg.trim(),
         domain: getDomain()
     }).done(function (response) {
         console.log(response);
@@ -236,5 +236,9 @@ function sendMessage(evente) {
             showResult(response['result']);
             $('#message_box').scrollTop($("#message_box")[0].scrollHeight + 20);
         }
+    }).fail(function (response){
+        alert("fail!")
+        console.log("fail:")
+        console.log(response)
     });
 }
