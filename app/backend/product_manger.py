@@ -104,7 +104,7 @@ class ProductManager:
                 slot_types.append(key)
                 slot_values.append(value)
         data = self.product_brief_info.copy()
-        print(len(data))
+        # print(len(data))
         for i in range(len(slot_values)):
             slot_type = slot_types[i]
             slot_value = slot_values[i]
