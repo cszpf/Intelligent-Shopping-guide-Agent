@@ -43,6 +43,7 @@ class Computer_Dialogue:
         :param request:
         :return:
         """
+
         # stateTracking
         new_slotTable = self.nlu(request)
 
@@ -136,7 +137,6 @@ class Computer_Dialogue:
         else:
             return 'NLG state Wrong in System!!!'
 
-
     def slot_search(self, slot_table):
         product_list = self.product_manager.get_product_list(slot_table)
         return product_list
@@ -144,55 +144,6 @@ class Computer_Dialogue:
     def game_search(self, game_list):
         product_list = self.product_manager.get_game_product_list(game_list)
         return product_list
-
-    def query(self, game_request, review_request, slot_table):
-        """
-        根据游戏,slot,和review的值来查找产品
-        :param game_request:
-        :param review_request:
-        :param slot_table:
-        :return:
-        """
-
-    # def policy_learning(self, new_slot_table):
-    #     """
-    #     根据新的用户输入的slot tabl 以及 当前dialogue的状态：state、action等，做出决策
-    #     :param new_slot_table:
-    #     :return:
-    #     """
-    #     # 更新对话系统状态
-    #     # new_slot_value = new_slot_table.keys()  # 新加进来的slot value
-    #     # 处理价格问题
-    #     if 'price_m' in new_slot_table:
-    #         self.slotTable['price'] = new_slot_table['price_m']
-    #         del new_slot_table['price_m']
-    #     elif 'price_l' in new_slot_table:
-    #         if 'price_h' in new_slot_table:
-    #             self.slotTable['price'] = (new_slot_table['price_l'] + new_slot_table['price_h']) / 2
-    #             del new_slot_table['price_l']
-    #             del new_slot_table['price_h']
-    #         else:
-    #             self.slotTable['price'] = new_slot_table['price_l']
-    #             del new_slot_table['price_l']
-    #     elif 'price_h' in new_slot_table:
-    #         if 'price_l' in new_slot_table:
-    #             self.slotTable['price'] = (new_slot_table['price_h'] + new_slot_table['price_l']) / 2
-    #             del new_slot_table['price_l']
-    #             del new_slot_table['price_h']
-    #         else:
-    #             self.slotTable['price'] = new_slot_table['price_h']
-    #             del new_slot_table['price_l']
-    #     self.slotTable.update(new_slot_table)  # 更新当前的slotTalbel
-    #     current_state = [i for i, j in self.slotTable.items() if j is not None]
-    #     self.slotRemain = list(set(slotneeded) - set(current_state))
-    #     self.states.append(current_state)  # 将当前slot 状态记录到stats列表中
-    #     # 确定action
-    #     if self.slotRemain:  # 如果当前state中，已有的slot值大于设定的阈值
-    #         return 'ask'
-    #     elif self.flag and 'ids' in current_state:  # 代表已经查询过数据库，并且用户已经做出选择
-    #         return 'buy'
-    #     else:
-    #         return 'query'
 
     def detect_choice(self, request):
         """
@@ -250,6 +201,7 @@ class Computer_Dialogue:
         if len(self.product_show_part) > 0:
             self.show_result = True
 
+
     def get_result(self):
         """
 
@@ -273,6 +225,7 @@ class Computer_Dialogue:
         print('show_result : {}'.format(self.show_result))
         print('product show: {}'.format(self.product_show_part))
 
+
     def reset_system(self):
         """
         重置系统
@@ -286,8 +239,8 @@ class Computer_Dialogue:
         self.review_product_list = list()
         self.init_time = 0
         self.show_result = False
-
         # state_tracker reset
+        self.state_tracker.to_init()  # 重置系统状态
         self.state_tracker.reset()
 
 if __name__ == '__main__':
