@@ -85,8 +85,8 @@ class Computer_Dialogue:
         # action = self.policy_learning(new_slotTable)
         self.state_tracker.learn_policy(new_slotTable, request)  # 更新state_tracker的系统状态
         # 展示
-        self.state_tracker.show_system_state()
-        print('=====================================\ncurrent_product_part_show:\n', self.product_show_part)
+        # self.state_tracker.show_system_state()
+        # print('=====================================\ncurrent_product_part_show:\n', self.product_show_part)
         current_state = self.state_tracker.state
         if current_state in ['init', 'end', 'exit_ask']:
             if current_state == 'init':
@@ -123,7 +123,7 @@ class Computer_Dialogue:
                     self.state_tracker.review_request,
                     self.state_tracker.slotTable)
             # Fixme: 这里需要处理没检索到商品,需要引导用户更改条件
-            print('product_result number is:', len(self.product_list))
+            # print('product_result number is:', len(self.product_list))
             self.product_choice()
             return self.NLG(action=current_state, product_list=self.product_show_part)
         elif current_state == 'change_confirm':
