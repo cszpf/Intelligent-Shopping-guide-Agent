@@ -29,7 +29,6 @@ class Reply:
         self._game_ask = ['请问您对什么游戏有要求呢？\n（如:英雄联盟等）', '请问您平时玩什么游戏呢?']
         self._change = Template('请问是否确定将$slot_type,从$old_value更改为$new_value?\n(请回答:是/不是)')
 
-
     def ask_slot_values(self, slot='price'):
         """找到约 46
         :param slot: str, in ('price', 'memory', 'brand', 'disk', 'cpu', 'gpu'), default is 'price'
