@@ -24,7 +24,7 @@ class Computer_Dialogue:
         # 初始化NLU模型
         self.state_tracker = Policy_learner()  # 追踪当前对话状态
         self.init_time = 0  # 用于记录用户停留在init状态的次数
-        self.show_reuslt = False  # 用来表示,是否需要展示
+        self.show_result = False  # 用来表示,是否需要展示
         # Fixme: 写死，关于review部分，会出现一次
         self.review_flag = True
 
