@@ -54,6 +54,7 @@ class DialogManager:
             res['response'] = self.responseText
             res['showResult'] = self.dialog.show_result
             res['slot_value'] = self.dialog.get_slot_table()
+            
             res['result'] = self.dialog.get_result() if self.dialog.show_result else []
             print(res['response'])
             print(res['showResult'])
@@ -63,6 +64,7 @@ class DialogManager:
     def reset(self):
         if self.dialog is not None:
             self.dialog.reset()
+            self.domain = None
             
 
 if __name__ == '__main__':

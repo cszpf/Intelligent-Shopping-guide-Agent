@@ -225,12 +225,7 @@ class Computer_Dialogue:
         print('show_result : {}'.format(self.show_result))
         print('product show: {}'.format(self.product_show_part))
 
-<<<<<<< HEAD
     def reset(self):
-=======
-
-    def reset_system(self):
->>>>>>> d13bfe65d4adb1ee7d03dd1e01a270bcf576088d
         """
         重置系统
         :return:
