@@ -6,7 +6,6 @@ from load_data import load_data_set
 import os
 
 os.chdir('./app/backend')
-
 ###########################
 # 全局变量
 # 加载品牌列表
@@ -23,6 +22,8 @@ with open(file_path, encoding='utf-8') as f:
 """
     一些数据预处理函数
 """
+
+
 def sub_func_1(x):
     """
     这个函数为了解决
@@ -113,7 +114,6 @@ def mark_tag(tag, start, end, flag):
     :param flag:
     :return:
     """
-
 
 
 def get_tags(data):
