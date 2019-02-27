@@ -11,18 +11,21 @@
  */
 export const PAD_INDEX = 1;  // Index of the padding character.
 export const OOV_INDEX = 0;  // Index fo the OOV character.export const PAD_INDEX = 0;  // Index of the padding character.
-export var MetaDataTempl = {'batchSize': 128,
+export const MetaDataTemplate = {'batchSize': 128,
 		       'numWords': 10000,
 		       'maxLen': 100,
 			'embeddingSize':32,
 			'epochs':5,
 			'validationSplit':0.2,
-			'modelSacaDir':'dist/resources'
+			'modelSaveDir':'/dist/resources'
 	}
 
 import  {padSequences} from './sequence_utils';
 import * as tf from '@tensorflow/tfjs';
 import * as fs from 'fs';
+import * as fetch from 'node-fetch';
+import * as path from 'path';
+import * as jsonfile from 'jsonfile';
 
 function loadFeatures(sequences, maxLen) {
 
@@ -134,18 +137,23 @@ export class TextData {
 
   toJson() {
 
-    return JSON.stringify({dataIdentifier_:this.dataIdentifier_,
-                           textString: this.textString_,
-                           charSet: this.charSet_,
-                           charSetSize: this.charSetSize_})
+    return JSON.stringify({'dataIdentifier_':this.dataIdentifier_,
+                           'textString_': this.textString_,
+                           'charSet_': this.charSet_,
+                           'charSetSize_': this.charSetSize_})
   }
 
-  fromJson(json) {
-    var data = JSON.parse(json)
-    this.dataIdentifier_ = data.dataIdentifier;
+    static  fromJson(jsonUrl) {
+    const json = jsonfile.readFileSync(jsonUrl);
+
+    /*this.dataIdentifier_ = data.dataIdentifier;
     this.textString_ = data.textString;
     this.charSet_ = data.charSet
     this.charSetSize_ = data.charSetSize
+    return this;*/
+    const textdata = Object.create(TextData.prototype);
+    return Object.assign(textdata, json);
+  
   }
 }
 
@@ -236,8 +244,10 @@ export async function loadData(numWords, len) {
   let xTrain = tf.tensor2d(xTrainArray, [xTrainArray.length, len], 'int32');
   let xTest = tf.tensor2d(xTestArray, [xTestArray.length, len], 'int32');
   //save TextData
-  let TextDataSerialize = charConverter.toJson()
-  fs.writeFile('TextData', TextDataSerialize)
+  let TextDataSerialize = charConverter.toJson();
+  fs.writeFile('TextData.json', TextDataSerialize, (err)=>{
+  	if (err) throw err;
+  	console.log('文件已保存')})
 
   tf.util.assert(
       xTrain.shape[0] === yTrain.shape[0],
