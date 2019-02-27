@@ -484,6 +484,7 @@ class Policy_learner():
         print('state        :  {}'.format(self.state))
         print('slot tatble  :  {}'.format(self.slotTable))
         print('slot remain  :  {}'.format(self.slotRemain))
+        print('slot ask now :  {}'.format(self.slot_current_ask))
         print('computer flag:  {}'.format(self.computer_flag))
         print('game flag    :  {}'.format(self.game_flag))
         print('game request :\n{}'.format(self.game_request))
@@ -564,9 +565,7 @@ class Policy_learner():
         """
         if self.slot_current_ask == 'memory':
             memory_pattern = re.compile('\d+[Gg]')
-
             match = re.match(memory_pattern, request)
-
             if match is not None and self.slot_current_ask not in nlu_slots:
                 nlu_slots[self.slot_current_ask] = match[0]
                 self.slotTable[self.slot_current_ask] = match[0]
