@@ -228,8 +228,7 @@ class Computer_Dialogue:
         print('show_result : {}'.format(self.show_result))
         print('product show: {}'.format(self.product_show_part))
 
-
-    def reset_system(self):
+    def reset(self):
         """
         重置系统
         :return:
