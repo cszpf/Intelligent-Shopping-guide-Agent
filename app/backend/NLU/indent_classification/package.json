@@ -7,16 +7,24 @@
   "private": true,
   "dependencies": {
     "@tensorflow/tfjs": "^0.15.3",
+    "@tensorflow/tfjs-node": "^0.3.1",
+    "@tensorflow/tfjs-node-gpu": "^0.3.1",
     "argparse": "^1.0.10",
     "babel-core": "^6.26.3",
     "babel-preset-node6": "^11.0.0",
     "babel-runtime": "^6.26.0",
     "csvtojson": "^2.0.8",
+    "express": "^4.16.4",
+    "filereader": "^0.10.3",
+    "fs": "^0.0.1-security",
+    "jsonfile": "^5.0.0",
+    "node-fetch": "^2.3.0",
     "shelljs": "^0.8.3"
   },
   "scripts": {
     "train": "babel-node train.js",
-    "data": "babel-node data.js"
+    "data": "babel-node data.js",
+    "predict": "babel-node predict.js"
   },
   "author": "jinraol",
   "devDependencies": {
