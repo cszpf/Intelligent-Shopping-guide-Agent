@@ -119,8 +119,16 @@ async function main() {
       model.evaluate(xTest, yTest, {batchSize: args.batchSize});
   console.log(`Evaluation loss: ${(await testLoss.data())[0].toFixed(4)}`);
   console.log(`Evaluation accuracy: ${(await testAcc.data())[0].toFixed(4)}`);
-
-  // Save model.
+ 
+   const probs = model.predict(xTest);
+   const predictions = probs.argMax(1);
+   const precision =
+		tf.metrics.precision(yTest.argMax(1), predictions).dataSync()[0];
+   const recall =
+        tf.metrics.recall(yTest.argMax(1), predictions).dataSync()[0];
+   console.log(`Test precision: ${precision.toFixed(4)}\n`);
+   console.log(`Test recall : ${recall.toFixed(4)}\n`)
+// Save model.
   if (args.modelSaveDir != null && args.modelSaveDir.length > 0) {
     // Create base directory first.
     shelljs.mkdir('-p', args.modelSaveDir);

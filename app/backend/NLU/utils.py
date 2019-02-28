@@ -4,7 +4,7 @@ import shutil
 import logging
 
 import tensorflow as tf
-from conlleval import return_report
+from .conlleval import return_report
 
 models_path = "./models"
 eval_path = "./evaluation"

@@ -26,7 +26,6 @@ def text_convert_tag(f_name,  data):
                     else:
                         tag_text += text[index]+' '+tag[index]+'\n'
             f.write(tag_text+'\n')
-pdb.set_trace()	 
 forum = pd.read_csv('data/forum_tag.csv', header=0)
 forum['tag'] = forum['tag'].apply(lambda x: ast.literal_eval(x))
 

@@ -2,7 +2,7 @@ import pandas as pd
 import re
 import ast
 from collections import Counter
-from load_data import load_data_set
+from .load_data import load_data_set
 import os
 
 os.chdir('./app/backend')

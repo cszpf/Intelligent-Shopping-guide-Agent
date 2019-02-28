@@ -1,10 +1,10 @@
 import random
 import re
-from product_manger import ProductManager
-from ReplyTemplet import Reply
-from NLU import NLU_interface
-from policy_learning import Policy_learner
-import config
+from .product_manger import ProductManager
+from .ReplyTemplate import Reply
+from .NLU import NLU_interface
+from .policy_learning import Policy_learner
+from . import config
 
 
 class Computer_Dialogue:

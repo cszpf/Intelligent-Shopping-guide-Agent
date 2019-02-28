@@ -4,7 +4,7 @@ import {padSequences} from './sequence_utils';
 import * as path from 'path';
 import * as jsonfile from 'jsonfile';
 
-global.fetch = require('node-fetch')
+global.fetch = require('node-fetch'):q
 //const fetch = require("node-fetch");
 const express = require('express');
 export const TYPEMAP = ['COMPUTER','CAMER', 'PHONE'];
@@ -79,6 +79,7 @@ export class queryClassifier{
 		const input = tf.tensor2d(indices, [1, this.metaData.maxLen]);
 		const predictOut = this.model.predict(input);
 		const predictLabel = TYPEMAP[predictOut.argMax(1).dataSync()[0]];
+		console.log(predictLabel)
 		return predictLabel;
 	}
 }
