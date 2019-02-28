@@ -30,7 +30,7 @@ $(document).ready(function (e) {
 
 
 function getDomain(){
-    let  storage=window.localStorage;
+    let  storage = window.localStorage;
     let domain = storage['domain'];
     if (!domain) return '';
     else return domain;
@@ -38,15 +38,13 @@ function getDomain(){
 
 function domainClassifier(sentence) {
     let  storage=window.localStorage;
-    if (sentence.indexOf('手机') != -1) {
-        storage['domain'] =  'phone';
-    }
-    if (sentence.indexOf('电脑') != -1) {
-        storage['domain'] =  'computer';
-    }
-    if (sentence.indexOf('相机') != -1) {
-        storage['domain'] =  'camera';
-    }
+    let domain = '';
+    $.get('/intent', {
+        data: msg.trim()
+    }).done((response)=>{
+        domain = response;
+    })
+    storage['domain'] = domain;
 }
 
 function changeDomainDetail() {
@@ -78,9 +76,6 @@ function changeDomainDetail() {
         for (item in id_name) {
             $("#detail").append("<li>" + id_name[item] + "：<span id=" + item + ">无</span>  </li>")
         }
-    }
-    if (getDomain() == 'camera') {
-
     }
 }
 
