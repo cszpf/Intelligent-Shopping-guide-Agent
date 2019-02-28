@@ -4,7 +4,7 @@ import {padSequences} from './sequence_utils';
 import * as path from 'path';
 import * as jsonfile from 'jsonfile';
 
-global.fetch = require('node-fetch'):q
+global.fetch = require('node-fetch');
 //const fetch = require("node-fetch");
 const express = require('express');
 export const TYPEMAP = ['COMPUTER','CAMER', 'PHONE'];
@@ -72,6 +72,7 @@ export class queryClassifier{
 	 * */
 
 	async predict(text){
+		console.log(text);
 		const paddedSequence = padSequences([text.split("")], this.metaData.maxLen);
 		const indices = this.textData.textToIndices(paddedSequence[0]);
 		//console.log(indices);
@@ -88,13 +89,20 @@ async function main(){
 	var app = express();
 	app.use(express.static('./'));
 	var server = app.listen(8081);
-	app.get('/', function(req, res){
-		res.send('根目录');	
-	})
+	
 	const classifier= new queryClassifier();
 	await classifier.init('./dist/resources/metadata.json', 
 			      './TextData.json');
-	await classifier.predict('推荐一部手机');
+	
+	/*app.get('/' ,function(req, res){
+		res.send('根目录');
+	})*/
+
+	app.get('/', async function(req, res){
+        	var data = req.query.data;
+		var result = await classifier.predict(data);
+		res.send(result);
+        })
 }
 
 
