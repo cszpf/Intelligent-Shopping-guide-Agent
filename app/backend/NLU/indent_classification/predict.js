@@ -98,7 +98,7 @@ async function main(){
 		res.send('根目录');
 	})*/
 
-	app.get('/', async function(req, res){
+	app.get('/indent', async function(req, res){
         	var data = req.query.data;
 		var result = await classifier.predict(data);
 		res.send(result);
