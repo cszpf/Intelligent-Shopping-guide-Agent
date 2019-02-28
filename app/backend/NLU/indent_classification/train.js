@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as shelljs from 'shelljs';
 
-import {loadData, MetadataTemplate} from './data';
+import {loadData, MetaDataTemplate} from './data';
 
 /**
  * Create a model for indent classification.
@@ -127,7 +127,7 @@ async function main() {
 
     // Load metadata template.
     console.log('Loading metadata template...');
-    const metadata = await loadMetadataTemplate();
+    const metadata = MetaDataTemplate;
     
     // Save metadata.
     metadata.epochs = args.epochs;
