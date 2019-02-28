@@ -7,13 +7,13 @@ from collections import OrderedDict
 
 import tensorflow as tf
 import numpy as np
-from model import Model
-from loader import load_sentences, update_tag_scheme
-from loader import char_mapping, tag_mapping
-from loader import augment_with_pretrained, prepare_dataset
+from .model import Model
+from .loader import load_sentences, update_tag_scheme
+from .loader import char_mapping, tag_mapping
+from .loader import augment_with_pretrained, prepare_dataset
 from utils import get_logger, make_path, clean, create_model, save_model
 from utils import print_config, save_config, load_config, test_ner
-from data_utils import load_word2vec, create_input, input_from_line, BatchManager
+from .data_utils import load_word2vec, create_input, input_from_line, BatchManager
 
 flags = tf.app.flags
 flags.DEFINE_boolean("clean",       False,      "clean train folder")
@@ -28,7 +28,7 @@ flags.DEFINE_string("tag_schema",   "iobes",    "tagging schema iobes or iob")
 flags.DEFINE_float("clip",          5,          "Gradient clip")
 flags.DEFINE_float("dropout",       0.5,        "Dropout rate")
 flags.DEFINE_float("batch_size",    20,         "batch size")
-flags.DEFINE_float("lr",             0.01,      "Initial learning rate")
+flags.DEFINE_float("lr",            0.01,      "Initial learning rate")
 flags.DEFINE_string("optimizer",    "adam",     "Optimizer for training")
 flags.DEFINE_boolean("pre_emb",     True,       "Wither use pre-trained embedding")
 flags.DEFINE_boolean("zeros",       False,      "Wither replace digits with zero")
@@ -236,36 +236,3 @@ def slot_filling(text):
     :param text: 输入的文本
     :return: 返回一个dict{'string':text, entities:[{
     """
-
-def main(_):
-    # import sys
-    # import os
-    # print(sys.path)
-    # print(os.getcwd())
-    # cwd = os.getcwd()
-    # FLAGS.clean = True
-    # FLAGS.train = True
-    #
-    # FLAGS.train_file = cwd + '/data/forum.train'
-    # FLAGS.dev_file = cwd + '/data/forum.dev'
-    # FLAGS.test_file = cwd + '/data/forum.test'
-    #
-    # FLAGS.ckpt_path = cwd + '/forum_ckpt/'
-    # FLAGS.result_path = cwd + '/forum_result/'
-    # FLAGS.config_file = cwd + '/forum_config/config_file'
-    # FLAGS.vocab_file = cwd + '/forum_config/vocab.json'
-    # FLAGS.map_file = cwd + '/forum_config/maps.pkl'
-    # FLAGS.log_file = cwd + '/forum_config/log/train.log'
-    if FLAGS.train:
-        if FLAGS.clean:
-            clean(FLAGS)
-        train()
-    else:
-        evaluate_line()
-
-
-if __name__ == "__main__":
-    tf.app.run(main, host='0.0.0.0', port=5000)
-
-
-

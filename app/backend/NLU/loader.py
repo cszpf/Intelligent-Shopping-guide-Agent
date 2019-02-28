@@ -2,8 +2,8 @@ import os
 import re
 import codecs
 
-from data_utils import create_dico, create_mapping, zero_digits
-from data_utils import iob2, iob_iobes, get_seg_features
+from .data_utils import create_dico, create_mapping, zero_digits
+from .data_utils import iob2, iob_iobes, get_seg_features
 
 
 def load_sentences(path, lower, zeros):

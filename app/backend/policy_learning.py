@@ -1,8 +1,8 @@
 import re
 import random
-import load_data
+from . import load_data
 import pandas as pd
-import config
+from .import config
 from transitions import Machine
 
 
