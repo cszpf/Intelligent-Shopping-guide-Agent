@@ -44,9 +44,4 @@ class queryClassifier{
 
 	predict(text){
 	}
-
-
-
-
-
 }
