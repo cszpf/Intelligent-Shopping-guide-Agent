@@ -1,6 +1,27 @@
-# Intelligent-Shopping-guide-Agent
-简易版任务型对话系统
-声明：进行git push操作前，先git pull一下，保证本地仓库同github仓库同步
-在主目录下运行：
-source venv/bin/activate
-flask run
+## 电商导购助手
+一个web端的电商导购助手，能够通过对话来帮助用户选购手机、电脑。后端运行环境为`Node.js`+`Python`,使用的机器学习模型由`Tensorflow.js`与`Python`训练而来。
+
+### 主要文件
+ - *./server.py*
+ 
+    后端对话管理服务器入口文件
+
+ - *./dialogManager.py*
+ 
+    后端顶层对话管理模块
+
+ - *./phoneparam.sql*
+
+    数据库手机产品信息表
+
+ - *./app/backend/NLU/*
+
+    NLU模块，包括意图识别、关系抽取
+
+ - *./app/backend/NLU/NLU_service.py*
+ 
+    NLU服务器入口
+
+ - *./templates/*
+ 
+    前端页面文件
