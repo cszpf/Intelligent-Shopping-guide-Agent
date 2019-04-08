@@ -7,6 +7,7 @@ from .utils import get_logger, create_model
 from .utils import load_config
 from .data_utils import load_word2vec, input_from_line
 from ..create_data import get_tags_single_text
+import os
 ##########################
 # 预先设定好的参数
 flags = tf.app.flags
@@ -25,18 +26,19 @@ def get_slot_dl(text):
     :return:
     """
     tf.reset_default_graph()   # FIXME: 为了可以保证重复多次输入(不过会很慢)整合代码时，可以尝试将NLU和DM分离，使用统一的文件管理。
-    FLAGS.config_file = 'NLU/forum_config/config_file'
-    FLAGS.log_file = 'NLU/forum_config/log/train.log'
-    FLAGS.ckpt_path = 'NLU/forum_ckpt/'
-    FLAGS.map_file = 'NLU/forum_config/maps.pkl'
-
-    config = load_config(FLAGS.config_file)
-    logger = get_logger(FLAGS.log_file)
+    FLAGS.config_file = '/forum_config/config_file'
+    FLAGS.log_file = '/forum_config/log/train.log'
+    FLAGS.ckpt_path = '/forum_ckpt/'
+    FLAGS.map_file = '/forum_config/maps.pkl'
+    
+    file_path = os.path.dirname(__file__)
+    config = load_config(file_path+FLAGS.config_file)
+    logger = get_logger(file_path+FLAGS.log_file)
     # limit GPU memory
     tf_config = tf.ConfigProto()
     tf_config.gpu_options.allow_growth = True
 
-    with open(FLAGS.map_file, "rb") as f:
+    with open(file_path+FLAGS.map_file, "rb") as f:
         char_to_id, id_to_char, tag_to_id, id_to_tag = pickle.load(f)
     with tf.Session(config=tf_config) as sess:
         model = create_model(sess, Model, FLAGS.ckpt_path, load_word2vec, config, id_to_char, logger)

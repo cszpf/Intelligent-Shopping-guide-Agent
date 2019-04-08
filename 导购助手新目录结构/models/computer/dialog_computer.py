@@ -4,7 +4,7 @@ from .product_manger import ProductManager
 from .ReplyTemplet import Reply
 from .NLU import NLU_interface
 from .policy_learning import Policy_learner
-from .config import *
+from .config import PRODUCT_SHOW_NUM,SLOT_NEEDED
 
 
 class Computer_Dialogue:
@@ -70,7 +70,7 @@ class Computer_Dialogue:
         elif current_state in ['slot_ask', 'review_ask']:
             _state = [slot for slot, value in self.state_tracker.slotTable.items() if value is not None]
             none_state = [slot for slot, value in self.state_tracker.slotTable.items() if value is None]
-            self.state_tracker.slotRemain = list(set(config.SLOT_NEEDED) - set(_state))
+            self.state_tracker.slotRemain = list(set(SLOT_NEEDED) - set(_state))
             # assert len(self.slotRemain) > 0  # Fixme 可能直接冲init过来,就可能不剩slot问
             if len(self.state_tracker.slotRemain) > 0:
                 slot_ask = self.state_tracker.slotRemain[int(random.random() * len(self.state_tracker.slotRemain))]
@@ -201,7 +201,7 @@ class Computer_Dialogue:
         :return:
         """
         random.shuffle(self.product_list)
-        sample_number = config.PRODUCT_SHOW_NUM
+        sample_number = PRODUCT_SHOW_NUM
         self.product_show_part = list()
         self.show_result = False
         while len(self.product_list) > 0 and sample_number > 0:

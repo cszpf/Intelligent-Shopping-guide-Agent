@@ -1,8 +1,8 @@
 import pandas as pd
-from .load_data import *
+from .load_data import load_text_file
 import re
 import os
-from .config import *
+from .config import PRICE_THRESHOLD,SLOT_PLACE_HOLDER
 
 class ProductManager:
 
@@ -11,13 +11,13 @@ class ProductManager:
         初始化，加载产品数据
         """
         # FixMe:暂时写死，
-        file_path = os.path.dirname(__file__)+'/data/jingdong_extract_attrs_add_part_laptop_with_id.csv'
+        file_path = os.path.dirname(__file__)+'/data/'
         print(file_path)
         self.product_brief_info = pd.read_csv(
-            file_path, encoding='utf-8').fillna('缺失')
-        self.product_brands_list = load_data.load_text_file(os.path.join('data', 'coumters_brands_list.txt'))
-        self.game_configurations_table = pd.read_csv(os.path.join('data', 'game_config.csv'), encoding='utf-8')
-        self.review_product = pd.read_csv(os.path.join('data', 'label_productId.csv'), encoding='utf-8')
+            os.path.join(file_path, 'jingdong_extract_attrs_add_part_laptop_with_id.csv')).fillna('缺失')
+        self.product_brands_list = load_text_file(os.path.join(file_path, 'computers_brands_list.txt'))
+        self.game_configurations_table = pd.read_csv(os.path.join(file_path, 'game_config.csv'), encoding='utf-8')
+        self.review_product = pd.read_csv(os.path.join(file_path, 'label_productId.csv'), encoding='utf-8')
 
     def query(self, game_request, review_request, slotTable):
         """
@@ -37,7 +37,7 @@ class ProductManager:
         # 讲slotTable中的占位符,替换成None
         slot_table = {}
         for slot, value in slotTable.items():
-            if value is not None and value != config.SLOT_PLACE_HOLDER:
+            if value is not None and value != SLOT_PLACE_HOLDER:
                 slot_table[slot] = value
 
         ###################
@@ -114,8 +114,8 @@ class ProductManager:
             if len(data) == 0:
                 return pd.DataFrame()
             if slot_type == 'price':
-                price_low = float(slot_value) - config.PRICE_THRESHOLD
-                price_high = float(slot_value) + config.PRICE_THRESHOLD
+                price_low = float(slot_value) - PRICE_THRESHOLD
+                price_high = float(slot_value) + PRICE_THRESHOLD
                 data = data[(data['price'] > price_low) & (data['price'] < price_high)]
             elif slot_type in ['brand', 'cpu', 'disk', 'memory', 'gpu']:
                 data = data[data[slot_type].apply(lambda x: slot_value.lower() in str(x).lower())]
