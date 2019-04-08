@@ -25,6 +25,7 @@ class Computer_Dialogue:
         self.state_tracker = Policy_learner()  # 追踪当前对话状态
         self.init_time = 0  # 用于记录用户停留在init状态的次数
         self.show_result = False  # 用来表示,是否需要展示
+        self.usr_request = str # 用户输入
         # # Fixme: 写死，关于review部分，会出现一次
         # self.review_flag = True
 
@@ -37,18 +38,24 @@ class Computer_Dialogue:
         slot_table = NLU_interface.get_slot_table(request)
         return slot_table
 
+    def user(self, request):
+        """
+        :param request:
+        :return:
+        """
+        self.usr_request = request
 
-    def get_response(self, request):
+    def response(self):
         """
         :param request:
         :return:
         """
 
         # stateTracking
-        new_slotTable = self.nlu(request)
+        new_slotTable = self.nlu(self.usr_request)
 
         # action = self.policy_learning(new_slotTable)
-        self.state_tracker.learn_policy(new_slotTable, request)  # 更新state_tracker的系统状态
+        self.state_tracker.learn_policy(new_slotTable, self.usr_request)  # 更新state_tracker的系统状态
         # 展示
         self.state_tracker.show_system_state()
         print('=====================================\ncurrent_product_part_show:\n', self.product_show_part)
