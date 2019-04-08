@@ -1,9 +1,10 @@
 import re
 import random
-from .load_data import *
+from .load_data import load_text_file
 import pandas as pd
-from .config import *
+from .config import SLOT_NEEDED,SLOT_LIST
 from transitions import Machine
+import os
 
 
 class State_machine():
@@ -149,12 +150,13 @@ class Policy_learner():
     def __init__(self):
         #######################################
         # Fixme: 加载数据，可以考虑配置文件
-        self.all_game_list = load_data.load_text_file('./data/game_list.txt')
-        self.review_label_list = pd.read_csv('./data/label_productId.csv', encoding='utf-8')['label'].tolist()
+        file_path = os.path.dirname(__file__)+'/data/'
+        self.all_game_list = load_text_file(file_path+'game_list.txt')
+        self.review_label_list = pd.read_csv(file_path+'label_productId.csv', encoding='utf-8')['label'].tolist()
 
         #######################################
         # 用于记录系统状态的各种变量
-        self.slotTable = {slot_type: None for slot_type in config.SLOT_LIST}  # 初始化slot table
+        self.slotTable = {slot_type: None for slot_type in SLOT_LIST}  # 初始化slot table
         self.slotRemain = []
         self.slot_current_ask = None  # 用来记录当前询问的slot
         self.history_states = []
@@ -235,13 +237,13 @@ class Policy_learner():
             return state, data_return
         elif state == 'slot_ask':
             _state = [slot for slot, value in self.slotTable.items() if value is not None]
-            self.slotRemain = list(set(config.SLOT_NEEDED) - set(_state))
+            self.slotRemain = list(set(SLOT_NEEDED) - set(_state))
             self.slot_current_ask = self.slotRemain[int(random.random() * len(self.slotRemain))]
             data_return['slot_type'] = self.slot_current_ask
             return state, data_return
         elif state == 'review_ask':
             _state = [slot for slot, value in self.slotTable.items() if value is not None]
-            self.slotRemain = list(set(config.SLOT_NEEDED) - set(_state))
+            self.slotRemain = list(set(SLOT_NEEDED) - set(_state))
             if len(self.slotRemain) != 0:
                 self.slot_current_ask = self.slotRemain[int(random.random() * len(self.slotRemain))]
                 data_return['slot_ask'] = self.slot_current_ask
@@ -345,7 +347,7 @@ class Policy_learner():
         用户重置用户需求：将原有slottable充值为None
         :return:
         """
-        self.slotTable = {slot_type: None for slot_type in config.SLOT_LIST}  # 初始化slot table
+        self.slotTable = {slot_type: None for slot_type in SLOT_LIST}  # 初始化slot table
         self.slotRemain = list()
         self.slot_current_ask = None  # 用来记录当前询问的slot
         self.computer_flag = False  # 用于记录，用户的意图是不是买电脑
@@ -392,7 +394,7 @@ class Policy_learner():
                 del new_slot_table['price_l']
         self.slotTable.update(new_slot_table)  # 更新当前的slotTalbel
         current_state = [i for i, j in self.slotTable.items() if j is not None]
-        self.slotRemain = list(set(config.SLOT_NEEDED) - set(current_state))
+        self.slotRemain = list(set(SLOT_NEEDED) - set(current_state))
 
     def update_game_list(self, game_request):
         """

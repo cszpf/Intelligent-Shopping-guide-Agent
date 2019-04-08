@@ -43,7 +43,7 @@ class DialogManager:
             res = {}
             res['response'] = self.dialog.response()
             res['showResult'] = self.dialog.show_result
-            res['slot_value'] = self.dialog.get_slot_value()
+            res['slot_value'] = self.dialog.get_slot_table()
             res['result'] = self.dialog.get_result() if self.dialog.show_result else []
             return res
 

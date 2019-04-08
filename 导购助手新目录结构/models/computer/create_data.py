@@ -11,7 +11,7 @@ import sys
 # 加载品牌列表
 # Fixme: 这里最好使用一个配置文件，不用全局变量
 brands_list = []
-file_path = './data/computers_brands_list.txt'
+file_path = '/data/computers_brands_list.txt'
 module_path = os.path.dirname(__file__)    
 file_path = module_path + file_path
 print(os.path.abspath(file_path))
