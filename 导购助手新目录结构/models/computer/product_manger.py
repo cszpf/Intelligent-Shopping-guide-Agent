@@ -1,8 +1,8 @@
 import pandas as pd
-import load_data
+from .load_data import *
 import re
 import os
-import config
+from .config import *
 
 class ProductManager:
 

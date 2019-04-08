@@ -5,10 +5,10 @@ import sys
 from tensorflow.contrib.crf import crf_log_likelihood
 from tensorflow.contrib.crf import viterbi_decode
 from tensorflow.contrib.layers.python.layers import initializers
-import rnncell as rnn
+from .rnncell import CoupledInputForgetGateLSTMCell
 
-from utils import result_to_json
-from data_utils import create_input, iobes_iob
+from .utils import result_to_json
+from .data_utils import create_input, iobes_iob
 
 class Model(object):
     def __init__(self, config):
@@ -122,7 +122,7 @@ class Model(object):
             lstm_cell = {}
             for direction in ["forward", "backward"]:
                 with tf.variable_scope(direction):
-                    lstm_cell[direction] = rnn.CoupledInputForgetGateLSTMCell(
+                    lstm_cell[direction] = CoupledInputForgetGateLSTMCell(
                         lstm_dim,
                         use_peepholes=True,
                         initializer=self.initializer,
