@@ -1,5 +1,5 @@
 from string import Template
-from product_manger import ProductManager
+from .product_manger import ProductManager
 from random import random
 import pandas as pd
 
