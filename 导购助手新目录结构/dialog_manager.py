@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from models.computer.dialog_computer import dialog_computer
+from models.computer.dialog_computer import Computer_Dialogue
 from models.phone.dialog_phone import dialog_phone
 import numpy as np
 
@@ -21,7 +21,7 @@ class DialogManager:
             if domain == 'phone':
                 self.dialog = dialog_phone()
             elif domain == 'computer':
-                self.dialog = dialog_computer()
+                self.dialog = Computer_Dialogue()
         self.dialog.user(sentence)
                 
     

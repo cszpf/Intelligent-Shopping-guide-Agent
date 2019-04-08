@@ -6,7 +6,7 @@ from .model import Model
 from .utils import get_logger, create_model
 from .utils import load_config
 from .data_utils import load_word2vec, input_from_line
-from create_data import get_tags_single_text
+from ..create_data import get_tags_single_text
 ##########################
 # 预先设定好的参数
 flags = tf.app.flags

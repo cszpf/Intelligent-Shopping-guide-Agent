@@ -4,7 +4,7 @@ from .product_manger import ProductManager
 from .ReplyTemplet import Reply
 from .NLU import NLU_interface
 from .policy_learning import Policy_learner
-import config
+from .config import *
 
 
 class Computer_Dialogue:
