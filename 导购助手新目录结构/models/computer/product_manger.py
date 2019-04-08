@@ -11,8 +11,10 @@ class ProductManager:
         初始化，加载产品数据
         """
         # FixMe:暂时写死，
+        file_path = os.path.dirname(__file__)+'/data/jingdong_extract_attrs_add_part_laptop_with_id.csv'
+        print(file_path)
         self.product_brief_info = pd.read_csv(
-            os.path.join('data', 'jingdong_extract_attrs_add_part_laptop_with_id.csv'), encoding='utf-8').fillna('缺失')
+            file_path, encoding='utf-8').fillna('缺失')
         self.product_brands_list = load_data.load_text_file(os.path.join('data', 'coumters_brands_list.txt'))
         self.game_configurations_table = pd.read_csv(os.path.join('data', 'game_config.csv'), encoding='utf-8')
         self.review_product = pd.read_csv(os.path.join('data', 'label_productId.csv'), encoding='utf-8')

@@ -2,16 +2,19 @@ import pandas as pd
 import re
 import ast
 from collections import Counter
-from load_data import load_data_set
+from .load_data import load_data_set
 import os
-
-os.chdir('./app/backend')
+import sys
+#os.chdir('./app/backend')
 ###########################
 # 全局变量
 # 加载品牌列表
 # Fixme: 这里最好使用一个配置文件，不用全局变量
 brands_list = []
-file_path = './data/coumters_brands_list.txt'
+file_path = './data/computers_brands_list.txt'
+module_path = os.path.dirname(__file__)    
+file_path = module_path + file_path
+print(os.path.abspath(file_path))
 with open(file_path, encoding='utf-8') as f:
     line = f.readline().strip()
     while line:
