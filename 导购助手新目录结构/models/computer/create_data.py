@@ -2,9 +2,10 @@ import pandas as pd
 import re
 import ast
 from collections import Counter
-from .load_data import load_data_set
 import os
 import sys
+sys.path.append(os.path.dirname(__file__))
+from load_data import load_data_set
 #os.chdir('./app/backend')
 ###########################
 # 全局变量
