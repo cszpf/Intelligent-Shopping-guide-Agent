@@ -3,6 +3,9 @@ import nltk
 import pickle
 import sys
 import os
+import tensorflow as tf
+global graph
+graph = tf.get_default_graph()
 
 sys.path.append(os.path.dirname(__file__))
 print(sys.path)
@@ -25,11 +28,11 @@ class NLUService(object):
     """
 
     def __init__(self, ):
+        self.intention_recognition_model = None
+        self.requirement_recognition_model = None
         self.computer_slot_model = None
         self.phone_slot_model = None
         self.camera_slot_model = None
-        self.intention_recognition_model = None
-        self.requirement_recognition_model = None
 
         self.config = Config()
 
@@ -75,7 +78,8 @@ class NLUService(object):
         data_matrix = create_matrices(sentences, self.computer_slot_model.mappings, True)
 
         # :: Tag the input ::
-        tags = self.computer_slot_model.tag_sentences(data_matrix)
+        with graph.as_default():
+            tags = self.computer_slot_model.tag_sentences(data_matrix)
 
         return result_to_json_iob(sentence, tags['computer'][0])  # fixme:  'computer' should be a var
 
@@ -97,7 +101,8 @@ class NLUService(object):
         data_matrix = create_matrices(sentences, self.phone_slot_model.mappings, True)
 
         # :: Tag the input ::
-        tags = self.phone_slot_model.tag_sentences(data_matrix)
+        with graph.as_default():
+            tags = self.phone_slot_model.tag_sentences(data_matrix)
 
         return result_to_json_iob(sentence, tags['phone'][0])  # fixme:  'phone' should be a var
 
@@ -120,7 +125,8 @@ class NLUService(object):
         data_matrix = create_matrices(sentences, self.camera_slot_model.mappings, True)
 
         # :: Tag the input ::
-        tags = self.camera_slot_model.tag_sentences(data_matrix)
+        with graph.as_default():
+            tags = self.camera_slot_model.tag_sentences(data_matrix)
 
         return result_to_json_iob(sentence, tags['camera'][0])  # fixme:  'camera' should be a var
 
