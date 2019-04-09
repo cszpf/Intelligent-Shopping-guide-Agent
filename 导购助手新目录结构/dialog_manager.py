@@ -15,6 +15,7 @@ class DialogManager:
         self.dialog = None
         self.reponseText = ''
         self.dialogs = {'computer': Computer_Dialogue(), 'phone': Phone_Dialogue()}
+        #self.dialogs = {'phone': Phone_Dialogue()}
 
     def user(self, domain, sentence):
         print(domain)

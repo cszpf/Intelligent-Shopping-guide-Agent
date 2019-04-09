@@ -2,103 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="42f85920-ba41-486b-be59-327783b83b61" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/NLU/NLUService.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/config.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/intention_part/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/intention_part/data/answer_no.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/intention_part/data/answer_slot.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/intention_part/data/answer_yes.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/intention_part/data/ask_slot_list.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/intention_part/data/intend_data.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/intention_part/data/intend_data_1.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/intention_part/data/intend_data_helper.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/intention_part/main.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/intention_part/model/model.pk" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/requirement_part/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/requirement_part/data/Brand.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/requirement_part/data/Frame.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/requirement_part/data/Level.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/requirement_part/data/data_pattern.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/requirement_part/data/requirement_data.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/requirement_part/data/requirement_data_helper.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/requirement_part/main.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/requirement_part/model/model.pk" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/data/camera/dev.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/data/camera/test.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/data/camera/train.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/data/computer/dev.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/data/computer/test.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/data/computer/train.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/data/phone/dev.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/data/phone/test.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/data/phone/train.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/models/camera_0.9944_0.9895_9.h5" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/models/computer_0.9011_0.9105_19.h5" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/models/phone_0.9346_0.9255_14.h5" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/networks/BiLSTM.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/networks/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/networks/keraslayers/ChainCRF.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/networks/keraslayers/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/pkl/camera_computer_phone_wiki_100.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/pkl/computer_wiki_100.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/pkl/phone_wiki_100.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/train_multi_task.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/train_phone.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/util/BIOF1Validation.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/util/CoNLL.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/util/WordEmbeddings.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/util/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/util/preprocessing.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NLU/slot_part/wiki_100.utf8" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/backend/NLU/indent_classification/predict.js" beforeDir="false" afterPath="$PROJECT_DIR$/../app/backend/NLU/indent_classification/predict.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dialog_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/dialog_manager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/.main.py.swp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/NLU_interface.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/conlleval.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/convert_forum_tag.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/convert_per_word_tag_to_document.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/data/forum.dev" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/data/forum.test" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/data/forum.train" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/data_utils.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/forum_ckpt/checkpoint" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/forum_ckpt/ner.ckpt.data-00000-of-00001" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/forum_ckpt/ner.ckpt.index" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/forum_ckpt/ner.ckpt.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/forum_config/config_file" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/forum_config/maps.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/forum_result/ner_predict.utf8" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/indent_classification/.babelrc" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/indent_classification/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/indent_classification/TextData.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/indent_classification/data.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/indent_classification/indent_classification.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/indent_classification/indent_test.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/indent_classification/indent_train.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/indent_classification/package-lock.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/indent_classification/package.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/indent_classification/predict.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/indent_classification/sequence_utils.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/indent_classification/train.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/indent_classification/yarn.lock" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/loader.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/main.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/model.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/rnncell.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/utils.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/NLU/wiki_100.utf8" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/ReplyTemplet.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/computer/ReplyTemplet.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/create_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/computer/create_data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/dialog_computer.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/computer/dialog_computer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/policy_learning.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/computer/policy_learning.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/computer/product_manger.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/computer/product_manger.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/NLU/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/NLU/nlu_interface.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/dialog_phone.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/phone/dialog_phone.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/server.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/NLUService.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/phone/Phone_NLU/NLUService.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -111,8 +18,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/dialog_manager.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="417">
-              <caret line="59" column="18" selection-start-line="59" selection-start-column="18" selection-end-line="59" selection-end-column="18" />
+            <state relative-caret-position="374">
+              <caret line="19" column="37" selection-start-line="19" selection-start-column="37" selection-end-line="19" selection-end-column="37" />
               <folding>
                 <element signature="e#24#85#0" expanded="true" />
               </folding>
@@ -120,11 +27,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/server.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="175">
-              <caret line="15" column="13" lean-forward="true" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
+            <state relative-caret-position="220">
+              <caret line="10" column="12" lean-forward="true" selection-start-line="10" selection-start-column="12" selection-end-line="10" selection-end-column="12" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
               </folding>
@@ -135,7 +42,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/models/phone/dialog_phone.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="183">
+            <state relative-caret-position="8668">
               <caret line="396" selection-start-line="396" selection-end-line="396" />
             </state>
           </provider>
@@ -144,20 +51,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/models/phone/Phone_NLU/NLUService.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="183">
-              <caret line="99" selection-start-line="99" selection-end-line="99" />
-              <folding>
-                <element signature="e#0#37#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="220">
+              <caret line="33" column="25" selection-start-line="33" selection-start-column="25" selection-end-line="33" selection-end-column="25" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/networks/BiLSTM.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
-              <caret line="392" column="19" selection-start-line="392" selection-start-column="19" selection-end-line="392" selection-end-column="19" />
+            <state relative-caret-position="8470">
+              <caret line="386" selection-start-line="386" selection-end-line="386" />
             </state>
           </provider>
         </entry>
@@ -266,6 +170,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
@@ -282,7 +187,7 @@
     </option>
   </component>
   <component name="RunManager" selected="Python.server">
-    <configuration name="BiLSTM" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="NLUService (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="导购助手新目录结构" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -290,11 +195,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/models/phone/NLU/slot_part/networks" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/models/phone/Phone_NLU" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/models/phone/NLU/slot_part/networks/BiLSTM.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/models/phone/Phone_NLU/NLUService.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -390,10 +295,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.server" />
+        <item itemvalue="Python.NLUService (1)" />
         <item itemvalue="Python.dialog_manager" />
         <item itemvalue="Python.dialog_phone" />
         <item itemvalue="Python.NLUService" />
-        <item itemvalue="Python.BiLSTM" />
       </list>
     </recent_temporary>
   </component>
@@ -532,10 +437,38 @@
     <entry file="file://$PROJECT_DIR$/models/phone/NLU/config.py" />
     <entry file="file://$PROJECT_DIR$/models/phone/NLU/slot_part/networks/BiLSTM.py" />
     <entry file="file://$PROJECT_DIR$/models/phone/Phone_NLU/config.py" />
+    <entry file="file://$USER_HOME$/anaconda3/lib/python3.7/site-packages/keras/engine/training.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="193">
+          <caret line="1163" column="26" selection-start-line="1163" selection-start-column="26" selection-end-line="1163" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/phone/dialog_phone.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="8668">
+          <caret line="396" selection-start-line="396" selection-end-line="396" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/networks/BiLSTM.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="8470">
+          <caret line="386" selection-start-line="386" selection-end-line="386" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/phone/Phone_NLU/NLUService.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="220">
+          <caret line="33" column="25" selection-start-line="33" selection-start-column="25" selection-end-line="33" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/dialog_manager.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="417">
-          <caret line="59" column="18" selection-start-line="59" selection-start-column="18" selection-end-line="59" selection-end-column="18" />
+        <state relative-caret-position="374">
+          <caret line="19" column="37" selection-start-line="19" selection-start-column="37" selection-end-line="19" selection-end-column="37" />
           <folding>
             <element signature="e#24#85#0" expanded="true" />
           </folding>
@@ -544,35 +477,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/server.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="175">
-          <caret line="15" column="13" lean-forward="true" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
+        <state relative-caret-position="220">
+          <caret line="10" column="12" lean-forward="true" selection-start-line="10" selection-start-column="12" selection-end-line="10" selection-end-column="12" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/phone/dialog_phone.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="183">
-          <caret line="396" selection-start-line="396" selection-end-line="396" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/phone/Phone_NLU/NLUService.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="183">
-          <caret line="99" selection-start-line="99" selection-end-line="99" />
-          <folding>
-            <element signature="e#0#37#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/networks/BiLSTM.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="392" column="19" selection-start-line="392" selection-start-column="19" selection-end-line="392" selection-end-column="19" />
         </state>
       </provider>
     </entry>
