@@ -1,10 +1,12 @@
 import re
 import random
-from .load_data import load_text_file
-import pandas as pd
-from .config import SLOT_NEEDED,SLOT_LIST
-from transitions import Machine
+import sys
 import os
+sys.path.append(os.path.dirname(__file__))
+from load_data import load_text_file
+import pandas as pd
+from config import SLOT_NEEDED,SLOT_LIST
+from transitions import Machine
 
 
 class State_machine():

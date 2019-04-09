@@ -1,8 +1,10 @@
 import pandas as pd
-from .load_data import load_text_file
-import re
+import sys
 import os
-from .config import PRICE_THRESHOLD,SLOT_PLACE_HOLDER
+sys.path.append(os.path.dirname(__file__))
+from load_data import load_text_file
+import re
+from config import PRICE_THRESHOLD,SLOT_PLACE_HOLDER
 
 class ProductManager:
 

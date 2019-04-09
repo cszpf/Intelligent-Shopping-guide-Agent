@@ -1,10 +1,13 @@
 import random
 import re
-from .product_manger import ProductManager
-from .ReplyTemplet import Reply
-from .NLU import NLU_interface
-from .policy_learning import Policy_learner
-from .config import PRODUCT_SHOW_NUM,SLOT_NEEDED
+import sys
+import os
+sys.path.append(os.path.dirname(__file__))
+from product_manger import ProductManager
+from ReplyTemplet import Reply
+from Computer_NLU import NLU_interface
+from policy_learning import Policy_learner
+from config import PRODUCT_SHOW_NUM,SLOT_NEEDED
 
 
 class Computer_Dialogue:
