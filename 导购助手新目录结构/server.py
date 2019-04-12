@@ -1,6 +1,6 @@
 from flask import Flask
 from flask import render_template
-from flask import request, jsonify
+from flask import request, jsonify, send_file
 from dialog_manager import DialogManager
 
 app = Flask(__name__)
@@ -10,7 +10,6 @@ manager = DialogManager()
 @app.route('/')
 def index():
     return render_template('index.html')
-
 
 @app.route('/dialog', methods=['GET', 'POST'])
 def dialog():
@@ -26,6 +25,10 @@ def dialog():
 def resetDialog():
     manager.reset()
     return "reset done!"
+
+@app.route('/intent_classifier/<filename>',methods=['GET'])
+def intent_classifier(filename):
+    return send_file('./static/models/'+filename)
 
 
 if __name__ == '__main__':

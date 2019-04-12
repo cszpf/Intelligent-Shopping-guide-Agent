@@ -1,15 +1,17 @@
 import numpy as np
 import sys
 import os
+
+sys.path.append(os.path.join(os.path.dirname(__file__), os.path.pardir))
 sys.path.append(os.path.dirname(__file__))
-from Phone_NLU.NLUService import NLUService
+from NLU.NLUService import NLUService
 from save_and_load import *
 import json
 import re
 
-from staticData import necessaryTag, labelToTag, ask_slot, listInfo, nameToColumn
-from staticData import adjustableSlot, whatever_word, yes_word, no_word
-from staticData import experienceAttr, game, gameRequirement
+from static_data_phone import necessaryTag, labelToTag, ask_slot, listInfo, nameToColumn
+from static_data_phone import adjustableSlot, whatever_word, yes_word, no_word
+from static_data_phone import experienceAttr, game, gameRequirement
 from collections import defaultdict
 from search_phone import searchPhone
 
@@ -27,6 +29,61 @@ def transNumber(num):
 def getRandomSentence(sentenceList):
     num = np.random.randint(len(sentenceList))
     return sentenceList[num]
+
+
+def getChangeIntent(domain, sentence):
+    if domain == 'phone':
+        changeableSlot = ['价格', '屏幕', '内存', '像素', '拍照', '照相']
+        posWord = ['贵', '高', '大', '宽', '好', '清晰']
+        negWord = ['便宜', '小', '低', '糟糕', '少', '差']
+        positiveCount = 0
+        target = ''
+        # 匹配描述目标
+        for word in changeableSlot:
+            if word in sentence:
+                target = word
+                break
+        # 补充目标
+        if target == '':
+            if any(w in sentence for w in ['贵', '便宜']):
+                target = '价格'
+            elif any(w in sentence for w in ['清晰', '拍照', '照相']):
+                target = '像素'
+            elif any(w in sentence for w in ['高', '低']):
+                target = '价格?'
+            elif any(w in sentence for w in ['大', '小']):
+                target = '屏幕?'
+
+        tooWord = ['太', '有点', '过于', '不够']
+        for word in posWord:
+            if word in sentence:
+                if all(w + word not in sentence for w in tooWord):
+                    positiveCount += 1
+                else:
+                    positiveCount -= 1
+        for word in negWord:
+            if word in sentence:
+                if all(w + word not in sentence for w in tooWord):
+                    positiveCount -= 1
+                else:
+                    positiveCount += 1
+
+        positive = 0
+        if positiveCount > 0:
+            positive = 1
+        elif positiveCount < 0:
+            positive = -1
+
+        if target == '内存':
+            sentence = sentence.lower()
+            if any(w in sentence for w in ['运行内存', 'ram']):
+                target = '运行内存'
+            elif any(w in sentence for w in ['机身内存', 'rom', '硬盘']):
+                target = '内存大小'
+            else:
+                target = '内存?'
+
+        return (target, positive)
 
 
 class Phone_Dialogue():
@@ -425,7 +482,7 @@ class Phone_Dialogue():
                     if type(itemDict[key]) == float:
                         temp[key] = itemDict[key]
                     elif itemDict[key] is not None:
-                        temp[key] = itemDict[key].decode('utf8')
+                        temp[key] = itemDict[key]
 
             res.append(temp)
         return res
@@ -465,6 +522,7 @@ class Phone_Dialogue():
 
     def get_result(self):
         return self.getResult()
+
 
 if __name__ == '__main__':
     model = Phone_Dialogue()

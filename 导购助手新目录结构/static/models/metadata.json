@@ -1,0 +1,1 @@
+{"batchSize":128,"numWords":10000,"maxLen":100,"embeddingSize":32,"epochs":5,"validationSplit":0.2,"modelSaveDir":"/dist/resources","embedding_size":32,"max_len":100,"batch_size":128,"vocabulary_size":10000}
