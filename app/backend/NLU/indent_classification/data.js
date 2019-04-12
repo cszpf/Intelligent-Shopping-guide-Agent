@@ -185,27 +185,6 @@ function loadTargets(labels) {
  *   yTest: The same as `yTrain`, but for the test dataset.
  */
 export async function loadData(numWords, len) {
-  /* const trainCsv = tf.data.csv(
-  	'indent_train.csv', {
-  		hasHeader: true,
-		columnConfigs: {
-  			labels: {
-  				islabel: true
-  			}
-  		}
-  	});
-
-  const testCsv = tf.data.csv(
-  
-	  'indent_test.csv', {
-  		hasHeader: true,
-  		columnConfigs: {
-  			labels: {
-  				islabel: true
-  			}
-  		}
-  	});
-  */
   const csv = require('csvtojson');
   const trainJson = await csv({checkType:true}).fromFile('indent_train.csv').then((jsonObj)=>{return jsonObj});
   const testJson = await csv({checkType:true}).fromFile('indent_test.csv').then((jsonObj)=>{return jsonObj}); 
@@ -257,3 +236,5 @@ export async function loadData(numWords, len) {
       'Mismatch in number of examples between xTest and yTest');
   return {xTrain, yTrain, xTest, yTest};
 }
+
+loadData(10000,100)
