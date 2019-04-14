@@ -14,7 +14,7 @@ Base = declarative_base()
 
 
 class Phone(Base):
-    __tablename__ = 'phoneparam'
+    __tablename__ = 'phone_param'
 
     index = Column(Integer, primary_key=True)
     cpu = Column(String)
