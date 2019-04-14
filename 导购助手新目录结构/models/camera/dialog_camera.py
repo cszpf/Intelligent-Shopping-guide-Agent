@@ -11,7 +11,6 @@ import re
 
 from static_data_camera import necessaryTag, labelToTag, ask_slot, listInfo, nameToColumn
 from static_data_camera import adjustableSlot, whatever_word, yes_word, no_word
-from static_data_camera import experienceAttr, game, gameRequirement
 from collections import defaultdict
 from search_camera import search_camera
 
@@ -181,7 +180,7 @@ class Camera_Dialogue():
         self.changeState('result')
 
     def adjustConfirm(self, sentence):
-        targetWord = ['运行内存', '机身内存', '价格', '屏幕']
+        targetWord = ['像素', '价格']
         for word in targetWord:
             if word in sentence:
                 self.morewhat = (word, self.morewhat[1])
@@ -238,7 +237,7 @@ class Camera_Dialogue():
         if len(to_add) > 0:
             add = True
             self.write(to_add)
-        morewhat = getChangeIntent('phone', sentence)
+        morewhat = getChangeIntent('camera', sentence)
         if morewhat[1] != 0:
             if '?' in morewhat[0]:
                 self.changeState('adjustConfirm')
@@ -280,19 +279,12 @@ class Camera_Dialogue():
                 else:
                     return getRandomSentence(["请问您是需要更便宜的产品吗?"])
 
-            if target == '内存':
-                self.expected = '机身内存'
-                if self.morewhat[1] >= 0:
-                    return getRandomSentence(["请问您是需要更大的机身内存还是运行内存?"])
-                else:
-                    return getRandomSentence(["请问您是需要小一点的机身内存还是运行内存?"])
-
-            if target == '屏幕':
+            if target == '像素':
                 self.expected = '屏幕大小'
                 if self.morewhat[1] >= 0:
-                    return getRandomSentence(['请问您是需要更大的屏幕尺寸吗?'])
+                    return getRandomSentence(['请问您是需要更高的像素吗?'])
                 else:
-                    return getRandomSentence(['请问您是需要更小的屏幕尺寸吗？'])
+                    return getRandomSentence(['请问您是需要低一点的像素吗？'])
 
         if self.state == 'confirmChoice':
             sentenceList = ["即将为您预订以下商品，是否确认？"]
@@ -333,7 +325,7 @@ class Camera_Dialogue():
                 self.changeState('result')
 
     def init(self, sentence):
-        self.responsePrefix = '欢迎来到手机导购助手！'
+        self.responsePrefix = '欢迎来到相机导购助手！'
         self.changeState('ask')
         self.ask(sentence)
 
@@ -371,10 +363,6 @@ class Camera_Dialogue():
                 res[labelToTag['experience']].append((t['word'], op))
             if t['type'] == 'function':
                 res[labelToTag['function']].append((t['word'], op))
-            if 'screen_size' in t['type']:
-                t['type'] = t['type'].replace('screen_size', 'screenSize')
-            if 'memory_size' in t['type']:
-                t['type'] = t['type'].replace('memory_size', 'memorySize')
 
             name = t['type']
             if t['type'].find('_') != -1:
@@ -443,24 +431,18 @@ class Camera_Dialogue():
 
     def extract(self, sentence):
         tag = self.nlu.phone_slot_predict(sentence)['entities']
-        for word in experienceAttr:
-            if word in sentence:
-                tag.append({'type': 'experience', 'word': word})
-        for word in game:
-            if word in sentence:
-                tag.append({'type': 'function', 'word': word})
         return tag
 
     def search(self, slot_value_table):
         # 调用这个函数进行数据库查询
         condition = slot_value_table
-        result = searchPhone(condition)
+        result = search_camera(condition)
         self.resultList = result
 
         return result[0:5]
 
     def getResult(self):
-        returnSlot = ['name', 'price', 'ram', 'rom', 'size', 'backca']
+        returnSlot = ['name', 'price', 'pixel', 'level', 'frame']
         res = []
         resultList = self.resultList
         if self.state == 'confirmChoice':
@@ -516,14 +498,14 @@ class Camera_Dialogue():
 
 
 if __name__ == '__main__':
-    model = Phone_Dialogue()
-    inp = "我要买个手机"
+    model = Camera_Dialogue()
+    inp = "我要买个相机"
     print('用户：' + inp)
     model.user(inp)
     print("模型：", model.response())
 
     print()
-    inp = "不要华为的,能玩吃鸡的"
+    inp = "索尼或者佳能的吧"
     print('用户：' + inp)
     model.user(inp)
     print("模型：", model.response())

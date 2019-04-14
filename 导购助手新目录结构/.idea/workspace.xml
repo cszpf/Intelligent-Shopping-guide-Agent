@@ -2,71 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="42f85920-ba41-486b-be59-327783b83b61" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/models/camera/data/generateSQL.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/backend/NLU/indent_classification/TextData.json" beforeDir="false" afterPath="$PROJECT_DIR$/../app/backend/NLU/indent_classification/TextData.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/backend/NLU/indent_classification/data.js" beforeDir="false" afterPath="$PROJECT_DIR$/../app/backend/NLU/indent_classification/data.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/backend/NLU/indent_classification/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../app/backend/NLU/indent_classification/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/backend/NLU/indent_classification/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../app/backend/NLU/indent_classification/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/backend/NLU/indent_classification/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../app/backend/NLU/indent_classification/yarn.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../sql_files/phoneparam.sql" beforeDir="false" afterPath="$PROJECT_DIR$/../sql_files/phoneparam.sql" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dialog_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/dialog_manager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/NLUService.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/intention_part/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/intention_part/data/answer_no.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/intention_part/data/answer_slot.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/intention_part/data/answer_yes.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/intention_part/data/ask_slot_list.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/intention_part/data/intend_data.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/intention_part/data/intend_data_1.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/intention_part/data/intend_data_helper.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/intention_part/main.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/intention_part/model/model.pk" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/path_config.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/requirement_part/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/requirement_part/data/Brand.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/requirement_part/data/Frame.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/requirement_part/data/Level.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/requirement_part/data/data_pattern.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/requirement_part/data/requirement_data.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/requirement_part/data/requirement_data_helper.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/requirement_part/main.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/requirement_part/model/model.pk" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/data/camera/dev.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/data/camera/test.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/data/camera/train.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/data/computer/dev.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/data/computer/test.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/data/computer/train.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/data/phone/dev.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/data/phone/test.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/data/phone/train.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/models/camera_0.9944_0.9895_9.h5" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/models/computer_0.9011_0.9105_19.h5" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/models/phone_0.9346_0.9255_14.h5" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/networks/BiLSTM.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/networks/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/networks/keraslayers/ChainCRF.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/networks/keraslayers/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/pkl/camera_computer_phone_wiki_100.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/pkl/computer_wiki_100.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/pkl/phone_wiki_100.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/train_multi_task.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/train_phone.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/util/BIOF1Validation.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/util/CoNLL.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/util/WordEmbeddings.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/util/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/util/preprocessing.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/wiki_100.utf8" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/dialog_phone.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/phone/dialog_phone.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/camera/data/getSQL.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/models/camera/data/getSQL.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/camera/dialog_camera.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/camera/dialog_camera.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/camera/search_camera.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/camera/search_camera.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/camera/static_data_camera.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/camera/static_data_camera.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/phone/search_phone.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/phone/search_phone.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/phone/staticData.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/server.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -76,11 +19,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/server.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="109">
-              <caret line="21" selection-start-line="21" selection-end-line="21" />
+            <state relative-caret-position="572">
+              <caret line="26" column="24" lean-forward="true" selection-start-line="26" selection-start-column="24" selection-end-line="26" selection-end-column="24" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
               </folding>
@@ -88,11 +31,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/models/camera/dialog_camera.py">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/models/computer_/dialog_computer.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="110">
-              <caret line="7" column="27" selection-start-line="7" selection-start-column="27" selection-end-line="7" selection-end-column="27" />
+            <state relative-caret-position="293">
+              <caret line="20" column="34" lean-forward="true" selection-start-line="20" selection-start-column="34" selection-end-line="20" selection-end-column="34" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -101,40 +44,22 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/dialog_manager.py">
+        <entry file="file://$PROJECT_DIR$/models/computer_/static_data_computer.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="396">
-              <caret line="20" column="21" selection-start-line="20" selection-start-column="21" selection-end-line="20" selection-end-column="21" />
+            <state relative-caret-position="241">
+              <caret line="32" column="10" lean-forward="true" selection-start-line="32" selection-start-column="10" selection-end-line="32" selection-end-column="10" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/models/computer_/search_computer.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="343">
+              <caret line="66" column="18" selection-start-line="66" selection-start-column="18" selection-end-line="66" selection-end-column="18" />
               <folding>
-                <element signature="e#24#85#0" expanded="true" />
+                <element signature="e#24#76#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/models/camera/data/generateSQL.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="44">
-              <caret line="2" column="23" selection-start-line="2" selection-start-column="23" selection-end-line="2" selection-end-column="23" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/models/camera/static_data_camera.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret column="13" selection-start-column="13" selection-end-column="13" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/models/camera/search_camera.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1408">
-              <caret line="73" selection-start-line="73" selection-end-line="73" />
             </state>
           </provider>
         </entry>
@@ -159,6 +84,7 @@
       <find>getChangeIntent</find>
       <find>staicData</find>
       <find>staticData</find>
+      <find>adjustConfirm</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -184,13 +110,17 @@
         <option value="$PROJECT_DIR$/models/phone/NLU/config.py" />
         <option value="$PROJECT_DIR$/models/phone/Phone_NLU/config.py" />
         <option value="$PROJECT_DIR$/models/phone/Phone_NLU/NLUService.py" />
-        <option value="$PROJECT_DIR$/models/phone/search_phone.py" />
-        <option value="$PROJECT_DIR$/models/camera/search_camera.py" />
         <option value="$PROJECT_DIR$/models/phone/dialog_phone.py" />
-        <option value="$PROJECT_DIR$/models/camera/dialog_camera.py" />
-        <option value="$PROJECT_DIR$/dialog_manager.py" />
         <option value="$PROJECT_DIR$/models/camera/data/generateSQL.py" />
         <option value="$PROJECT_DIR$/server.py" />
+        <option value="$PROJECT_DIR$/models/phone/search_phone.py" />
+        <option value="$PROJECT_DIR$/models/camera/static_data_camera.py" />
+        <option value="$PROJECT_DIR$/dialog_manager.py" />
+        <option value="$PROJECT_DIR$/models/camera/dialog_camera.py" />
+        <option value="$PROJECT_DIR$/models/camera/search_camera.py" />
+        <option value="$PROJECT_DIR$/models/computer_/static_data_computer.py" />
+        <option value="$PROJECT_DIR$/models/computer_/dialog_computer.py" />
+        <option value="$PROJECT_DIR$/models/computer_/search_computer.py" />
       </list>
     </option>
   </component>
@@ -216,13 +146,19 @@
             <path>
               <item name="导购助手新目录结构" type="b2602c69:ProjectViewProjectNode" />
               <item name="导购助手新目录结构" type="462c0819:PsiDirectoryNode" />
-              <item name="static" type="462c0819:PsiDirectoryNode" />
+              <item name="models" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="导购助手新目录结构" type="b2602c69:ProjectViewProjectNode" />
               <item name="导购助手新目录结构" type="462c0819:PsiDirectoryNode" />
-              <item name="static" type="462c0819:PsiDirectoryNode" />
               <item name="models" type="462c0819:PsiDirectoryNode" />
+              <item name="computer_" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="导购助手新目录结构" type="b2602c69:ProjectViewProjectNode" />
+              <item name="导购助手新目录结构" type="462c0819:PsiDirectoryNode" />
+              <item name="models" type="462c0819:PsiDirectoryNode" />
+              <item name="phone" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -248,8 +184,8 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.server">
-    <configuration name="NLUService (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
+  <component name="RunManager" selected="Python.dialog_computer">
+    <configuration name="dialog_computer" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="导购助手新目录结构" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -257,11 +193,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/models/phone/Phone_NLU" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/models/computer_" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/models/phone/Phone_NLU/NLUService.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/models/computer_/dialog_computer.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -291,27 +227,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="dialog_phone" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="导购助手新目录结构" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/models/phone" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/models/phone/dialog_phone.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="generateSQL" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="导购助手新目录结构" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -325,6 +240,27 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/models/camera/data/generateSQL.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="search_camera" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="导购助手新目录结构" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/models/camera" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/models/camera/search_camera.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -356,11 +292,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.dialog_computer" />
+        <item itemvalue="Python.search_camera" />
         <item itemvalue="Python.server" />
         <item itemvalue="Python.generateSQL" />
         <item itemvalue="Python.dialog_manager" />
-        <item itemvalue="Python.dialog_phone" />
-        <item itemvalue="Python.NLUService (1)" />
       </list>
     </recent_temporary>
   </component>
@@ -379,14 +315,13 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="67" y="25" width="1853" height="1055" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20197044" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32930845" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32930845" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39956093" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -490,53 +425,6 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/models/phone/Phone_NLU/slot_part/networks/BiLSTM.py" />
     <entry file="file://$PROJECT_DIR$/models/phone/Phone_NLU/NLUService.py" />
-    <entry file="file://$PROJECT_DIR$/models/phone/search_phone.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="117">
-          <caret line="7" column="9" lean-forward="true" selection-start-line="7" selection-start-column="9" selection-end-line="7" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/phone/dialog_phone.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="154">
-          <caret line="7" column="22" selection-start-line="7" selection-start-column="22" selection-end-line="7" selection-end-column="22" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/server.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="109">
-          <caret line="21" selection-start-line="21" selection-end-line="21" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/camera/dialog_camera.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="110">
-          <caret line="7" column="27" selection-start-line="7" selection-start-column="27" selection-end-line="7" selection-end-column="27" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dialog_manager.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="396">
-          <caret line="20" column="21" selection-start-line="20" selection-start-column="21" selection-end-line="20" selection-end-column="21" />
-          <folding>
-            <element signature="e#24#85#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/models/camera/data/generateSQL.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="44">
@@ -544,17 +432,107 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/models/camera/save_and_load.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/models/camera/static_data_camera.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="13" selection-start-column="13" selection-end-column="13" />
+        <state relative-caret-position="307">
+          <caret line="35" column="7" selection-start-line="35" selection-start-column="7" selection-end-line="35" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/camera/dialog_camera.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="433" column="18" selection-start-line="433" selection-start-column="18" selection-end-line="433" selection-end-column="18" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/models/camera/search_camera.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1408">
-          <caret line="73" selection-start-line="73" selection-end-line="73" />
+        <state relative-caret-position="197">
+          <caret line="59" column="41" selection-start-line="59" selection-start-column="41" selection-end-line="59" selection-end-column="41" />
+          <folding>
+            <element signature="e#24#76#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dialog_manager.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret line="18" column="75" selection-start-line="18" selection-start-column="75" selection-end-line="18" selection-end-column="75" />
+          <folding>
+            <element signature="e#24#85#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="572">
+          <caret line="26" column="24" lean-forward="true" selection-start-line="26" selection-start-column="24" selection-end-line="26" selection-end-column="24" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/phone/static_data_phone.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="418">
+          <caret line="20" column="26" selection-end-line="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/phone/search_phone.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="308">
+          <caret line="29" column="12" lean-forward="true" selection-end-line="157" />
+          <folding>
+            <element signature="e#24#76#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/phone/dialog_phone.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="17" lean-forward="true" selection-end-line="538" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/computer_/static_data_computer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="241">
+          <caret line="32" column="10" lean-forward="true" selection-start-line="32" selection-start-column="10" selection-end-line="32" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/computer_/search_computer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="343">
+          <caret line="66" column="18" selection-start-line="66" selection-start-column="18" selection-end-line="66" selection-end-column="18" />
+          <folding>
+            <element signature="e#24#76#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/computer_/dialog_computer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="293">
+          <caret line="20" column="34" lean-forward="true" selection-start-line="20" selection-start-column="34" selection-end-line="20" selection-end-column="34" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
