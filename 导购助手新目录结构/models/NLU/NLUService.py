@@ -37,9 +37,9 @@ class NLUService(object):
         self.config = Config()
 
         # :: all model path ::
-        self.computer_model_path = self.config.SLU_path + '/slot_part/models/computer_0.9011_0.9105_19.h5'
-        self.phone_model_path = self.config.SLU_path + '/slot_part/models/phone_0.9346_0.9255_14.h5'
-        self.camera_model_path = self.config.SLU_path + '/slot_part/models/camera_0.9944_0.9895_9.h5'
+        self.computer_model_path = self.config.SLU_path + '/slot_part/models/computer_0.9367_0.9451_40.h5'
+        self.phone_model_path = self.config.SLU_path + '/slot_part/models/phone_0.9464_0.9319_34.h5'
+        self.camera_model_path = self.config.SLU_path + '/slot_part/models/camera_0.9846_0.9751_30.h5'
         self.intention_model_path = self.config.SLU_path + '/intention_part/model/model.pk'
         self.requirement_model_path = self.config.SLU_path + '/requirement_part/model/model.pk'
 
