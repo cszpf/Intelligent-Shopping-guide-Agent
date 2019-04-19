@@ -38,7 +38,7 @@ class Phone(Base):
             return str(int(s))
         if s is None:
             return "无"
-        return s.decode('utf8')
+        return s
 
     def __repr__(self):
         name = self.toStr(self.name)
@@ -58,7 +58,7 @@ Session = sessionmaker(engine)
 def betterCpu(cpu, requriment):
     if cpu is None:
         return True
-    cpu = cpu.decode('utf8').replace(' ', '')
+    cpu = cpu.replace(' ', '')
     requriment = requriment.replace(' ', '')
     level_req = cpu_level[requriment]
     pattern = '.*'.join(requriment.split(' '))
@@ -150,7 +150,7 @@ def searchPhone(condition):
             for word in experience:
                 if item.good is None:
                     continue
-                if word in item.good.decode('utf8'):
+                if word in item.good:
                     score[item.index] += 1
         res = sorted(res, key=lambda x: score[x.index], reverse=True)[0:10]
         res = sorted(res, key=lambda x: x.index)
