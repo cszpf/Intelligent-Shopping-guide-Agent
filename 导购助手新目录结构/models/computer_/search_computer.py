@@ -8,7 +8,7 @@ from sqlalchemy import or_, not_, and_
 import re
 
 from collections import defaultdict
-from static_data_computer import nameToColumn, gameRequirement, cpu_level
+from static_data_computer import nameToColumn, cpu_level, gpu_level, function_attr
 
 Base = declarative_base()
 
@@ -18,12 +18,23 @@ class Computer(Base):
 
     index = Column(Integer, primary_key=True)
     cpu = Column(String)
+    cpu_name = Column(String)
     gpu = Column(String)
+    gpu_name = Column(String)
     price = Column(Float)
     memory = Column(Float)
     disk = Column(Float)
     brand = Column(String)
     name = Column(String)
+    tags = Column(String)
+
+    score = 0
+
+    def get_score(self):
+        return self.score
+
+    def add_score(self, s=1):
+        self.score += s
 
     def toStr(self, s):
         if type(s) == float:
@@ -46,28 +57,45 @@ engine = create_engine('mysql+mysqlconnector://root@localhost:3306/dialog')
 Session = sessionmaker(engine)
 
 
-def betterCpu(cpu, requriment):
-    if cpu is None:
+def better_cpu(item, requriment):
+    if item.cpu is None:
+        return False
+    if item.cpu in cpu_level and requriment in cpu_level:
+        l1 = cpu_level[item.cpu]
+        l2 = cpu_level[requriment]
+        print(item.cpu,l1)
+        print(requriment,l2)
+        if l1 <= l2:
+            return True
+    return False
+
+
+def better_gpu(item, requriment):
+    if item.gpu is None:
+        return False
+    if item.gpu in gpu_level and requriment in gpu_level:
+        l1 = gpu_level[item.gpu]
+        l2 = gpu_level[requriment]
+        print(item.gpu, l1)
+        print(requriment, l2)
+        if l1 <= l2:
+            return True
+    return False
+
+
+def better_memory(item, requriment):
+    if item.memory is None:
+        return False
+    m1 = item.memory
+    m2 = requriment.replace('GB','')
+    m2 = int(m2)
+    if m1>=m2:
         return True
-    cpu = cpu.decode('utf8').replace(' ', '')
-    requriment = requriment.replace(' ', '')
-    level_req = cpu_level[requriment]
-    pattern = '.*'.join(requriment.split(' '))
-    pattern = r'.*%s.*' % pattern
-    for c in cpu_level:
-        match = re.search(pattern, cpu)
-        if match:
-            if cpu_level[c] <= level_req:
-                return True
-            else:
-                return False
-    return True
+    else:
+        return False
 
 
 def searchComputer(condition):
-    '''
-    {'negative': {'品牌': [('华为', '=')]}, '价格': [(3000.0, '>=')]}
-    '''
     session = Session()
     res = session.query(Computer)
 
@@ -86,7 +114,7 @@ def searchComputer(condition):
             if con[1] == '>=':
                 res = res.filter(Computer.price >= con[0])
             if con[1] == '=':
-                res = res.filter(and_(Computer.price >= con[0] - 1000, Phone.price <= con[0] + 1000))
+                res = res.filter(and_(Computer.price >= con[0] - 1000, Computer.price <= con[0] + 1000))
             if con[1] == '<=':
                 res = res.filter(Computer.price <= con[0])
 
@@ -108,24 +136,26 @@ def searchComputer(condition):
             if con[1] == '<=':
                 res = res.filter(Computer.disk <= con[0])
 
-
     res = res.order_by(Computer.index).all()
 
-    if '配置要求' in condition:
-        ramRequriment = gameRequirement['memory']
-        res = [item for item in res if item.ram is not None and item.ram >= ramRequriment]
-        cpuRequriment = gameRequirement['cpu']
-        res = [item for item in res if betterCpu(item.cpu, cpuRequriment)]
+    if '功能要求' in condition:
+        checker_dict = {'cpu': better_cpu, 'gpu': better_gpu, 'memory': better_memory}
+        for func in condition['功能要求']:
+            attr_requirement = function_attr[func[0]]
+            for attr in attr_requirement:
+                checker = checker_dict[attr]
+                for item in res:
+                    if (checker(item, attr_requirement[attr])):
+                        item.add_score(1)
+                    else:
+                        item.add_score(-1)
 
-    if '其他' in condition:
-        experience = [con[0] for con in condition['其他']]
-        score = defaultdict(lambda: 0)
-        for item in res:
-            for word in experience:
-                if item.good is None:
-                    continue
-                if word in item.good:
-                    score[item.index] += 1
-        res = sorted(res, key=lambda x: score[x.index], reverse=True)[0:10]
-        res = sorted(res, key=lambda x: x.index)
+    if '体验要求' in condition:
+        experience = [con[0] for con in condition['体验要求']]
+        for exp in experience:
+            for item in res:
+                if item.tags is not None and exp in item.tags:
+                    item.add_score(1)
+
+    res = sorted(res, key=lambda x: x.get_score())
     return res

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-from models.computer.dialog_computer import Computer_Dialogue
+from models.computer_.dialog_computer import Computer_Dialogue
 from models.phone.dialog_phone import Phone_Dialogue
 from models.camera.dialog_camera import Camera_Dialogue
+from models.NLU.NLUService import NLUService
 import numpy as np
 
 
@@ -15,8 +16,9 @@ class DialogManager:
         self.domain = None
         self.dialog = None
         self.reponseText = ''
-        #self.dialogs = {'computer': Computer_Dialogue(), 'phone': Phone_Dialogue()}
-        self.dialogs = {'phone': Phone_Dialogue(),'camera':Camera_Dialogue()}
+        self.nlu = NLUService()
+        # self.dialogs = {'computer': Computer_Dialogue(), 'phone': Phone_Dialogue()}
+        self.dialogs = {'phone': Phone_Dialogue(self.nlu), 'camera': Camera_Dialogue(self.nlu), 'computer': Computer_Dialogue(self.nlu)}
 
     def user(self, domain, sentence):
         print(domain)

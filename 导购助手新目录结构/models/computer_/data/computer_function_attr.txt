@@ -1,0 +1,25 @@
+lol
+cpu:i3 2120M
+memory:4GB
+
+PUBG
+cpu:i5 4330M
+gpu:GTX 660M
+memory:6GB
+
+cf
+cpu:i5 3520m
+gpu:GT 630m
+memory:4GB
+
+魔兽世界
+cpu:i5 7440hq
+gpu:GTX 560
+memory:4GB
+
+魔兽争霸
+memory:3GB
+
+dnf
+memory:4GB
+cpu:i3 2120m
