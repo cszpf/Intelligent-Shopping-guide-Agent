@@ -3,7 +3,16 @@ import sys
 import os
 
 sys.path.append(os.path.dirname(__file__))
-from save_and_load import load
+from save_and_load import load, read, read_list
+
+# 品牌列表
+brand_list = '''
+惠普 戴尔 苹果 华硕 神舟 ThinkPad Acer 宏碁 机械革命 三星 雷神 Alienware 机械师 联想 华为 a豆 微软 小米 ROG MSI 微星 荣耀 
+炫龙 LG 麦本本 雷蛇 火影 Terrans Force 海尔 技嘉 中柏 VAIO 吾空 壹号本 清华同方 东芝 锡恩帝 松下 昂达 酷比魔方 富士通 
+宝扬 博本 谷歌 海鲅 索立信 ENZ 爱尔轩 紫麦 镭波 AVITA 金属大师 SOSOON 刀客 huawei razer 索尼 google 方正 台电 新蓝 gateway 
+七喜 明基 长城 tcl dell mechrevo emachines 宏基 intel ibm 优派
+'''
+brand_list = brand_list.replace('\n', '').lower().split()
 
 # 必须的slot
 necessaryTag = ['品牌', '价格', '内存']
@@ -14,8 +23,8 @@ labelToTag = {'brand': '品牌',
               'disk': '硬盘大小',
               'cpu': '处理器',
               'gpu': '显卡',
-              'experience': '其他',
-              'function': '配置要求'}
+              'experience': '体验要求',
+              'function': '功能要求'}
 # 针对每一个slot的发问
 ask_slot = {'品牌': ['请问你喜欢什么牌子呢？', '请问你需要什么牌子的呢?'],
             '价格': ['请问你预算多少？', '请问什么价位的合适呢?', '请问预期的价位是多少呢?'],
@@ -27,7 +36,7 @@ listInfo = {'品牌': ['畅销的品牌有惠普,戴尔,华硕呢', '比较畅�
 
 # 将中文的slot转成数据库的字段
 nameToColumn = {'品牌': 'brand', '价格': 'price', '内存': 'memory', '硬盘': 'disk',
-                '处理器': 'cpu', '显卡': 'gpu', '型号': 'name', '其他': 'experience', '配置要求': 'function'}
+                '处理器': 'cpu', '显卡': 'gpu', '型号': 'name', '体验要求': 'experience', '功能要求': 'function'}
 # 可以进行调整的字段
 adjustableSlot = {'价格': 'price', '内存': 'memory', '硬盘': 'disk'}
 # 表示无所谓的词语
@@ -40,14 +49,60 @@ no_word = ['不要', '不是', '否定', '否认', '不对', '不可以', '不�
 experienceAttr = ['信号', '做工', '分辨率', '处理器', '外观', '字体', '反应', '效果', '性价比', '性能', '手感', '拍照', '摄像', '机身', '游戏', '电池',
                   '界面',
                   '网络', '系统', '强悍', '硬件', '续航', '网速', '音质', '流畅', '视频', '软件', '重量', '音质']
-# 手机cpu等级
+# cpu　gpu等级
 path = os.path.dirname(__file__)
-level = load(os.path.join(path, 'cpu.data'))
-cpu_level = {}
-for i, lv in enumerate(level):
-    for cpu in lv:
-        cpu_level[cpu] = i
+cpu_level = load(path + '/data/cpu_level.data')
+gpu_level = load(path + '/data/gpu_level.data')
 
-# 游戏列表
-game = ['王者荣耀', '王者', '吃鸡', '全军出击', '刺激战场', '我的世界', '明日之后', 'fgo', '炉石', '游戏']
-gameRequirement = {'cpu': 'i5', 'memory': 2}
+
+def load_function(file_path):
+    file = read(file_path).readlines()
+    file = [line.strip() for line in file]
+    function_name = ['cpu', 'gpu', 'memory']
+    res = {}
+    i = 0
+    while i < len(file):
+        name = file[i]
+        temp = {}
+        i += 1
+        while i < len(file) and file[i] != '':
+            line = file[i].split(':')
+            for word in function_name:
+                if word == line[0]:
+                    temp[word] = line[1]
+            i += 1
+
+        res[name] = temp
+        while i < len(file) and file[i] == '':
+            i += 1
+    return res
+
+
+def load_func_synonyms(file_path):
+    file = read_list(file_path)
+    res = {}
+    for line in file:
+        line = line.split()
+        std_word = line[0]
+        for word in line:
+            res[word] = std_word
+
+    return res
+
+
+def load_exp_synonyms(file_path):
+    file = read_list(file_path)
+    words = []
+    for line in file:
+        line = line.split()
+        words.extend(line)
+    return words
+
+
+function_attr = load_function(path + '/data/computer_function_attr.txt')
+func_synonyms = load_func_synonyms(path + '/data/computer_func_synonyms.txt')
+
+good_words = read_list(path + '/data/good_words.txt')
+bad_words = read_list(path + '/data/bad_words.txt')
+
+exp_synonyms = load_exp_synonyms(path + '/data/computer_exp_synonyms.txt')

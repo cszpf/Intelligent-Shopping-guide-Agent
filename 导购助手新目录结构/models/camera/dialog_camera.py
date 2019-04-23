@@ -2,9 +2,7 @@ import numpy as np
 import sys
 import os
 
-sys.path.append(os.path.join(os.path.dirname(__file__), os.path.pardir))
 sys.path.append(os.path.dirname(__file__))
-from NLU.NLUService import NLUService
 from save_and_load import *
 import json
 import re
@@ -77,7 +75,7 @@ def getChangeIntent(domain, sentence):
 
 
 class Camera_Dialogue():
-    def __init__(self):
+    def __init__(self,nlu):
         self.slot_value = {}
         self.state = "init"
         self.last_state = 'init'
@@ -89,7 +87,7 @@ class Camera_Dialogue():
         self.responsePrefix = ''
         self.show_result = False
         self.finish = False
-        self.nlu = NLUService()
+        self.nlu = nlu
 
     def save(self):
         model = {
@@ -259,6 +257,8 @@ class Camera_Dialogue():
 
         if self.state == 'list':
             self.changeState('ask')
+            if self.ask_slot == '':
+                return self.response()
             return getRandomSentence(listInfo[self.ask_slot])
 
         if self.state == 'result':

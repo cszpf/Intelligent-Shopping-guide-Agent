@@ -4,6 +4,7 @@ import pickle
 import sys
 import os
 import tensorflow as tf
+
 global graph
 graph = tf.get_default_graph()
 
@@ -92,8 +93,6 @@ class NLUService(object):
         """
 
         sentence = slot_clean(sentence)
-        print(len(sentence))
-        print(len("我想买手机"))
         text = ' '.join([word for word in sentence])
 
         # :: Prepare the input ::
@@ -164,3 +163,18 @@ class NLUService(object):
         sentence_term_doc = self.requirement_tfidf_model.transform(sentence_list)
         label = self.requirement_classifier_model.predict(sentence_term_doc)
         return self.requirement_label_subject[label[0]]
+
+    def confirm_slot(self, slot_list, sentence):
+        intent = self.requirement_predict(sentence)
+        if intent == 'need':
+            for item in slot_list:
+                item['need'] = True
+            return slot_list
+        if intent == 'no_need':
+            for item in slot_list:
+                item['need'] = False
+            return slot_list
+        if intent == 'whatever':
+            for item in slot_list:
+                item['need'] = False
+            return slot_list
