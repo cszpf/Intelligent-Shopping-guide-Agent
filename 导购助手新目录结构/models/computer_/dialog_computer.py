@@ -28,45 +28,44 @@ def getRandomSentence(sentenceList):
 
 
 def getChangeIntent(domain, sentence):
-    if domain == 'phone':
-        changeableSlot = ['价格', '屏幕', '内存', '像素', '拍照', '照相']
-        posWord = ['贵', '高', '大', '宽', '好', '清晰']
-        negWord = ['便宜', '小', '低', '糟糕', '少', '差']
-        positiveCount = 0
-        target = ''
-        # 匹配描述目标
-        for word in changeableSlot:
-            if word in sentence:
-                target = word
-                break
-        # 补充目标
-        if target == '':
-            if any(w in sentence for w in ['贵', '便宜']):
-                target = '价格'
-            elif any(w in sentence for w in ['高', '低']):
-                target = '价格?'
+    changeableSlot = ['价格', '硬盘', '内存']
+    posWord = ['贵', '高', '大', '好']
+    negWord = ['便宜', '小', '低', '糟糕', '少', '差']
+    positiveCount = 0
+    target = ''
+    # 匹配描述目标
+    for word in changeableSlot:
+        if word in sentence:
+            target = word
+            break
+    # 补充目标
+    if target == '':
+        if any(w in sentence for w in ['贵', '便宜']):
+            target = '价格'
+        elif any(w in sentence for w in ['高', '低']):
+            target = '价格?'
 
-        tooWord = ['太', '有点', '过于', '不够']
-        for word in posWord:
-            if word in sentence:
-                if all(w + word not in sentence for w in tooWord):
-                    positiveCount += 1
-                else:
-                    positiveCount -= 1
-        for word in negWord:
-            if word in sentence:
-                if all(w + word not in sentence for w in tooWord):
-                    positiveCount -= 1
-                else:
-                    positiveCount += 1
+    tooWord = ['太', '有点', '过于', '不够']
+    for word in posWord:
+        if word in sentence:
+            if all(w + word not in sentence for w in tooWord):
+                positiveCount += 1
+            else:
+                positiveCount -= 1
+    for word in negWord:
+        if word in sentence:
+            if all(w + word not in sentence for w in tooWord):
+                positiveCount -= 1
+            else:
+                positiveCount += 1
 
-        positive = 0
-        if positiveCount > 0:
-            positive = 1
-        elif positiveCount < 0:
-            positive = -1
+    positive = 0
+    if positiveCount > 0:
+        positive = 1
+    elif positiveCount < 0:
+        positive = -1
 
-        return (target, positive)
+    return (target, positive)
 
 
 class Computer_Dialogue():
@@ -223,17 +222,14 @@ class Computer_Dialogue():
             self.changeState('done')
             return
         tag = self.extract(sentence)
-        answer_intent = self.nlu.requirement_predict(sentence)
-        negative = False
-        if answer_intent == 'no_need':
-            negative = True
-        to_add = self.fillMessage(tag, negative)
-        if answer_intent == 'whatever':
-            to_add[self.ask_slot] = [('whatever', '=')]
-        add = False
-        if len(to_add) > 0:
-            add = True
+        intent = self.nlu.requirement_predict(sentence)
+        print(sentence, intent)
+        print(tag)
+        if len(tag) > 0:
+            tag = self.nlu.confirm_slot(tag, sentence)
+            to_add = self.fillMessage(tag)
             self.write(to_add)
+            return
         morewhat = getChangeIntent('computer', sentence)
         if morewhat[1] != 0:
             if '?' in morewhat[0]:
@@ -366,6 +362,7 @@ class Computer_Dialogue():
                     res[name].append((t['word'], '!='))
             else:
                 t['type'] = t['type'].replace('memory_size', 'memory')
+                t['type'] = t['type'].replace('ram', 'memory')
                 if t['type'].find('_') != -1:
                     name_ = t['type'].split('_')
                     name = name_[0]

@@ -24,3 +24,8 @@ def write(arr,name):
         else:
             file.write(line+'\n')
     file.close()
+
+def read_list(file_name):
+    file = codecs.open(file_name,'r').readlines()
+    file = [line.strip() for line in file]
+    return file
