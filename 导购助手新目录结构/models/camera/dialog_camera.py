@@ -6,9 +6,8 @@ sys.path.append(os.path.dirname(__file__))
 from save_and_load import *
 import json
 import re
-
-from static_data_camera import necessaryTag, labelToTag, ask_slot, listInfo, nameToColumn
-from static_data_camera import adjustableSlot, whatever_word, yes_word, no_word
+from static_data_camera import necessaryTag, labelToTag, ask_slot, listInfo, nameToColumn, adjustableSlot, \
+    whatever_word, yes_word, no_word, func_synonyms, exp_synonyms, function_attr, brand_list
 from collections import defaultdict
 from search_camera import search_camera
 
@@ -29,53 +28,48 @@ def getRandomSentence(sentenceList):
 
 
 def getChangeIntent(domain, sentence):
-    if domain == 'phone':
-        changeableSlot = ['价格', '屏幕', '内存', '像素', '拍照', '照相']
-        posWord = ['贵', '高', '大', '宽', '好', '清晰']
-        negWord = ['便宜', '小', '低', '糟糕', '少', '差']
-        positiveCount = 0
-        target = ''
-        # 匹配描述目标
-        for word in changeableSlot:
-            if word in sentence:
-                target = word
-                break
-        # 补充目标
-        if target == '':
-            if any(w in sentence for w in ['贵', '便宜']):
-                target = '价格'
-            elif any(w in sentence for w in ['清晰', '拍照', '照相']):
-                target = '像素'
-            elif any(w in sentence for w in ['高', '低']):
-                target = '价格?'
-            elif any(w in sentence for w in ['大', '小']):
-                target = '屏幕?'
+    changeableSlot = ['价格', '像素']
+    posWord = ['贵', '高', '大', '好']
+    negWord = ['便宜', '小', '低', '糟糕', '少', '差']
+    positiveCount = 0
+    target = ''
+    # 匹配描述目标
+    for word in changeableSlot:
+        if word in sentence:
+            target = word
+            break
+    # 补充目标
+    if target == '':
+        if any(w in sentence for w in ['贵', '便宜']):
+            target = '价格'
+        elif any(w in sentence for w in ['高', '低']):
+            target = '价格?'
 
-        tooWord = ['太', '有点', '过于', '不够']
-        for word in posWord:
-            if word in sentence:
-                if all(w + word not in sentence for w in tooWord):
-                    positiveCount += 1
-                else:
-                    positiveCount -= 1
-        for word in negWord:
-            if word in sentence:
-                if all(w + word not in sentence for w in tooWord):
-                    positiveCount -= 1
-                else:
-                    positiveCount += 1
+    tooWord = ['太', '有点', '过于', '不够']
+    for word in posWord:
+        if word in sentence:
+            if all(w + word not in sentence for w in tooWord):
+                positiveCount += 1
+            else:
+                positiveCount -= 1
+    for word in negWord:
+        if word in sentence:
+            if all(w + word not in sentence for w in tooWord):
+                positiveCount -= 1
+            else:
+                positiveCount += 1
 
-        positive = 0
-        if positiveCount > 0:
-            positive = 1
-        elif positiveCount < 0:
-            positive = -1
+    positive = 0
+    if positiveCount > 0:
+        positive = 1
+    elif positiveCount < 0:
+        positive = -1
 
-        return (target, positive)
+    return (target, positive)
 
 
 class Camera_Dialogue():
-    def __init__(self,nlu):
+    def __init__(self, nlu):
         self.slot_value = {}
         self.state = "init"
         self.last_state = 'init'
@@ -88,6 +82,7 @@ class Camera_Dialogue():
         self.show_result = False
         self.finish = False
         self.nlu = nlu
+        self.asked = []
 
     def save(self):
         model = {
@@ -99,7 +94,8 @@ class Camera_Dialogue():
             'list_': self.list,
             'add_attention': self.add_attention,
             'choice': self.choice,
-            'morewhat': self.morewhat
+            'morewhat': self.morewhat,
+            'asked': self.asked
         }
         return json.dumps(model)
 
@@ -114,6 +110,7 @@ class Camera_Dialogue():
         self.add_attention = m['add_attention']
         self.choice = m['choice']
         self.morewhat = m['morewhat']
+        self.asked = m['asked']
 
     def reset(self):
         self.slot_value = {}
@@ -127,6 +124,7 @@ class Camera_Dialogue():
         self.responsePrefix = ''
         self.show_result = False
         self.finish = False
+        self.asked = []
 
     def changeState(self, state, lastState=None):
         print("state change to:" + state)
@@ -178,7 +176,7 @@ class Camera_Dialogue():
         self.changeState('result')
 
     def adjustConfirm(self, sentence):
-        targetWord = ['像素', '价格']
+        targetWord = ['价格', '像素']
         for word in targetWord:
             if word in sentence:
                 self.morewhat = (word, self.morewhat[1])
@@ -224,17 +222,14 @@ class Camera_Dialogue():
             self.changeState('done')
             return
         tag = self.extract(sentence)
-        answer_intent = self.nlu.requirement_predict(sentence)
-        negative = False
-        if answer_intent == 'no_need':
-            negative = True
-        to_add = self.fillMessage(tag, negative)
-        if answer_intent == 'whatever':
-            to_add[self.ask_slot] = [('whatever', '=')]
-        add = False
-        if len(to_add) > 0:
-            add = True
+        intent = self.nlu.requirement_predict(sentence)
+        print(sentence, intent)
+        print(tag)
+        if len(tag) > 0:
+            tag = self.nlu.confirm_slot(tag, sentence)
+            to_add = self.fillMessage(tag)
             self.write(to_add)
+
         morewhat = getChangeIntent('camera', sentence)
         if morewhat[1] != 0:
             if '?' in morewhat[0]:
@@ -247,13 +242,19 @@ class Camera_Dialogue():
     def response(self):
         if self.state == 'ask':
             # 检查必须的slot_value，如果没有的话就发出提问
+            unasked = []
             for slot in necessaryTag:
-                if slot not in self.slot_value:
-                    self.ask_slot = slot
-                    return getRandomSentence(ask_slot[slot])
+                if slot not in self.asked:
+                    unasked.append(slot)
+            if len(unasked) > 0:
+                num = np.random.randint(len(unasked))
+                slot = unasked[num]
+                self.ask_slot = slot
+                return getRandomSentence(ask_slot[slot])
             # 如果到了这里，说明所有的slot都问完了,转入confirm_result
-            self.changeState('confirm_result')
-            return self.response()
+            else:
+                self.changeState('confirm_result')
+                return self.response()
 
         if self.state == 'list':
             self.changeState('ask')
@@ -279,13 +280,6 @@ class Camera_Dialogue():
                 else:
                     return getRandomSentence(["请问您是需要更便宜的产品吗?"])
 
-            if target == '像素':
-                self.expected = '屏幕大小'
-                if self.morewhat[1] >= 0:
-                    return getRandomSentence(['请问您是需要更高的像素吗?'])
-                else:
-                    return getRandomSentence(['请问您是需要低一点的像素吗？'])
-
         if self.state == 'confirmChoice':
             sentenceList = ["即将为您预订以下商品，是否确认？"]
             return getRandomSentence(sentenceList)
@@ -301,7 +295,7 @@ class Camera_Dialogue():
 
     def checkNecessary(self):
         for tag in necessaryTag:
-            if tag not in self.slot_value:
+            if tag not in self.asked:
                 return False
         return True
 
@@ -312,15 +306,18 @@ class Camera_Dialogue():
             self.listSlot(sentence)
         else:
             tag = self.extract(sentence)
-            answer_intent = self.nlu.requirement_predict(sentence)
-            negative = False
-            if answer_intent == 'no_need':
-                negative = True
-            to_add = self.fillMessage(tag, negative)
-            if answer_intent == 'whatever':
-                to_add[self.ask_slot] = [('whatever', '=')]
-
-            self.write(to_add)
+            intent = self.nlu.requirement_predict(sentence)
+            print(sentence, intent)
+            print(tag)
+            if len(tag) == 0 and intent == 'whatever':
+                if self.ask_slot != '':
+                    self.write({self.ask_slot: [('whatever', '=')]})
+                    self.asked.append(self.ask_slot)
+                    self.ask_slot = ''
+            else:
+                tag = self.nlu.confirm_slot(tag, sentence)
+                to_add = self.fillMessage(tag)
+                self.write(to_add)
             if self.checkNecessary():
                 self.changeState('result')
 
@@ -339,7 +336,7 @@ class Camera_Dialogue():
         else:
             return -1
 
-    def fillMessage(self, tag, negative):
+    def fillMessage(self, tag):
         # 主要用于修正tag和转换存储格式
         '''
         input:
@@ -347,44 +344,44 @@ class Camera_Dialogue():
         output:
             {'像素':[(3000,'=')]}
         '''
+        print("fillmessage")
+        print(tag)
         if len(tag) == 0:
             return {}
         res = defaultdict(lambda: [])
         # entities = tag['entities']
         opDict = {'l': '>=', 'm': '=', 'u': '<='}
+        bi_tag = ['brand', 'experience', 'function', 'frame', 'type', 'level']
         for t in tag:
             op = '='
-            if t['type'] == 'brand':
-                if not negative:
-                    res[labelToTag['brand']].append((t['word'], op))
+            if t['type'] in bi_tag:
+                name = labelToTag[t['type']]
+                if t['need']:
+                    res[name].append((t['word'], '='))
                 else:
-                    res[labelToTag['brand']].append((t['word'], '!='))
-            if t['type'] == 'experience':
-                res[labelToTag['experience']].append((t['word'], op))
-            if t['type'] == 'function':
-                res[labelToTag['function']].append((t['word'], op))
-
-            name = t['type']
-            if t['type'].find('_') != -1:
-                name_ = t['type'].split('_')
-                name = name_[0]
-                op = opDict[name_[1]]
-            value = self.filterNum(t['word'])
-            if value > 0:
-                res[labelToTag[name]].append((value, op))
+                    res[name].append((t['word'], '!='))
+            else:
+                if t['type'].find('_') != -1:
+                    name_ = t['type'].split('_')
+                    name = name_[0]
+                    op = opDict[name_[1]]
+                value = self.filterNum(t['word'])
+                if value > 0:
+                    res[labelToTag[name]].append((value, op))
+        res = dict(res)
+        print(res)
         return res
 
     def write(self, table):
         # table：待写入的slot-value
         print("write")
-        print(dict(table))
+        print(table)
         for t in table:
             if t == self.ask_slot:
+                self.asked.append(self.ask_slot)
                 self.ask_slot = ''
-            if t in self.slot_value:
-                self.slot_value[t].extend(table[t])
-            else:
-                self.slot_value[t] = table[t]
+            self.slot_value[t] = table[t]
+            self.asked.append(t)
 
     def checkChoice(self, sentence):
         # 1. 通过第几个的方式来选择 #目前只支持这一种
@@ -406,7 +403,7 @@ class Camera_Dialogue():
 
         pattern = re.compile('[第|最后]([一二三四五12345])')
         m = pattern.search(sentence)
-        if (m):
+        if m:
             index = transNumber(m.group(1))
             if index > len(self.resultList):
                 return False
@@ -430,7 +427,15 @@ class Camera_Dialogue():
                 return False
 
     def extract(self, sentence):
-        tag = self.nlu.phone_slot_predict(sentence)['entities']
+        print("extract")
+        tag = self.nlu.camera_slot_predict(sentence)['entities']
+        tag = [item for item in tag if item['type'] != 'brand' or item['word'] in brand_list]
+        for word in exp_synonyms:
+            if word in sentence:
+                tag.append({'type': 'experience', 'word': word})
+        for word in func_synonyms:
+            if word in sentence:
+                tag.append({'type': 'function', 'word': word})
         return tag
 
     def search(self, slot_value_table):
@@ -442,7 +447,7 @@ class Camera_Dialogue():
         return result[0:5]
 
     def getResult(self):
-        returnSlot = ['name', 'price', 'pixel', 'level', 'frame']
+        returnSlot = ['name', 'price', 'type', 'level', 'pixel', 'screen', 'shutter']
         res = []
         resultList = self.resultList
         if self.state == 'confirmChoice':
@@ -464,7 +469,7 @@ class Camera_Dialogue():
         res = {}
         opDict = {'<=': '小于', '=': '', '>=': '大于', '!=': '不要'}
         for slot in self.slot_value:
-            if slot == '其他':
+            if slot == '体验要求':
                 continue
             sentenceList = []
             for con in self.slot_value[slot]:
@@ -472,21 +477,16 @@ class Camera_Dialogue():
             slot = nameToColumn[slot]
             res[slot] = ','.join(sentenceList)
 
-        if '其他' in self.slot_value:
+        if '体验要求' in self.slot_value:
             sentenceList = []
-            for word in self.slot_value['其他']:
+            for word in self.slot_value['体验要求']:
                 sentenceList.append(word[0])
             res['experience'] = ','.join(sentenceList)
 
-        if '配置要求' in self.slot_value:
+        if '功能要求' in self.slot_value:
             sentenceList = []
-            functionName = {'cpu': '处理器', 'ram': '运行内存'}
-            for requriment in gameRequirement:
-                value = str(gameRequirement[requriment])
-                if requriment == 'ram':
-                    value += 'GB'
-                s = "%s%s以上" % (functionName[requriment], value)
-                sentenceList.append(s)
+            for word in self.slot_value['功能要求']:
+                sentenceList.append(word[0])
             res['function'] = ','.join(sentenceList)
         return res
 
@@ -498,14 +498,8 @@ class Camera_Dialogue():
 
 
 if __name__ == '__main__':
-    model = Camera_Dialogue()
+    model = ()
     inp = "我要买个相机"
-    print('用户：' + inp)
-    model.user(inp)
-    print("模型：", model.response())
-
-    print()
-    inp = "索尼或者佳能的吧"
     print('用户：' + inp)
     model.user(inp)
     print("模型：", model.response())

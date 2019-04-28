@@ -8,7 +8,7 @@ from sqlalchemy import or_, not_, and_
 import re
 
 from collections import defaultdict
-from static_data_computer import nameToColumn, cpu_level, gpu_level, function_attr
+from static_data_computer import nameToColumn, cpu_level, gpu_level, function_attr,func_synonyms
 
 Base = declarative_base()
 
@@ -17,6 +17,7 @@ class Computer(Base):
     __tablename__ = 'computer_param'
 
     index = Column(Integer, primary_key=True)
+    id = Column(Integer)
     cpu = Column(String)
     cpu_name = Column(String)
     gpu = Column(String)
@@ -63,8 +64,8 @@ def better_cpu(item, requriment):
     if item.cpu in cpu_level and requriment in cpu_level:
         l1 = cpu_level[item.cpu]
         l2 = cpu_level[requriment]
-        print(item.cpu,l1)
-        print(requriment,l2)
+        print(item.cpu, l1)
+        print(requriment, l2)
         if l1 <= l2:
             return True
     return False
@@ -87,9 +88,9 @@ def better_memory(item, requriment):
     if item.memory is None:
         return False
     m1 = item.memory
-    m2 = requriment.replace('GB','')
+    m2 = requriment.replace('GB', '')
     m2 = int(m2)
-    if m1>=m2:
+    if m1 >= m2:
         return True
     else:
         return False
@@ -98,7 +99,7 @@ def better_memory(item, requriment):
 def searchComputer(condition):
     session = Session()
     res = session.query(Computer)
-
+    print(condition)
     if '品牌' in condition and condition['品牌'][0][0] != 'whatever':
         brandList = []
         for brand in condition['品牌']:
@@ -137,25 +138,40 @@ def searchComputer(condition):
                 res = res.filter(Computer.disk <= con[0])
 
     res = res.order_by(Computer.index).all()
-
+    score = defaultdict(lambda: 0)
     if '功能要求' in condition:
         checker_dict = {'cpu': better_cpu, 'gpu': better_gpu, 'memory': better_memory}
         for func in condition['功能要求']:
-            attr_requirement = function_attr[func[0]]
+            attr_requirement = function_attr[func_synonyms[func[0]]]
             for attr in attr_requirement:
                 checker = checker_dict[attr]
                 for item in res:
                     if (checker(item, attr_requirement[attr])):
-                        item.add_score(1)
+                        score[item.index] += 1
                     else:
-                        item.add_score(-1)
+                        score[item.index] -= 1
 
     if '体验要求' in condition:
         experience = [con[0] for con in condition['体验要求']]
         for exp in experience:
             for item in res:
                 if item.tags is not None and exp in item.tags:
-                    item.add_score(1)
+                    score[item.index] += 1
 
-    res = sorted(res, key=lambda x: x.get_score())
-    return res
+    res = sorted(res, key=lambda x: score[x.index], reverse=True)
+    print([score[item.index] for item in res][0:15])
+    res_ = []
+    last_id = -1
+    for item in res:
+        if item.id == last_id:
+            continue
+        else:
+            res_.append(item)
+            last_id = item.id
+    if len(res_) < 5:
+        res_id = [item.id for item in res_]
+        for item in res:
+            if item.id not in res_id:
+                res_.append(item)
+    print([score[item.index] for item in res_][0:15])
+    return res_

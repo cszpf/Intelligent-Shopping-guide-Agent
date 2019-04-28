@@ -1,0 +1,48 @@
+轻巧
+type:微单 单反 消费 卡片
+level:入门
+
+画质
+type:微单 单反
+level:高端
+frame:asp画幅 全画幅
+pixel:2000万
+
+性能
+type:高端单反
+price:7000
+frame:全画幅 asp画幅
+
+性价比
+type:微单 消费 单反
+level:入门
+price:2000,7000
+frame:asp画幅
+screen:高清屏
+
+色彩
+frame:全画幅 ASP画幅 ASP-C画幅 1/2.3英寸
+pixel:1500万
+
+高像素
+type:单反
+level:高端
+有效像素:2400万
+
+宽容度
+type:微单
+
+细节
+type:单反 微单 单电
+level:高端
+pixel:2500万以上
+
+操作简单
+type:微单 消费 卡片
+
+续航
+type:单反
+level:中端 高端
+
+灵敏
+type:单电
