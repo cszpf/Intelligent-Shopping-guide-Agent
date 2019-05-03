@@ -21,25 +21,17 @@ flask的前端页面文件夹
 
 ### ./models/phone/dialog_phone.py
 
-手机领域的对话机器人入口文件，需要实现一个dialog_phone类来进行对话管理。必须实现几个供全局对话管理类调用的接口，接口详情见`./models/phone/dialog_phone.py`文件
+手机领域的对话机器人入口文件
 
-### ./models/phone/NLU
+### ./models/phone/data/
 
-nlu模块的文件夹，需要实现nlu_interface.py文件来提供接口
+手机领域的静态资源文件
+
+### ./models/NLU
+
+nlu模块的文件夹
 
 
-### ./models/phone/NLU/nlu_interface.py
+### ./models/NLU/nlu_interface.py
 
 实现基本的nlu接口，需要的接口根据不同对话系统而不同。
-需要在全局范围内创建一个nlu的类并加载好模型，避免每一次调用都需要载入模型和初始化
-
-
-## 调整方案
-### nlu部分（俊生:手机的nlu部分）
-将所有nlu的代码集中到对应的NLU文件夹中，并抽象出nlu_interface.py的接口文件
-
-### dialog部分（志成,星宇）
-将所有对话系统的文件集中到对应的文件夹中，并且实现供上层调用的接口
-
-### tensorflow.js的前端意图识别部分（星宇）
-抛弃原有的使用nodejs服务器来进行模型加载和预测的方式，改为前端在浏览器直接加载模型。
