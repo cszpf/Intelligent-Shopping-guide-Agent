@@ -1,7 +1,4 @@
 @charset "utf-8";
-/*
- * author yinq
- */
 /* 防止用户自定义背景颜色对网页的影响，添加让用户可以自定义字体 */
 html{color:#000;-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%; height:100%;}
 /* 内外边距通常让各个浏览器样式的表现位置不同 */
@@ -74,7 +71,7 @@ body .fn-hide {display:none;}
 }
 
 /*common*/
-body{ background:#176994 url(../images/bg4.jpg)  top center no-repeat; background-size:cover; height:-moz-calc(100% - 100px); height:-webkit-calc(100% - 100px); height:calc(100% - 100px); padding:50px;}
+body{ background:#176994 url(../images/bg3.jpg)  top center no-repeat; background-size:cover; height:-moz-calc(100% - 100px); height:-webkit-calc(100% - 100px); height:calc(100% - 100px); padding:50px;}
 .fontico:before{
   font-family: "fontello";
   font-style: normal;
@@ -119,7 +116,7 @@ i.logout:before{ content:'\e804';}
 .chat_main{ padding:20px 0px 0px 20px; width:-moz-calc(100% - 21px); width:-webkit-calc(100% - 21px); width:calc(100%-21px); height:-moz-calc(100% - 40px); height:-webkit-calc(100% - 40px); height:calc(100% - 40px);}
 .message_box{ background-color:#FFF; margin-bottom:15px; height:-moz-calc(100% - 115px); height:-webkit-calc(100% - 120px); height:calc(100% - 120px); overflow:auto;}
 
-.msg_item{ margin-bottom:20px; position:relative;}
+.msg_item{ margin-bottom:20px; position:relative;font-size: 22px;}
 .msg_item .uface{float:left; height: 40px; position:absolute; bottom:0px;}
 .msg_item .item_right{ margin-left:45px; float:left; margin-right:15px;}
 .msg_item .msg{ background-color:#bdbdbd; padding:10px 15px; line-height:24px; -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px; color:#2E4059; position: relative; margin-bottom:5px; white-space: pre-wrap;}
@@ -141,7 +138,7 @@ width: 0;
 
 
 
-.msg_item_I{ margin-bottom:20px; margin-right: 5px; position:relative;}
+.msg_item_I{ margin-bottom:20px; margin-right: 5px; position:relative;font-size: 22px;}
 .msg_item_I .uface{float:right; height: 40px; position:absolute;  bottom:0px; right: 0px}
 .msg_item_I .item_right{ margin-left:15px; float:right; margin-right:45px;}
 .msg_item_I .msg{ background-color:#E0F1FC; padding:10px 15px; line-height:24px; -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px; color:#2E4059; position: relative; margin-bottom:5px}
