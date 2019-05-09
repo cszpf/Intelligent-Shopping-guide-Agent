@@ -9,7 +9,6 @@ global graph
 graph = tf.get_default_graph()
 
 sys.path.append(os.path.dirname(__file__))
-print(sys.path)
 from path_config import Config
 from slot_part.util.preprocessing import create_matrices
 from slot_part.util.preprocessing import transform_digital
@@ -17,7 +16,28 @@ from slot_part.util.preprocessing import clean as slot_clean
 from slot_part.util.BIOF1Validation import result_to_json_iob
 from slot_part.networks.BiLSTM import BiLSTM
 from intention_part.main import clean as intention_clean
+from intention_part.main import load_aspect_sentiment
 from requirement_part.main import clean as requirement_clean
+
+
+def split_all(s, target):
+    '''
+    split a sentence by target
+    :param s: input sentence
+    :param target: target string
+    :return:a list of string
+    '''
+    sent = []
+    line = ''
+    for word in s:
+        if word not in target:
+            line += word
+        else:
+            sent.append(line)
+            line = ''
+    if line != '':
+        sent.append(line)
+    return sent
 
 
 class NLUService(object):
@@ -62,6 +82,8 @@ class NLUService(object):
             self.requirement_tfidf_model = save['tfidfVectorizer']
             self.requirement_classifier_model = save['classifier_model']
             self.requirement_label_subject = save['label_subject']
+
+        self.aspect_sentiment = load_aspect_sentiment()
 
     def computer_slot_predict(self, sentence):
         """
@@ -164,17 +186,68 @@ class NLUService(object):
         label = self.requirement_classifier_model.predict(sentence_term_doc)
         return self.requirement_label_subject[label[0]]
 
-    def confirm_slot(self, slot_list, sentence):
-        intent = self.requirement_predict(sentence)
-        if intent == 'need':
+    def confirm_slot(self, slot_list, sentence, mode=3):
+        '''
+        :param slot_list: slot list to be confirmed
+        :param sentence: user input
+        :param mode: 1. aspect-based sentiment 2. intention based 3. rule based
+        :return: slot_list with need attr
+        '''
+        print("confirm slot")
+        print(slot_list)
+        print(sentence)
+        if mode == 1:
             for item in slot_list:
-                item['need'] = True
+                slot = item['word']
+                sentence = split_all(sentence, ',.?，。？！!')
+                for sent in sentence:
+                    if slot not in sent:
+                        continue
+                    sentiment = self.aspect_sentiment['predict'](sent, slot)
+                    if sentiment == 'positive':
+                        item['need'] = True
+                    else:
+                        item['need'] = False
             return slot_list
-        if intent == 'no_need':
+        elif mode == 2:
+            intent = self.requirement_predict(sentence)
+            if intent == 'need':
+                for item in slot_list:
+                    item['need'] = True
+                return slot_list
+            if intent == 'no_need':
+                for item in slot_list:
+                    item['need'] = False
+                return slot_list
+            if intent == 'whatever':
+                for item in slot_list:
+                    item['need'] = False
+                return slot_list
+        else:
+            intent = self.requirement_predict(sentence)
+            no_word = ['不要', '不是', '否定', '否认', '不对', '不可以', '不行', '别', '否', '不', '差']
             for item in slot_list:
-                item['need'] = False
-            return slot_list
-        if intent == 'whatever':
-            for item in slot_list:
-                item['need'] = False
+                if item['type'] not in ['function', 'experience']:
+                    if intent == 'need':
+                        item['need'] = True
+                    if intent == 'no_need':
+                        item['need'] = False
+                    if intent == 'whatever':
+                        item['need'] = True
+                    continue
+
+                slot = item['word']
+                sentence = split_all(sentence, ',.?，。？！!')
+                for sent in sentence:
+                    if slot not in sent:
+                        continue
+                    negative = False
+                    for word in no_word:
+                        if word in sent:
+                            negative = True
+                            break
+                    if negative:
+                        item['need'] = False
+                    else:
+                        item['need'] = True
             return slot_list

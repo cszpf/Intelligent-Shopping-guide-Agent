@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>PARROT</title>
+	<title>智能导购助手</title>
 	<link type="text/css" rel="stylesheet" href="{{ url_for('static',filename='css/style.css')}}">
 	<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.min.js')}}"></script>
 	<script type="text/javascript" src="{{ url_for('static', filename='js/main.js')}}"></script>
@@ -14,7 +14,7 @@
 <body>
 	<div class="chatbox">
 		<div class="chat_top fn-clear">
-			<h1 class='project'>PARROT</h1>
+			<h1 class='project'>智能导购助手</h1>
 		</div>
 		<div class="chat_message fn-clear">
 			<div class="chat_main">
@@ -41,7 +41,8 @@
 		</div>
 
       	<div class="contacts">
-            <h1>运行详情:</h1>
+			<h1 class="inline-ele">运行详情:</h1>
+			<button class="inline-ele" id='reset_button'>重置对话</button>
             <div style="border-bottom:1px solid #eee;"></div>
             <ul id = 'detail'>
                                 

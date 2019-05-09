@@ -23,3 +23,10 @@ memory:3GB
 dnf
 memory:4GB
 cpu:i3 2120m
+
+游戏
+memory:4GB
+cpu:i5 3520m
+
+办公
+memory:4GB

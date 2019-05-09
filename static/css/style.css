@@ -206,9 +206,11 @@ width: 0;
     /*overflow-y: hidden;*/
 
 }
-
 .contacts li>span {
     font-size: 14px;
     /*display: inline-block;*/
     /*white-space: nowrap;*/
+}
+.inline-ele{
+  display: inline;
 }

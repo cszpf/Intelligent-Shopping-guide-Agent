@@ -7,7 +7,11 @@ import jieba
 from sklearn import metrics
 from sklearn.model_selection import train_test_split
 import pickle
-
+import os
+import torch
+import sys
+sys.path.append(os.path.dirname(__file__))
+from aspect_sentiment import get_model
 
 def clean(text):
     """
@@ -101,6 +105,9 @@ def evaluate():
         label = classifier_model.predict(sentence_term_doc)
         print(label_subject[label[0]])
 
+def load_aspect_sentiment():
+    model = get_model()
+    return model
 
 if __name__ == "__main__":
     train()

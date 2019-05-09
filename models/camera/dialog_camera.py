@@ -6,13 +6,18 @@ sys.path.append(os.path.dirname(__file__))
 from save_and_load import *
 import json
 import re
-from static_data_camera import necessaryTag, labelToTag, ask_slot, listInfo, nameToColumn, adjustableSlot, \
+from static_data_camera import necessary_tag, label_to_tag, ask_slot, list_info, name_to_column, adjustable_slot, \
     whatever_word, yes_word, no_word, func_synonyms, exp_synonyms, function_attr, brand_list
 from collections import defaultdict
 from search_camera import search_camera
 
 
-def transNumber(num):
+def trans_number(num):
+    '''
+    transfer chinese number to 1-9
+    :param num:number string
+    :return:transfered number string
+    '''
     digit = [str(i) for i in range(1, 10)]
     digit_char = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十']
     if num in digit:
@@ -22,19 +27,30 @@ def transNumber(num):
     return 'unkown'
 
 
-def getRandomSentence(sentenceList):
-    num = np.random.randint(len(sentenceList))
-    return sentenceList[num]
+def get_random_sentence(sentence_list):
+    '''
+    select a sentence randomly
+    :param sentence_list:
+    :return: selected sentence
+    '''
+    num = np.random.randint(len(sentence_list))
+    return sentence_list[num]
 
 
-def getChangeIntent(domain, sentence):
-    changeableSlot = ['价格', '像素']
-    posWord = ['贵', '高', '大', '好']
-    negWord = ['便宜', '小', '低', '糟糕', '少', '差']
-    positiveCount = 0
+def get_change_intent(domain, sentence):
+    '''
+    check if the input contains a change intention
+    :param domain:current domain
+    :param sentence:user input
+    :return:(target,positive) a tuple contains a change target and a value to measure whether to change
+    '''
+    changeable_slot = ['价格', '像素']
+    pos_word = ['贵', '高', '大', '好']
+    neg_word = ['便宜', '小', '低', '糟糕', '少', '差']
+    positive_count = 0
     target = ''
     # 匹配描述目标
-    for word in changeableSlot:
+    for word in changeable_slot:
         if word in sentence:
             target = word
             break
@@ -45,24 +61,24 @@ def getChangeIntent(domain, sentence):
         elif any(w in sentence for w in ['高', '低']):
             target = '价格?'
 
-    tooWord = ['太', '有点', '过于', '不够']
-    for word in posWord:
+    too_word = ['太', '有点', '过于', '不够']
+    for word in pos_word:
         if word in sentence:
-            if all(w + word not in sentence for w in tooWord):
-                positiveCount += 1
+            if all(w + word not in sentence for w in too_word):
+                positive_count += 1
             else:
-                positiveCount -= 1
-    for word in negWord:
+                positive_count -= 1
+    for word in neg_word:
         if word in sentence:
-            if all(w + word not in sentence for w in tooWord):
-                positiveCount -= 1
+            if all(w + word not in sentence for w in too_word):
+                positive_count -= 1
             else:
-                positiveCount += 1
+                positive_count += 1
 
     positive = 0
-    if positiveCount > 0:
+    if positive_count > 0:
         positive = 1
-    elif positiveCount < 0:
+    elif positive_count < 0:
         positive = -1
 
     return (target, positive)
@@ -75,16 +91,19 @@ class Camera_Dialogue():
         self.last_state = 'init'
         self.ask_slot = ""
         self.expected = ''
-        self.resultList = None
+        self.result_list = None
         self.choice = {}
         self.morewhat = None
-        self.responsePrefix = ''
         self.show_result = False
         self.finish = False
         self.nlu = nlu
         self.asked = []
 
     def save(self):
+        '''
+        save current model to a json file
+        :return: json string
+        '''
         model = {
             'slot_value': self.slot_value,
             'state': self.state,
@@ -100,6 +119,11 @@ class Camera_Dialogue():
         return json.dumps(model)
 
     def load(self, model):
+        '''
+        load model from json string
+        :param model:json string
+        :return:None
+        '''
         m = json.loads(model)
         self.slot_value = m['slot_value']
         self.state = m['state']
@@ -113,113 +137,152 @@ class Camera_Dialogue():
         self.asked = m['asked']
 
     def reset(self):
+        '''
+        reset a dialog state
+        :return:None
+        '''
         self.slot_value = {}
         self.state = "init"
         self.last_state = 'init'
         self.ask_slot = ""
         self.expected = ''
-        self.resultList = None
+        self.result_list = None
         self.choice = {}
         self.morewhat = None
-        self.responsePrefix = ''
         self.show_result = False
         self.finish = False
         self.asked = []
 
-    def changeState(self, state, lastState=None):
+    def change_state(self, state, last_state=None):
+        '''
+        change dialog state
+        :param state:next state
+        :param last_state:current state
+        :return:None
+        '''
         print("state change to:" + state)
-        if lastState is None:
+        if last_state is None:
             self.last_state = self.state
         else:
-            self.last_state = lastState
-        if state in ['result', 'confirmChoice']:
+            self.last_state = last_state
+        if state in ['result', 'confirm_choice']:
             self.show_result = True
         else:
             self.show_result = False
         self.state = state
 
-    def goLastState(self):
+    def go_last_state(self):
+        '''
+        go back to last dialog state
+        :return:None
+        '''
         print("state go back to:" + self.last_state)
         self.state = self.last_state
 
     def user(self, sentence):
+        '''
+        deal with user input, routing input to different state
+        :param sentence:user input
+        :return:None
+        '''
         sentence = sentence.strip()
-        self.responsePrefix = ''
         if self.state == 'init':
             self.init(sentence)
         elif self.state == 'ask':
             self.ask(sentence)
         elif self.state == 'result':
             self.result(sentence)
-        elif self.state == 'confirmChoice':
-            self.confirmChoice(sentence)
-        elif self.state == 'adjustConfirm':
-            self.adjustConfirm(sentence)
+        elif self.state == 'confirm_choice':
+            self.confirm_choice(sentence)
+        elif self.state == 'adjust_confirm':
+            self.adjust_confirm(sentence)
 
-    def listSlot(self, sentence):
+    def list_slot(self, sentence):
+        '''
+        list informable slot,empty for input
+        :param sentence:sentence
+        :return:None
+        '''
         pass
 
-    def doAdjust(self, morewhat):
+    def do_adjust(self, morewhat):
         '''
-        morewhat:('价格',1)
+        excute an adjustion
+        :param morewhat:(target,positive) : ('价格',1) ,positive>0 means adjust higher value
+        :return:None
         '''
         print(morewhat)
-        result = self.getResult()
+        result = self.get_result()
         print(result)
-        if morewhat[0] in adjustableSlot:
-            upper = max([item[adjustableSlot[morewhat[0]]] for item in result if adjustableSlot[morewhat[0]] in item])
-            lower = min([item[adjustableSlot[morewhat[0]]] for item in result if adjustableSlot[morewhat[0]] in item])
+        if morewhat[0] in adjustable_slot:
+            upper = max([item[adjustable_slot[morewhat[0]]] for item in result if adjustable_slot[morewhat[0]] in item])
+            lower = min([item[adjustable_slot[morewhat[0]]] for item in result if adjustable_slot[morewhat[0]] in item])
             if morewhat[1] > 0:
                 self.slot_value[morewhat[0]] = [(upper, '>=')]
             else:
                 self.slot_value[morewhat[0]] = [(lower, '<=')]
-        self.changeState('result')
+        self.change_state('result')
 
-    def adjustConfirm(self, sentence):
+    def adjust_confirm(self, sentence):
+        '''
+        confirm adjustion for uncertained input
+        :param sentence: user input
+        :return: None
+        '''
         targetWord = ['价格', '像素']
         for word in targetWord:
             if word in sentence:
                 self.morewhat = (word, self.morewhat[1])
-                self.changeState('doAdjust')
-                self.doAdjust(self.morewhat)
+                self.change_state('do_adjust')
+                self.do_adjust(self.morewhat)
         intent = self.nlu.intention_predict(sentence)
         if intent == 'answer_yes':
             self.morewhat = (self.expected, self.morewhat[1])
-            self.changeState('doAdjust')
-            self.doAdjust(self.morewhat)
+            self.change_state('do_adjust')
+            self.do_adjust(self.morewhat)
         elif intent == 'answer_slot':
             tag = self.extract(sentence)
             answer_intent = self.nlu.requirement_predict(sentence)
             negative = False
             if answer_intent == 'no_need':
                 negative = True
-            to_add = self.fillMessage(tag, negative)
+            to_add = self.fill_message(tag, negative)
             if answer_intent == 'whatever' and self.ask_slot:
                 to_add[self.ask_slot] = [('whatever', '=')]
             if len(to_add) > 0:
                 self.write(to_add)
-                self.changeState('result')
+                self.change_state('result')
 
-    def confirmChoice(self, sentence):
+    def confirm_choice(self, sentence):
+        '''
+        confirm the result the user chosed
+        :param sentence: user input
+        :return:None
+        '''
         intent = self.nlu.intention_predict(sentence)
         if intent == 'answer_yes':
-            self.changeState('done')
+            self.change_state('done')
             return
         elif intent == 'answer_no':
-            self.changeState('result')
+            self.change_state('result')
             return
         for word in no_word:
             if word in sentence:
-                self.changeState('result')
+                self.change_state('result')
                 return
         for word in yes_word:
             if word in sentence:
-                self.changeState('done')
+                self.change_state('done')
                 return
 
     def result(self, sentence):
-        if self.checkChoice(sentence):
-            self.changeState('done')
+        '''
+        check user's reponse to the result
+        :param sentence:user input
+        :return:None
+        '''
+        if self.check_choice(sentence):
+            self.change_state('done')
             return
         tag = self.extract(sentence)
         intent = self.nlu.requirement_predict(sentence)
@@ -227,83 +290,100 @@ class Camera_Dialogue():
         print(tag)
         if len(tag) > 0:
             tag = self.nlu.confirm_slot(tag, sentence)
-            to_add = self.fillMessage(tag)
+            to_add = self.fill_message(tag)
             self.write(to_add)
 
-        morewhat = getChangeIntent('camera', sentence)
+        morewhat = get_change_intent('camera', sentence)
         if morewhat[1] != 0:
             if '?' in morewhat[0]:
-                self.changeState('adjustConfirm')
+                self.change_state('adjust_confirm')
                 self.morewhat = morewhat
             elif morewhat[0] != '':
-                self.changeState('doAdjust')
-                self.doAdjust(morewhat)
+                self.change_state('do_adjust')
+                self.do_adjust(morewhat)
 
     def response(self):
+        '''
+        NLG module,generating response according to current state
+        :return:dialog response
+        '''
         if self.state == 'ask':
             # 检查必须的slot_value，如果没有的话就发出提问
             unasked = []
-            for slot in necessaryTag:
+            for slot in necessary_tag:
                 if slot not in self.asked:
                     unasked.append(slot)
             if len(unasked) > 0:
                 num = np.random.randint(len(unasked))
                 slot = unasked[num]
                 self.ask_slot = slot
-                return getRandomSentence(ask_slot[slot])
+                return get_random_sentence(ask_slot[slot])
             # 如果到了这里，说明所有的slot都问完了,转入confirm_result
             else:
-                self.changeState('confirm_result')
+                self.change_state('confirm_result')
                 return self.response()
 
         if self.state == 'list':
-            self.changeState('ask')
+            self.change_state('ask')
             if self.ask_slot == '':
                 return self.response()
-            return getRandomSentence(listInfo[self.ask_slot])
+            return get_random_sentence(list_info[self.ask_slot])
 
         if self.state == 'result':
             res = self.search(self.slot_value)
-            self.resultList = res
+            self.result_list = res
             if len(res) == 0:
-                sentenceList = ["暂时没找到合适的商品哦，换个条件试试?"]
-                return getRandomSentence(sentenceList)
-            sentenceList = ["为您推荐以下商品,可回复第几个进行选择"]
-            return getRandomSentence(sentenceList)
+                sentence_list = ["暂时没找到合适的商品哦，换个条件试试?"]
+                return get_random_sentence(sentence_list)
+            sentence_list = ["为您推荐以下商品,可回复第几个进行选择"]
+            return get_random_sentence(sentence_list)
 
-        if self.state == 'adjustConfirm':
+        if self.state == 'adjust_confirm':
             target = self.morewhat[0].replace('?', '')
             if target == '价格':
                 self.expected = '价格'
                 if self.morewhat[1] <= 0:
-                    return getRandomSentence(["请问您是需要更贵的产品吗?"])
+                    return get_random_sentence(["请问您是需要更贵的产品吗?"])
                 else:
-                    return getRandomSentence(["请问您是需要更便宜的产品吗?"])
+                    return get_random_sentence(["请问您是需要更便宜的产品吗?"])
 
-        if self.state == 'confirmChoice':
-            sentenceList = ["即将为您预订以下商品，是否确认？"]
-            return getRandomSentence(sentenceList)
+        if self.state == 'confirm_choice':
+            sentence_list = ["即将为您预订以下商品，是否确认？"]
+            return get_random_sentence(sentence_list)
 
         if self.state == 'done':
-            sentenceList = ["本次服务已结束，谢谢您的使用"]
+            sentence_list = ["本次服务已结束，谢谢您的使用"]
             self.finish = True
             self.reset()
-            return getRandomSentence(sentenceList)
+            return get_random_sentence(sentence_list)
 
-    def doChoice(self):
+    def do_choice(self):
+        '''
+        select a result
+        :return:None
+        '''
         self.list = [self.choice]
 
-    def checkNecessary(self):
-        for tag in necessaryTag:
+    def check_necessary(self):
+        '''
+        check if all the necessary tag is asked
+        :return:True / False
+        '''
+        for tag in necessary_tag:
             if tag not in self.asked:
                 return False
         return True
 
     def ask(self, sentence):
+        '''
+        check user response for a asking action
+        :param sentence:user input
+        :return:None
+        '''
         intent = self.nlu.intention_predict(sentence)
         if intent == 'ask_slot_list':
-            self.changeState('list')
-            self.listSlot(sentence)
+            self.change_state('list')
+            self.list_slot(sentence)
         else:
             tag = self.extract(sentence)
             intent = self.nlu.requirement_predict(sentence)
@@ -316,46 +396,53 @@ class Camera_Dialogue():
                     self.ask_slot = ''
             else:
                 tag = self.nlu.confirm_slot(tag, sentence)
-                to_add = self.fillMessage(tag)
+                to_add = self.fill_message(tag)
                 self.write(to_add)
-            if self.checkNecessary():
-                self.changeState('result')
+            if self.check_necessary():
+                self.change_state('result')
 
     def init(self, sentence):
-        self.responsePrefix = '欢迎来到相机导购助手！'
-        self.changeState('ask')
+        '''
+        init state
+        :param sentence:user input
+        :return:None
+        '''
+        self.change_state('ask')
         self.ask(sentence)
 
     def chose(self, sentence):
         pass
 
     def filterNum(self, s):
+        '''
+        check if string contains continuous number
+        :param s:
+        :return:
+        '''
         match = re.search(r'(\d+)', s)
         if match:
             return float(match.group(1))
         else:
             return -1
 
-    def fillMessage(self, tag):
-        # 主要用于修正tag和转换存储格式
+    def fill_message(self, tag):
         '''
-        input:
-            [{'type': 'pixel_m', 'word': '我要3000万像素的'}]
-        output:
-            {'像素':[(3000,'=')]}
+        transfer the tag format
+        :param tag:[{'type': 'pixel_m', 'word': '我要3000万像素的'}]
+        :return:{'像素':[(3000,'=')]}
         '''
-        print("fillmessage")
+        print("fill_message")
         print(tag)
         if len(tag) == 0:
             return {}
         res = defaultdict(lambda: [])
         # entities = tag['entities']
-        opDict = {'l': '>=', 'm': '=', 'u': '<='}
+        op_dict = {'l': '>=', 'm': '=', 'u': '<='}
         bi_tag = ['brand', 'experience', 'function', 'frame', 'type', 'level']
         for t in tag:
             op = '='
             if t['type'] in bi_tag:
-                name = labelToTag[t['type']]
+                name = label_to_tag[t['type']]
                 if t['need']:
                     res[name].append((t['word'], '='))
                 else:
@@ -364,15 +451,20 @@ class Camera_Dialogue():
                 if t['type'].find('_') != -1:
                     name_ = t['type'].split('_')
                     name = name_[0]
-                    op = opDict[name_[1]]
+                    op = op_dict[name_[1]]
                 value = self.filterNum(t['word'])
                 if value > 0:
-                    res[labelToTag[name]].append((value, op))
+                    res[label_to_tag[name]].append((value, op))
         res = dict(res)
         print(res)
         return res
 
     def write(self, table):
+        '''
+        write slot-value-pair to slot table
+        :param table:{'像素':[(3000,'=')]}
+        :return:None
+        '''
         # table：待写入的slot-value
         print("write")
         print(table)
@@ -383,46 +475,51 @@ class Camera_Dialogue():
             self.slot_value[t] = table[t]
             self.asked.append(t)
 
-    def checkChoice(self, sentence):
-        # 1. 通过第几个的方式来选择 #目前只支持这一种
-        if len(self.resultList) == 0:
+    def check_choice(self, sentence):
+        '''
+        check which result user chose
+        :param sentence: user input
+        :return:result index
+        '''
+        # 1. 通过第几个的方式来选择 
+        if len(self.result_list) == 0:
             return False
         pattern = re.compile('^([一二三四五12345])$')
         m = pattern.search(sentence)
         if (m):
-            index = transNumber(m.group(1))
+            index = trans_number(m.group(1))
             if index > len(self.list):
                 return False
             if '倒数' in sentence or '最后' in sentence:
                 index = -index
             if index > 0:
-                self.choice = self.resultList[index - 1]
+                self.choice = self.result_list[index - 1]
             else:
-                self.choice = self.resultList[index]
+                self.choice = self.result_list[index]
             return True
 
         pattern = re.compile('[第|最后]([一二三四五12345])')
         m = pattern.search(sentence)
         if m:
-            index = transNumber(m.group(1))
-            if index > len(self.resultList):
+            index = trans_number(m.group(1))
+            if index > len(self.result_list):
                 return False
             if '倒数' in sentence or '最后' in sentence:
                 index = -index
             if index > 0:
-                self.choice = self.resultList[index - 1]
+                self.choice = self.result_list[index - 1]
             else:
-                self.choice = self.resultList[index]
+                self.choice = self.result_list[index]
             return True
         else:
             intent = self.nlu.requirement_predict(sentence)
             if intent == 'whatever':
-                self.choice = self.resultList[0]
+                self.choice = self.result_list[0]
                 return True
             else:
                 for word in whatever_word:
                     if word in sentence:
-                        self.choice = self.resultList[0]
+                        self.choice = self.result_list[0]
                         return True
                 return False
 
@@ -442,21 +539,21 @@ class Camera_Dialogue():
         # 调用这个函数进行数据库查询
         condition = slot_value_table
         result = search_camera(condition)
-        self.resultList = result
+        self.result_list = result
 
         return result[0:5]
 
-    def getResult(self):
-        returnSlot = ['name', 'price', 'type', 'level', 'pixel', 'screen', 'shutter']
+    def get_result(self):
+        return_slot = ['name', 'price', 'type', 'level', 'pixel', 'screen', 'shutter']
         res = []
-        resultList = self.resultList
-        if self.state == 'confirmChoice':
-            resultList = [self.choice]
-        for item in resultList:
+        result_list = self.result_list
+        if self.state == 'confirm_choice':
+            result_list = [self.choice]
+        for item in result_list:
             temp = {}
             itemDict = item.__dict__
             for key in itemDict:
-                if key in returnSlot:
+                if key in return_slot:
                     if type(itemDict[key]) == float:
                         temp[key] = itemDict[key]
                     elif itemDict[key] is not None:
@@ -465,41 +562,38 @@ class Camera_Dialogue():
             res.append(temp)
         return res
 
-    def getSlotValue(self):
+    def get_slot_table(self):
         res = {}
-        opDict = {'<=': '小于', '=': '', '>=': '大于', '!=': '不要'}
+        op_dict = {'<=': '小于', '=': '', '>=': '大于', '!=': '不要'}
         for slot in self.slot_value:
-            if slot == '体验要求':
+            if slot in ['体验要求', '功能要求']:
                 continue
-            sentenceList = []
+            sentence_list = []
             for con in self.slot_value[slot]:
-                sentenceList.append(opDict[con[1]] + str(con[0]))
-            slot = nameToColumn[slot]
-            res[slot] = ','.join(sentenceList)
+                word = con[0] if con[0] != 'whatever' else '不限'
+                sentence_list.append(op_dict[con[1]] + str(word))
+            slot = name_to_column[slot]
+            res[slot] = ','.join(sentence_list)
 
         if '体验要求' in self.slot_value:
-            sentenceList = []
+            sentence_list = []
             for word in self.slot_value['体验要求']:
-                sentenceList.append(word[0])
-            res['experience'] = ','.join(sentenceList)
+                if word[1] != '!=':
+                    sentence_list.append(word[0])
+            if len(sentence_list) > 0:
+                res['experience'] = ','.join(sentence_list)
 
         if '功能要求' in self.slot_value:
-            sentenceList = []
+            sentence_list = []
             for word in self.slot_value['功能要求']:
-                sentenceList.append(word[0])
-            res['function'] = ','.join(sentenceList)
+                if word[1] != '!=':
+                    sentence_list.append(word[0])
+            if len(sentence_list) > 0:
+                res['function'] = ','.join(sentence_list)
         return res
 
-    def get_slot_table(self):
-        return self.getSlotValue()
 
-    def get_result(self):
-        return self.getResult()
 
 
 if __name__ == '__main__':
-    model = ()
-    inp = "我要买个相机"
-    print('用户：' + inp)
-    model.user(inp)
-    print("模型：", model.response())
+    pass

@@ -6,9 +6,9 @@ sys.path.append(os.path.dirname(__file__))
 from save_and_load import load, read_list
 
 # 必须的slot
-necessaryTag = ['品牌', '级别', '画幅', '类型','价格']
+necessary_tag = ['品牌', '级别', '画幅', '类型','价格']
 # NLU的label和中文tag之间的转换
-labelToTag = {'brand': '品牌',
+label_to_tag = {'brand': '品牌',
               'price': '价格',
               'pixel': '像素',
               'level': '级别',
@@ -25,16 +25,16 @@ ask_slot = {'品牌': ['请问你喜欢什么牌子呢？', '请问你需要什�
             '级别': ['请问你需要入门级,中端,还是高端的相机？', '相机可分为入门级，中端和高端,请问你需要哪一种级别的呢?'],
             '类型': ['请问你想要什么类型的相机呢？比如微单，卡片机，单反等']}
 # informable slot的回复
-listInfo = {'品牌': ['畅销的品牌有佳能、索尼呢', '比较受欢迎的牌子有佳能、索尼等'],
+list_info = {'品牌': ['畅销的品牌有佳能、索尼呢', '比较受欢迎的牌子有佳能、索尼等'],
             '价格': ['一般常见的价位有5000左右的,1万左右的或者1万以上的呢']}
 
 # 将中文的slot转成数据库的字段
-nameToColumn = {'品牌': 'name', '价格': 'price',
+name_to_column = {'品牌': 'name', '价格': 'price',
                 '像素': 'pixel', '画幅': 'frame', '级别': 'level',
                 '类型': 'type', '快门': 'shutter', '屏幕': 'screen',
                 '体验要求': 'experience', '功能要求': 'function'}
 # 可以进行调整的字段
-adjustableSlot = {'价格': 'price', '像素': 'pixel', '画幅': 'frame', '级别': 'level','类型':'type'}
+adjustable_slot = {'价格': 'price', '像素': 'pixel', '画幅': 'frame', '级别': 'level','类型':'type'}
 # 表示无所谓的词语
 whatever_word = ['随意', '随便', '都行', '可以', '没关系']
 # 确认的回复

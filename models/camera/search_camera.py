@@ -8,7 +8,7 @@ from sqlalchemy import or_, not_, and_
 import re
 
 from collections import defaultdict
-from static_data_camera import nameToColumn, function_attr, func_synonyms, exp_synonyms
+from static_data_camera import  function_attr, func_synonyms, exp_synonyms
 
 Base = declarative_base()
 
