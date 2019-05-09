@@ -35,3 +35,6 @@ nlu模块的文件夹
 ### ./models/NLU/nlu_interface.py
 
 实现基本的nlu接口，需要的接口根据不同对话系统而不同。
+
+### ./sql
+数据库文件
