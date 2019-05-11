@@ -54,4 +54,4 @@ if __name__ == '__main__':
     manager.user('camera', '我想买相机','init')
     manager.reset('init')
     manager.record_history = True
-    app.run('127.0.0.1', port='5000')
+    app.run('0.0.0.0', port='5000')
