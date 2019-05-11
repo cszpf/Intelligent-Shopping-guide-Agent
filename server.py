@@ -23,6 +23,7 @@ def dialog():
     manager.user(domain, sentence, token)
     res = manager.response(token)
     print("本轮用时:", time.time() - begin_time)
+    print(res)
     return jsonify(res)
 
 

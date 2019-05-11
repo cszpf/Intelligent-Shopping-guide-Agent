@@ -95,6 +95,15 @@ def better_memory(item, requriment):
     else:
         return False
 
+def convert_bytes_to_str(res):
+    result = []
+    for item in res:
+        for key in item:
+            if type(item[key]) == bytes:
+                item[key] = item[key].decode('uitf8')
+        result.append(item)
+    return result
+
 
 def searchComputer(condition):
     session = Session()
@@ -144,6 +153,7 @@ def searchComputer(condition):
 
 
     res = res.order_by(Computer.index).all()
+    res = convert_bytes_to_str(res)
     score = defaultdict(lambda: 0)
     if '功能要求' in condition:
         checker_dict = {'cpu': better_cpu, 'gpu': better_gpu, 'memory': better_memory}
@@ -161,7 +171,6 @@ def searchComputer(condition):
         experience = [con[0] for con in condition['体验要求']]
         for exp in experience:
             for item in res:
-                print(item)
                 if item.tags is not None and exp in item.tags:
                     score[item.index] += 1
 

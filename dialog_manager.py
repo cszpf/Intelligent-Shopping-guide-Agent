@@ -121,13 +121,6 @@ class DialogManager:
                 res['showResult'] = self.dialog.show_result
                 res['slot_value'] = self.dialog.get_slot_table()
                 res['result'] = self.dialog.get_result() if self.dialog.show_result else []
-                result = []
-                for item in res['result']:
-                    for attr in item:
-                        if type(item[attr]) == bytes:
-                            item[attr] = item[attr].decode('utf8')
-                    result.append(item)
-                res['result'] = result
                 res['error'] = False
                 self.dialog_session[token] = {
                     'domain': self.domain,

@@ -48,6 +48,15 @@ class Camera(Base):
 engine = create_engine('mysql+mysqlconnector://root:120834+1s@127.0.0.1:3306/dialog?charset=utf8')
 Session = sessionmaker(engine)
 
+def convert_bytes_to_str(res):
+    result = []
+    for item in res:
+        for key in item:
+            if type(item[key]) == bytes:
+                item[key] = item[key].decode('uitf8')
+        result.append(item)
+    return result
+
 
 def search_camera(condition):
     '''
@@ -136,6 +145,7 @@ def search_camera(condition):
                     score[item.index] += 1
 
     res = sorted(res, key=lambda x: score[x.index], reverse=True)
+    res = convert_bytes_to_str(res)
     res_ = []
     last_id = -1
     for item in res:
