@@ -161,6 +161,7 @@ def searchComputer(condition):
         experience = [con[0] for con in condition['体验要求']]
         for exp in experience:
             for item in res:
+                print(item)
                 if item.tags is not None and exp in item.tags:
                     score[item.index] += 1
 
