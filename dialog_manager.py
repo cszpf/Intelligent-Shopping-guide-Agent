@@ -125,7 +125,7 @@ class DialogManager:
                 for item in res['result']:
                     for attr in item:
                         if type(item[attr]) == bytes:
-                            item[attr] = item.decode('utf8')
+                            item[attr] = item[attr].decode('utf8')
                     result.append(item)
                 res['result'] = result
                 res['error'] = False
