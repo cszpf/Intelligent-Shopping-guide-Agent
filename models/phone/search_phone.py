@@ -76,6 +76,15 @@ def better_memory(item, requriment):
     else:
         return False
 
+def convert_bytes_to_str(res):
+    result = []
+    for item in res:
+        for key in item:
+            if type(item[key]) == bytes:
+                item[key] = item[key].decode('uitf8')
+        result.append(item)
+    return result
+
 def searchPhone(condition):
     '''
     {'negative': {'品牌': [('华为', '=')]}, '价格': [(3000.0, '>=')]}
@@ -139,7 +148,7 @@ def searchPhone(condition):
                 res = res.filter(Phone.size <= con[0])
 
     res = res.order_by(Phone.index).all()
-
+    res = convert_bytes_to_str(res)
     score = defaultdict(lambda: 0)
     if '功能要求' in condition:
         checker_dict = {'cpu': better_cpu, 'memory': better_memory}
