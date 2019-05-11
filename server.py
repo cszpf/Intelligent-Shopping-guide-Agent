@@ -2,10 +2,7 @@ from flask import Flask
 from flask import render_template
 from flask import request, jsonify, send_file
 from dialog_manager import DialogManager
-<<<<<<< HEAD
 import time
-=======
->>>>>>> b5dd385c85fefa6b5b2b60b63a106d6973cdf6a7
 
 app = Flask(__name__)
 manager = DialogManager()
