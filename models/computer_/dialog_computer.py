@@ -84,6 +84,25 @@ def get_change_intent(domain, sentence):
     return (target, positive)
 
 
+p1 = re.compile(r'(i[3|5|7|9][-| ]*\d+[u|m|h|k|q]*)')
+p2 = re.compile(r'(i[3|5|7|9])')
+cpu_p = [p1, p2]
+
+
+def extract_cpu(s):
+    cpu_set = set()
+    for p in cpu_p:
+        match = re.findall(p, s)
+        for cpu in match:
+            cpu_set.add(cpu)
+        if len(match) > 0:
+            break
+    res = []
+    for cpu in cpu_set:
+        res.append({'type': 'cpu', 'word': cpu})
+    return res
+
+
 class Computer_Dialogue():
     def __init__(self, nlu):
         self.slot_value = {}
@@ -356,7 +375,6 @@ class Computer_Dialogue():
             self.finish = True
             return get_random_sentence(sentence_list)
 
-
     def check_necessary(self):
         '''
         check if all the necessary tag is asked
@@ -534,6 +552,8 @@ class Computer_Dialogue():
         for word in func_synonyms:
             if word in sentence:
                 tag.append({'type': 'function', 'word': word})
+        #cpus = extract_cpu(sentence)
+        #tag.extend(cpus)
         return tag
 
     def search(self, slot_value_table):
@@ -584,7 +604,7 @@ class Computer_Dialogue():
                 continue
             sentence_list = []
             for con in self.slot_value[slot]:
-                word = con[0] if con[0]!='whatever' else '不限'
+                word = con[0] if con[0] != 'whatever' else '不限'
                 sentence_list.append(op_dict[con[1]] + str(word))
             slot = nameToColumn[slot]
             res[slot] = ','.join(sentence_list)
@@ -605,7 +625,6 @@ class Computer_Dialogue():
             if len(sentence_list) > 0:
                 res['function'] = ','.join(sentence_list)
         return res
-
 
 
 if __name__ == '__main__':

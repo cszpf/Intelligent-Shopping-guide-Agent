@@ -45,7 +45,7 @@ class Camera(Base):
         return "<Camera(型号=%s, 价格=%s元, 有效像素=%s万, 画幅=%s, 级别=%s)>" % (name, price, pixel, frame, level)
 
 
-engine = create_engine('mysql+mysqlconnector://root：120834+1s@localhost:3306/dialog')
+engine = create_engine('mysql+mysqlconnector://root:120834+1s@127.0.0.1:3306/label_data?charset=utf8')
 Session = sessionmaker(engine)
 
 

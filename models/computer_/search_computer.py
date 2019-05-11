@@ -54,7 +54,7 @@ class Computer(Base):
         return "<Computer(型号=%s, 价格=%s, cpu=%s, 内存=%sGB, 硬盘=%sGB, gpu：%s)>" % (name, price, cpu, memory, disk, gpu)
 
 
-engine = create_engine('mysql+mysqlconnector://root：120834+1s@localhost:3306/dialog')
+engine = create_engine('mysql+mysqlconnector://root:120834+1s@127.0.0.1:3306/label_data?charset=utf8')
 Session = sessionmaker(engine)
 
 
@@ -137,6 +137,12 @@ def searchComputer(condition):
             if con[1] == '<=':
                 res = res.filter(Computer.disk <= con[0])
 
+    if '处理器' in condition and condition['处理器'][0][0] != 'whatever':
+        for con in condition['处理器']:
+            if con[1] == '>=':
+                res = res.filter(Computer.cpu.contains(con[0]))
+
+
     res = res.order_by(Computer.index).all()
     score = defaultdict(lambda: 0)
     if '功能要求' in condition:
@@ -173,3 +179,6 @@ def searchComputer(condition):
             if item.id not in res_id:
                 res_.append(item)
     return res_
+
+if __name__ == '__main__':
+    pass
