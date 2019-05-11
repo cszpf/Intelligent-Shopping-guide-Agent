@@ -109,10 +109,6 @@ class Computer_Dialogue():
             'state': self.state,
             'ask_slot': self.ask_slot,
             'expected': self.expected,
-            'attention': self.attention,
-            'list_': self.list,
-            'add_attention': self.add_attention,
-            'choice': self.choice,
             'morewhat': self.morewhat,
             'asked': self.asked
         }
@@ -129,12 +125,11 @@ class Computer_Dialogue():
         self.state = m['state']
         self.ask_slot = m['ask_slot']
         self.expected = m['expected']
-        self.attention = m['attention']
-        self.list = m['list_']
-        self.add_attention = m['add_attention']
-        self.choice = m['choice']
         self.morewhat = m['morewhat']
         self.asked = m['asked']
+        if self.state == 'result':
+            res = self.search(self.slot_value)
+            self.result_list = res
 
     def reset(self):
         '''
@@ -262,6 +257,7 @@ class Computer_Dialogue():
         intent = self.nlu.intention_predict(sentence)
         if intent == 'answer_yes':
             self.change_state('done')
+            self.finish = True
             return
         elif intent == 'answer_no':
             self.change_state('result')
@@ -273,6 +269,7 @@ class Computer_Dialogue():
         for word in yes_word:
             if word in sentence:
                 self.change_state('done')
+                self.finish = True
                 return
 
     def result(self, sentence):
@@ -283,6 +280,7 @@ class Computer_Dialogue():
         '''
         if self.check_choice(sentence):
             self.change_state('done')
+            self.finish = True
             return
         tag = self.extract(sentence)
         intent = self.nlu.requirement_predict(sentence)
@@ -310,6 +308,8 @@ class Computer_Dialogue():
         if self.state == 'ask':
             # 检查必须的slot_value，如果没有的话就发出提问
             unasked = []
+            if self.ask_slot != '':
+                return get_random_sentence(ask_slot[self.ask_slot])
             for slot in necessaryTag:
                 if slot not in self.asked:
                     unasked.append(slot)
@@ -354,15 +354,8 @@ class Computer_Dialogue():
         if self.state == 'done':
             sentence_list = ["本次服务已结束，谢谢您的使用"]
             self.finish = True
-            self.reset()
             return get_random_sentence(sentence_list)
 
-    def do_choice(self):
-        '''
-        select a result
-        :return:None
-        '''
-        self.list = [self.choice]
 
     def check_necessary(self):
         '''
@@ -491,7 +484,7 @@ class Computer_Dialogue():
         m = pattern.search(sentence)
         if (m):
             index = trans_number(m.group(1))
-            if index > len(self.list):
+            if index > len(self.result_list):
                 return False
             if '倒数' in sentence or '最后' in sentence:
                 index = -index

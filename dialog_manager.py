@@ -4,11 +4,18 @@ from models.phone.dialog_phone import Phone_Dialogue
 from models.camera.dialog_camera import Camera_Dialogue
 from models.NLU.NLUService import NLUService
 import numpy as np
+from collections import defaultdict
 
 
 def getRandomSentence(sentenceList):
     num = np.random.randint(len(sentenceList))
     return sentenceList[num]
+
+
+def write_lines(file, lines):
+    for line in lines:
+        file.write(line + '\n')
+    file.close()
 
 
 class DialogManager:
@@ -18,15 +25,75 @@ class DialogManager:
         self.reponseText = ''
         self.nlu = NLUService()
         # self.dialogs = {'computer': Computer_Dialogue(), 'phone': Phone_Dialogue()}
-        self.dialogs = {'phone': Phone_Dialogue(self.nlu), 'camera': Camera_Dialogue(self.nlu), 'computer': Computer_Dialogue(self.nlu)}
+        self.dialogs = {'phone': Phone_Dialogue(self.nlu), 'camera': Camera_Dialogue(self.nlu),
+                        'computer': Computer_Dialogue(self.nlu)}
+        self.dialog_session = {}
+        # error flag:用于判断是否应该向前端返回错误信息
+        self.error_flag = {}
+        # error_mark:没有抛出异常的逻辑错误
+        self.error_mark = {}
+        self.history = defaultdict(lambda: [])
+        self.finish = {}
+        self.record_history = False
 
-    def user(self, domain, sentence):
-        print(domain)
-        print(sentence)
+    def save_log(self, token, type, reason=None):
+        if not self.record_history:
+            return
+        if len(self.history[token]) == 0:
+            return
+        if token in self.error_mark:
+            type = 'wrong'
+        print("saving log of ", token)
+        if type == 'error':
+            history = self.history[token]
+            history.insert(0, reason)
+            history.append('')
+            file = open('./dialog_logs/error.txt', 'a')
+            write_lines(file, history)
+            del self.history[token]
+        else:
+            history = self.history[token]
+            history.append('')
+            file = open('./dialog_logs/%s.txt' % type, 'a')
+            write_lines(file, history)
+            del self.history[token]
+
+    def create_session(self, token):
+        self.domain = None
+        self.error_flag[token] = False
+        self.finish[token] = False
+        self.dialog_session[token] = {}
+        self.error_mark[token] = False
+
+    def load_session(self, token):
+        if token in self.dialog_session:
+            domain = self.dialog_session[token]['domain']
+            self.domain = domain
+            self.dialog = self.dialogs[domain]
+            self.dialog.load(self.dialog_session[token]['model'])
+        else:
+            self.create_session(token)
+
+    def user(self, domain, sentence, token):
+        self.load_session(token)
+        print("domain:", domain)
+        print("input:", sentence)
+        self.history[token].append('user:' + sentence)
         if not self.domain:
             self.domain = domain
             self.dialog = self.dialogs[domain]
-        self.dialog.user(sentence)
+            self.dialog.reset()
+        try:
+            self.dialog.user(sentence)
+            self.dialog_session[token] = {
+                'domain': domain,
+                'model': self.dialog.save()
+            }
+        except Exception as e:
+            print("got an error in input")
+            print(e)
+            self.save_log(token, 'error', str(e))
+            self.error_flag[token] = True
 
     def hello(self):
         print("hello")
@@ -35,25 +102,62 @@ class DialogManager:
                         "你好，我可以帮你挑选手机/电脑/相机，请问你想买的是什么?"]
         return getRandomSentence(sentenceList)
 
-    def response(self):
+    def response(self, token):
+        if token in self.error_flag and self.error_flag[token]:
+            self.reset(token)
+            return {'error': True}
+        self.load_session(token)
         if self.domain is None:
             res = {}
             res['response'] = self.hello()
             res['showResult'] = False
             res['slot_value'] = {}
+            res['error'] = False
             return res
         else:
             res = {}
-            res['response'] = self.dialog.response()
-            res['showResult'] = self.dialog.show_result
-            res['slot_value'] = self.dialog.get_slot_table()
-            res['result'] = self.dialog.get_result() if self.dialog.show_result else []
+            try:
+                res['response'] = self.dialog.response()
+                res['showResult'] = self.dialog.show_result
+                res['slot_value'] = self.dialog.get_slot_table()
+                res['result'] = self.dialog.get_result() if self.dialog.show_result else []
+                res['error'] = False
+                self.dialog_session[token] = {
+                    'domain': self.domain,
+                    'model': self.dialog.save()
+                }
+                self.history[token].append('server:' + res['response'])
+                print(self.dialog.state)
+                if self.dialog.finish:
+                    self.save_log(token, 'success')
+                    self.finish[token] = True
+                    self.reset(token)
+                    res['finish'] = True
+            except Exception as e:
+                print("got an error in output")
+                print(e)
+                self.save_log(token, 'error', str(e))
+                self.error_flag[token] = True
+            if token in self.error_flag and self.error_flag[token]:
+                return {
+                    'error': True
+                }
             return res
 
-    def reset(self):
-        if self.dialog is not None:
-            self.dialog.reset()
-            self.domain = None
+    def reset(self, token):
+        if token in self.dialog_session:
+            if not self.finish[token]:
+                self.save_log(token, 'stop')
+            del self.dialog_session[token]
+            del self.finish[token]
+            del self.error_flag[token]
+            del self.error_mark[token]
+
+    def mark_error(self, token):
+        if token not in self.dialog_session:
+            self.create_session(token)
+        self.error_mark[token] = not self.error_mark[token]
+        print("set error:", self.error_mark[token])
 
 
 if __name__ == '__main__':

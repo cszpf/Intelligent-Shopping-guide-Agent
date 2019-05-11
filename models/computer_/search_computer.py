@@ -159,7 +159,6 @@ def searchComputer(condition):
                     score[item.index] += 1
 
     res = sorted(res, key=lambda x: score[x.index], reverse=True)
-    print([score[item.index] for item in res][0:15])
     res_ = []
     last_id = -1
     for item in res:
@@ -173,5 +172,4 @@ def searchComputer(condition):
         for item in res:
             if item.id not in res_id:
                 res_.append(item)
-    print([score[item.index] for item in res_][0:15])
     return res_

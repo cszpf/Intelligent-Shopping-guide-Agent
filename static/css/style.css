@@ -214,3 +214,7 @@ width: 0;
 .inline-ele{
   display: inline;
 }
+
+.red {
+  color:red;
+}
