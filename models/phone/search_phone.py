@@ -148,7 +148,6 @@ def searchPhone(condition):
                 res = res.filter(Phone.size <= con[0])
 
     res = res.order_by(Phone.index).all()
-    res = convert_bytes_to_str(res)
     score = defaultdict(lambda: 0)
     if '功能要求' in condition:
         checker_dict = {'cpu': better_cpu, 'memory': better_memory}

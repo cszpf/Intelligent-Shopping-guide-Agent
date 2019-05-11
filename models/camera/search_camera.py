@@ -145,7 +145,6 @@ def search_camera(condition):
                     score[item.index] += 1
 
     res = sorted(res, key=lambda x: score[x.index], reverse=True)
-    res = convert_bytes_to_str(res)
     res_ = []
     last_id = -1
     for item in res:

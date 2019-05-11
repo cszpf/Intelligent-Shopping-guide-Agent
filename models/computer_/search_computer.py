@@ -153,7 +153,6 @@ def searchComputer(condition):
 
 
     res = res.order_by(Computer.index).all()
-    res = convert_bytes_to_str(res)
     score = defaultdict(lambda: 0)
     if '功能要求' in condition:
         checker_dict = {'cpu': better_cpu, 'gpu': better_gpu, 'memory': better_memory}
