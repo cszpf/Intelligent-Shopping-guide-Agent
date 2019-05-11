@@ -49,7 +49,7 @@ class Phone(Base):
         return "<Phone(型号=%s, 价格=%s, 屏幕大小=%s英寸, 运行内存=%sGB, 内存大小=%sGB, 像素：%s万)>" % (name, price, size, memory, disk, camera_back)
 
 
-engine = create_engine('mysql+mysqlconnector://root@localhost:3306/dialog')
+engine = create_engine('mysql+mysqlconnector://root：120834+1s@localhost:3306/dialog')
 Session = sessionmaker(engine)
 
 def better_cpu(item, requriment):

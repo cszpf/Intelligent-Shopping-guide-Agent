@@ -54,7 +54,7 @@ class Computer(Base):
         return "<Computer(型号=%s, 价格=%s, cpu=%s, 内存=%sGB, 硬盘=%sGB, gpu：%s)>" % (name, price, cpu, memory, disk, gpu)
 
 
-engine = create_engine('mysql+mysqlconnector://root@localhost:3306/dialog')
+engine = create_engine('mysql+mysqlconnector://root：120834+1s@localhost:3306/dialog')
 Session = sessionmaker(engine)
 
 
