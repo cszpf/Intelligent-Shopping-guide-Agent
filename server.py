@@ -19,6 +19,8 @@ def dialog():
     token = request.args.get('token')
     domain = request.args.get('domain')
     sentence = request.args.get('message')
+    if sentence is None:
+        return jsonify({'error':'bad request'})
     sentence = sentence.strip()
     manager.user(domain, sentence, token)
     res = manager.response(token)

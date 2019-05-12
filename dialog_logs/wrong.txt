@@ -170,3 +170,17 @@ user:8G以上
 server:请问什么价位的合适呢?
 user:1万左右
 
+user:你好
+server:请问什么价位的合适呢?
+user:你好
+server:请问预期的价位是多少呢?
+
+user:我想买手机
+server:请问你需要什么牌子的呢?
+user:可以玩王者荣耀的，华为
+server:请问什么价位的合适呢?
+user:9000以下
+server:为您推荐以下商品,可回复第几个进行选择
+user:第二个
+server:本次服务已结束，谢谢您的使用
+

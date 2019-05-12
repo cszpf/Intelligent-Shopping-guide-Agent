@@ -14,6 +14,8 @@ def getRandomSentence(sentenceList):
 
 def write_lines(file, lines):
     for line in lines:
+        if type(line)!=str:
+            continue
         file.write(line + '\n')
     file.close()
 
