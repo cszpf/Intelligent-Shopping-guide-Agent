@@ -26,6 +26,33 @@ def trans_number(num):
         return digit_char.index(num) + 1
     return 'unkown'
 
+def trans_price(s):
+    valide_char = '1234567890一二三四五六七八九十百千万'
+    for char in s:
+        if char not in valide_char:
+            return -1
+    if re.match(r'^\d+$', s):
+        return int(s)
+    digit_char = ['一', '二', '三', '四', '五', '六', '七', '八', '九']
+    for i, digit in enumerate(digit_char):
+        s = s.replace(digit, str(i + 1))
+    s = s.replace('两', str(2))
+    match = re.match(r'^[\d+\.*\d*万]*[\d+千]*[\d+百]*[\d+十]*[\d+]*$',s)
+    if match:
+        base = {'万':10000,'千':1000,'百':100,'十':10}
+        total = 0
+        cache = ''
+        for digit in s:
+            if digit not in base:
+                cache += digit
+            else:
+                total += float(cache)*base[digit]
+                cache = ''
+        if cache!='':
+            total += float(cache)
+        return total
+    return -1
+
 
 def get_random_sentence(sentence_list):
     '''
@@ -531,6 +558,35 @@ class Phone_Dialogue():
                         return True
                 return False
 
+    def slot_validate_check(self, sv_pair):
+        filtered_sv = []
+        number = re.compile(r'^\d+$')
+        for sv in sv_pair:
+            # check brand
+            if sv['type'] == 'brand':
+                if sv['word'] not in brand_list:
+                    continue
+            # check memory
+            if 'memory' in sv['type']:
+                memory = sv['word']
+                memory = memory.lower().replace('gb', '').replace('g', '')
+                if not re.match(number, memory):
+                    continue
+            # check price
+            if 'price' in sv['type']:
+                price =  trans_price(sv['word'])
+                if price == -1:
+                    continue
+                sv['word'] = str(price)
+            # check disk
+            if 'disk' in sv['type']:
+                disk = sv['word']
+                disk = disk.lower().replace('gb', '').replace('g', '')
+                if not re.match(number, disk):
+                    continue
+            filtered_sv.append(sv)
+        return filtered_sv
+
     def extract(self, sentence):
         '''
         extract information from user input
@@ -539,13 +595,13 @@ class Phone_Dialogue():
         '''
         print("extract")
         tag = self.nlu.phone_slot_predict(sentence)['entities']
-        tag = [item for item in tag if item['type'] != 'brand' or item['word'] in brand_list]
         for word in exp_synonyms:
             if word in sentence:
                 tag.append({'type': 'experience', 'word': word})
         for word in func_synonyms:
             if word in sentence:
                 tag.append({'type': 'function', 'word': word})
+        tag = self.slot_validate_check(tag)
         return tag
 
     def search(self, slot_value_table):

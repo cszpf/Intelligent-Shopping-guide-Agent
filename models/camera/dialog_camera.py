@@ -27,6 +27,34 @@ def trans_number(num):
     return 'unkown'
 
 
+def trans_price(s):
+    valide_char = '1234567890一二三四五六七八九十百千万'
+    for char in s:
+        if char not in valide_char:
+            return -1
+    if re.match(r'^\d+$', s):
+        return int(s)
+    digit_char = ['一', '二', '三', '四', '五', '六', '七', '八', '九']
+    for i, digit in enumerate(digit_char):
+        s = s.replace(digit, str(i + 1))
+    s = s.replace('两', str(2))
+    match = re.match(r'^[\d+\.*\d*万]*[\d+千]*[\d+百]*[\d+十]*[\d+]*$', s)
+    if match:
+        base = {'万': 10000, '千': 1000, '百': 100, '十': 10}
+        total = 0
+        cache = ''
+        for digit in s:
+            if digit not in base:
+                cache += digit
+            else:
+                total += float(cache) * base[digit]
+                cache = ''
+        if cache != '':
+            total += float(cache)
+        return total
+    return -1
+
+
 def get_random_sentence(sentence_list):
     '''
     select a sentence randomly
@@ -522,16 +550,56 @@ class Camera_Dialogue():
                         return True
                 return False
 
+    def slot_validate_check(self, sv_pair):
+        filtered_sv = []
+        number = re.compile(r'^\d+$')
+        frame_list = ['APS-C画幅', '全画幅', '中画幅', 'm4/3画幅', 'APS-H画幅', 'APS画幅', '半画幅']
+        frame_list = [frame.lower() for frame in frame_list]
+        level_list = ['入门级', '初级', '中级', '高级', '专业', '中端', '低端', '高端', '新手级', '入门']
+        type_list = ['卡片机', '广角相机', '长焦', '三防', '微单', '卡片', '数码微单', 'vr相机', '全景相机', 'VR相机', '单反', '胶片相机', '移轴机', '全景相机',
+                     '多功能照相机', '家用摄像机']
+        for sv in sv_pair:
+            # check brand
+            if sv['type'] == 'brand':
+                if sv['word'] not in brand_list:
+                    continue
+            # check price
+            if 'price' in sv['type']:
+                price = trans_price(sv['word'])
+                if price == -1:
+                    continue
+                sv['word'] = str(price)
+            filtered_sv.append(sv)
+            # check frame
+            if sv['type'] == 'frame':
+                if sv['word'] not in frame_list:
+                    continue
+            # check level
+            if sv['type'] == 'level':
+                if sv['word'] not in level_list:
+                    continue
+            # check pixel
+            if 'pixel' in sv['type']:
+                if not re.match('\d+万*', sv['word']):
+                    continue
+            # check type
+            if sv['type'] == 'type':
+                if sv['word'] not in type_list:
+                    continue
+            filtered_sv.append(sv)
+
+        return filtered_sv
+
     def extract(self, sentence):
         print("extract")
         tag = self.nlu.camera_slot_predict(sentence)['entities']
-        tag = [item for item in tag if item['type'] != 'brand' or item['word'] in brand_list]
         for word in exp_synonyms:
             if word in sentence:
                 tag.append({'type': 'experience', 'word': word})
         for word in func_synonyms:
             if word in sentence:
                 tag.append({'type': 'function', 'word': word})
+        tag = self.slot_validate_check(tag)
         return tag
 
     def search(self, slot_value_table):
