@@ -43,6 +43,8 @@ class DialogManager:
             return
         if token in self.error_mark:
             type = 'wrong'
+        if token in self.error_flag:
+            type = 'error'
         print("saving log of ", token)
         if type == 'error':
             history = self.history[token]
@@ -155,7 +157,7 @@ class DialogManager:
 
     def mark_error(self, token):
         if token not in self.dialog_session:
-            self.create_session(token)
+            return
         self.error_mark[token] = not self.error_mark[token]
         print("set error:", self.error_mark[token])
 
