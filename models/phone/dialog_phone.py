@@ -347,6 +347,13 @@ class Phone_Dialogue():
                 else:
                     return get_random_sentence(["请问您是需要更便宜的产品吗?"])
 
+            if target == '内存':
+                self.expected = '机身内存'
+                if self.morewhat[1] <= 0:
+                    return get_random_sentence(["请问您需要更小的机身内存（存储空间）还是运行内存?"])
+                else:
+                    return get_random_sentence(["请问您需要更大的机身内存（存储空间）还是运行内存?"])
+
         if self.state == 'confirm_choice':
             sentence_list = ["即将为您预订以下商品，是否确认？"]
             return get_random_sentence(sentence_list)

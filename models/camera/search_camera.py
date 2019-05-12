@@ -35,6 +35,15 @@ class Camera(Base):
             return "无"
         return s
 
+    def convert_bytes_to_str(self):
+        self.brand = self.brand.decode('utf8') if type(self.brand) == bytes else self.brand
+        self.level = self.level.decode('utf8') if type(self.level) == bytes else self.level
+        self.name = self.name.decode('utf8') if type(self.name) == bytes else self.name
+        self.frame = self.frame.decode('utf8') if type(self.frame) == bytes else self.frame
+        self.type = self.type.decode('utf8') if type(self.type) == bytes else self.type
+        self.screen = self.screen.decode('utf8') if type(self.screen) == bytes else self.screen
+        self.shutter = self.shutter.decode('utf8') if type(self.shutter) == bytes else self.shutter
+
     def __repr__(self):
         name = self.toStr(self.name)
         price = self.toStr(self.price)
@@ -145,6 +154,8 @@ def search_camera(condition):
                     score[item.index] += 1
 
     res = sorted(res, key=lambda x: score[x.index], reverse=True)
+    for item in res:
+        res.convert_bytes_to_str()
     res_ = []
     last_id = -1
     for item in res:

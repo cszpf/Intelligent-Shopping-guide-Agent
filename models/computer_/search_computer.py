@@ -43,6 +43,15 @@ class Computer(Base):
         if s is None:
             return "无"
         return s.decode('utf8')
+    
+    def convert_bytes_to_str(self):
+        self.cpu = self.cpu.decode('utf8') if type(self.cpu) == bytes else self.cpu 
+        self.cpu_name = self.cpu_name.decode('utf8') if type(self.cpu_name) == bytes else self.cpu_name 
+        self.gpu = self.gpu.decode('utf8') if type(self.gpu) == bytes else self.gpu 
+        self.gpu_name = self.gpu_name.decode('utf8') if type(self.gpu_name) == bytes else self.gpu_name 
+        self.brand = self.brand.decode('utf8') if type(self.brand) == bytes else self.brand 
+        self.name = self.name.decode('utf8') if type(self.name) == bytes else self.name 
+        self.tags = self.tags.decode('utf8') if type(self.tags) == bytes else self.tags 
 
     def __repr__(self):
         name = self.toStr(self.name)
@@ -153,6 +162,8 @@ def searchComputer(condition):
 
 
     res = res.order_by(Computer.index).all()
+    for item in res:
+        item.convert_bytes_to_str()
     score = defaultdict(lambda: 0)
     if '功能要求' in condition:
         checker_dict = {'cpu': better_cpu, 'gpu': better_gpu, 'memory': better_memory}

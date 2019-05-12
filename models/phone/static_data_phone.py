@@ -25,7 +25,7 @@ listInfo = {'品牌': ['畅销的品牌有华为，小米，苹果呢', '比较�
             '内存': ['常见的内存规格分为4G，6G，8G']}
 
 # 将中文的slot转成数据库的字段
-nameToColumn = {'品牌': 'brand', '价格': 'price', '机身内存': 'disk', '运行内存': 'memory',
+nameToColumn = {'品牌': 'brand', '价格': 'price', '机身内存': 'disk', '运行内存': 'memory','内存':'memory','硬盘':'disk',
                 '像素': 'pixel_back', '屏幕大小': 'size', '体验要求': 'experience', '配置要求': 'function'}
 # 可以进行调整的字段
 adjustableSlot = {'价格': 'price', '像素': 'pixel_back', '硬盘': 'disk', '尺寸': 'size', '内存': 'memory'}

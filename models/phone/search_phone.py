@@ -37,6 +37,14 @@ class Phone(Base):
         if s is None:
             return "无"
         return s
+    
+    def convert_bytes_to_str(self):
+        self.cpu = self.cpu.decode('utf8') if type(self.cpu)==bytes else self.cpu
+        self.camera_front = self.camera_front.decode('utf8') if type(self.camera_front)==bytes else self.camera_front
+        self.camera_back = self.camera_back.decode('utf8') if type(self.camera_back)==bytes else self.camera_back
+        self.name = self.name.decode('utf8') if type(self.name)==bytes else self.name
+        self.brand = self.brand.decode('utf8') if type(self.brand)==bytes else self.brand
+        self.tags = self.tags.decode('utf8') if type(self.tags)==bytes else self.tags
 
     def __repr__(self):
         name = self.toStr(self.name)
@@ -120,6 +128,7 @@ def searchPhone(condition):
             if con[1] == '<=':
                 res = res.filter(Phone.pixel_back <= con[0])
 
+    
     if '运行内存' in condition and condition['运行内存'][0][0] != 'whatever':
         for con in condition['运行内存']:
             if con[1] == '>=':
@@ -128,9 +137,28 @@ def searchPhone(condition):
                 res = res.filter(Phone.memory == con[0])
             if con[1] == '<=':
                 res = res.filter(Phone.memory <= con[0])
+    
+    if '内存' in condition and condition['内存'][0][0] != 'whatever':
+        for con in condition['内存']:
+            if con[1] == '>=':
+                res = res.filter(Phone.memory >= con[0])
+            if con[1] == '=':
+                res = res.filter(Phone.memory == con[0])
+            if con[1] == '<=':
+                res = res.filter(Phone.memory <= con[0])
+    
 
     if '机身内存' in condition and condition['机身内存'][0][0] != 'whatever':
         for con in condition['机身内存']:
+            if con[1] == '>=':
+                res = res.filter(Phone.disk >= con[0])
+            if con[1] == '=':
+                res = res.filter(Phone.disk == con[0])
+            if con[1] == '<=':
+                res = res.filter(Phone.disk <= con[0])
+    
+    if '硬盘' in condition and condition['硬盘'][0][0] != 'whatever':
+        for con in condition['硬盘']:
             if con[1] == '>=':
                 res = res.filter(Phone.disk >= con[0])
             if con[1] == '=':
@@ -148,6 +176,8 @@ def searchPhone(condition):
                 res = res.filter(Phone.size <= con[0])
 
     res = res.order_by(Phone.index).all()
+    for item in res:
+        item.convert_bytes_to_str()
     score = defaultdict(lambda: 0)
     if '功能要求' in condition:
         checker_dict = {'cpu': better_cpu, 'memory': better_memory}
