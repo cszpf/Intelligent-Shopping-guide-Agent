@@ -225,6 +225,7 @@ class NLUService(object):
         else:
             intent = self.requirement_predict(sentence)
             no_word = ['不要', '不是', '否定', '否认', '不对', '不可以', '不行', '别', '否', '不', '差']
+            except_word = ['不卡', '不坏', '没问题', '不糟糕']
             for item in slot_list:
                 if item['type'] not in ['function', 'experience']:
                     if intent == 'need':
@@ -245,6 +246,11 @@ class NLUService(object):
                         if word in sent:
                             negative = True
                             break
+                    if negative:
+                        for word in except_word:
+                            if word in sent:
+                                negative = False
+                                break
                     if negative:
                         item['need'] = False
                     else:

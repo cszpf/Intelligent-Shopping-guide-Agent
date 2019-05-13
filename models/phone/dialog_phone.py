@@ -144,6 +144,7 @@ class Phone_Dialogue():
         self.finish = False
         self.nlu = nlu
         self.asked = []
+        self.asked_more = False
 
     def save(self):
         '''
@@ -156,7 +157,8 @@ class Phone_Dialogue():
             'ask_slot': self.ask_slot,
             'expected': self.expected,
             'morewhat': self.morewhat,
-            'asked': self.asked
+            'asked': self.asked,
+            'asked_more':self.asked_more
         }
         return json.dumps(model)
 
@@ -173,6 +175,7 @@ class Phone_Dialogue():
         self.expected = m['expected']
         self.morewhat = m['morewhat']
         self.asked = m['asked']
+        self.asked_more = m['asked_more']
         if self.state == 'result':
             res = self.search(self.slot_value)
             self.result_list = res
@@ -193,6 +196,7 @@ class Phone_Dialogue():
         self.show_result = False
         self.finish = False
         self.asked = []
+        self.asked_more = False
 
     def change_state(self, state, last_state=None):
         '''
@@ -237,6 +241,8 @@ class Phone_Dialogue():
             self.confirm_choice(sentence)
         elif self.state == 'adjust_confirm':
             self.adjust_confirm(sentence)
+        elif self.state == 'ask_more':
+            self.ask_more(sentence)
 
     def list_slot(self, sentence):
         '''
@@ -274,8 +280,8 @@ class Phone_Dialogue():
         for word in targetWord:
             if word in sentence:
                 self.morewhat = (word, self.morewhat[1])
-                self.change_state('do_adjust')
                 self.do_adjust(self.morewhat)
+
         intent = self.nlu.intention_predict(sentence)
         if intent == 'answer_yes':
             self.morewhat = (self.expected, self.morewhat[1])
@@ -283,13 +289,7 @@ class Phone_Dialogue():
             self.do_adjust(self.morewhat)
         elif intent == 'answer_slot':
             tag = self.extract(sentence)
-            answer_intent = self.nlu.requirement_predict(sentence)
-            negative = False
-            if answer_intent == 'no_need':
-                negative = True
-            to_add = self.fill_message(tag, negative)
-            if answer_intent == 'whatever' and self.ask_slot:
-                to_add[self.ask_slot] = [('whatever', '=')]
+            to_add = self.fill_message(tag)
             if len(to_add) > 0:
                 self.write(to_add)
                 self.change_state('result')
@@ -329,9 +329,6 @@ class Phone_Dialogue():
             self.finish = True
             return
         tag = self.extract(sentence)
-        intent = self.nlu.requirement_predict(sentence)
-        print(sentence, intent)
-        print(tag)
         if len(tag) > 0:
             tag = self.nlu.confirm_slot(tag, sentence)
             to_add = self.fill_message(tag)
@@ -366,8 +363,19 @@ class Phone_Dialogue():
                 return get_random_sentence(ask_slot[slot])
             # 如果到了这里，说明所有的slot都问完了,转入confirm_result
             else:
-                self.change_state('confirm_result')
+                self.change_state('ask_more')
                 return self.response()
+
+        if self.state == 'ask_more':
+            if not self.asked_more:
+                #first ask
+                sentence_list = ['请问您还有其他需求吗?']
+                self.asked_more = True
+                return get_random_sentence(sentence_list)
+            else:
+                #not first ask
+                sentence_list = ['好的，请问还有其他的要求吗?']
+                return  get_random_sentence(sentence_list)
 
         if self.state == 'list':
             self.change_state('ask')
@@ -426,6 +434,30 @@ class Phone_Dialogue():
                 return False
         return True
 
+    def ask_more(self,sentence):
+        '''
+        check slot every time
+        check yes or no,too
+        mostly copy from adjust_confirm
+        :param sentence:
+        :return:None
+        '''
+        intent = self.nlu.intention_predict(sentence)
+        if intent == 'answer_no':
+            self.change_state('result')
+        else:
+            tag = self.extract(sentence)
+            intent = self.nlu.requirement_predict(sentence)
+            print(sentence, intent)
+            print(tag)
+            if len(tag) == 0 and intent == 'whatever':
+                if self.ask_slot != '':
+                    self.write({nameToColumn[self.ask_slot]: [('whatever', '=')]})
+            else:
+                tag = self.nlu.confirm_slot(tag, sentence)
+                to_add = self.fill_message(tag)
+                self.write(to_add)
+
     def ask(self, sentence):
         '''
         check user response for a asking action
@@ -443,15 +475,13 @@ class Phone_Dialogue():
             print(tag)
             if len(tag) == 0 and intent == 'whatever':
                 if self.ask_slot != '':
-                    self.write({self.ask_slot: [('whatever', '=')]})
-                    self.asked.append(self.ask_slot)
-                    self.ask_slot = ''
+                    self.write({nameToColumn[self.ask_slot]: [('whatever', '=')]})
             else:
                 tag = self.nlu.confirm_slot(tag, sentence)
                 to_add = self.fill_message(tag)
                 self.write(to_add)
             if self.check_necessary():
-                self.change_state('result')
+                self.change_state('ask_more')
 
     def init(self, sentence):
         '''
@@ -617,6 +647,9 @@ class Phone_Dialogue():
         tag = []
         for sent in sents:
             tag.extend(self.nlu.phone_slot_predict(sent)['entities'])
+            intent = self.nlu.requirement_predict(sent)
+            if intent == 'whatever':
+                tag.append({'type': nameToColumn[self.ask_slot], 'word': 'whatever'})
         for word in exp_synonyms:
             if word in sentence:
                 tag.append({'type': 'experience', 'word': word})
@@ -650,8 +683,6 @@ class Phone_Dialogue():
         return_slot = ['name', 'price', 'memory', 'disk', 'size', 'camera_back', 'pixel_back']
         res = []
         result_list = self.result_list
-        if self.state == 'confirm_choice':
-            result_list = [self.choice]
         for item in result_list:
             temp = {}
             itemDict = item.__dict__
