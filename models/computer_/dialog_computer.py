@@ -500,6 +500,7 @@ class Computer_Dialogue():
         bi_tag = ['brand', 'experience', 'function', 'cpu']
         for t in tag:
             op = '='
+            t['type'] = t['type'].lower()
             if t['type'] in bi_tag:
                 name = labelToTag[t['type']]
                 if t['need']:
@@ -509,6 +510,7 @@ class Computer_Dialogue():
             else:
                 t['type'] = t['type'].replace('memory_size', 'memory')
                 t['type'] = t['type'].replace('ram', 'memory')
+                name = t['type']
                 if t['type'].find('_') != -1:
                     name_ = t['type'].split('_')
                     name = name_[0]
@@ -624,7 +626,7 @@ class Computer_Dialogue():
         sents = split_all(sentence)
         tag = []
         for sent in sents:
-            tag.extend(self.nlu.computer_slot_predict(sent)['entities'])
+            tag.extend(self.nlu.phone_slot_predict(sent)['entities'])
         for word in exp_synonyms:
             if word in sentence:
                 tag.append({'type': 'experience', 'word': word})
