@@ -12,6 +12,25 @@ from collections import defaultdict
 from search_camera import search_camera
 
 
+def split_all(s, target=',.?，。？！!'):
+    '''
+    split a sentence by target
+    :param s: input sentence
+    :param target: target string
+    :return:a list of string
+    '''
+    sent = []
+    line = ''
+    for word in s:
+        if word not in target:
+            line += word
+        else:
+            sent.append(line)
+            line = ''
+    if line != '':
+        sent.append(line)
+    return sent
+
 def trans_number(num):
     '''
     transfer chinese number to 1-9
@@ -591,7 +610,10 @@ class Camera_Dialogue():
 
     def extract(self, sentence):
         print("extract")
-        tag = self.nlu.camera_slot_predict(sentence)['entities']
+        sents = split_all(sentence)
+        tag = []
+        for sent in sents:
+            tag.extend(self.nlu.camera_slot_predict(sent)['entities'])
         for word in exp_synonyms:
             if word in sentence:
                 tag.append({'type': 'experience', 'word': word})

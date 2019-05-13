@@ -624,7 +624,7 @@ class Computer_Dialogue():
         sents = split_all(sentence)
         tag = []
         for sent in sents:
-            tag.extend(self.nlu.phone_slot_predict(sent)['entities'])
+            tag.extend(self.nlu.computer_slot_predict(sent)['entities'])
         for word in exp_synonyms:
             if word in sentence:
                 tag.append({'type': 'experience', 'word': word})
