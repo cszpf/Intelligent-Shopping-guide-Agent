@@ -8,7 +8,7 @@ from sqlalchemy import or_, not_, and_
 import re
 
 from collections import defaultdict
-from static_data_camera import  function_attr, func_synonyms, exp_synonyms
+from static_data_camera import  function_attr, func_synonyms, exp_synonyms, name_to_column
 
 Base = declarative_base()
 
@@ -110,17 +110,22 @@ def search_camera(condition):
             else:
                 res = res.filter(Camera.frame == con[0])
 
+
+    res = res.order_by(Camera.index).all()
+    for item in res:
+        item.convert_bytes_to_str()
+    print(len(res))
+    res_dict = [item.__dict__ for item in res]
+    score = defaultdict(lambda: 0)
     equal_label = ['级别', '屏幕', '类型', '快门']
     for label in equal_label:
         if label in condition and condition[label][0][0] != 'whatever':
             for con in condition[label]:
                 if con[1] == '=':
-                    res = res.filter(Camera.level == con[0])
+                    for item in res_dict:
+                        if con[0] in item[name_to_column[label]]:
+                            score[item['index']] += 1
 
-    res = res.order_by(Camera.index).all()
-    print(len(res))
-    res_dict = [item.__dict__ for item in res]
-    score = defaultdict(lambda: 0)
     if '功能要求' in condition:
         requirement = [con[0] for con in condition['功能要求']]
 
@@ -154,8 +159,6 @@ def search_camera(condition):
                     score[item.index] += 1
 
     res = sorted(res, key=lambda x: score[x.index], reverse=True)
-    for item in res:
-        res.convert_bytes_to_str()
     res_ = []
     last_id = -1
     for item in res:

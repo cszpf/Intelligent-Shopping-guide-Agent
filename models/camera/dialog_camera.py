@@ -569,7 +569,6 @@ class Camera_Dialogue():
                 if price == -1:
                     continue
                 sv['word'] = str(price)
-            filtered_sv.append(sv)
             # check frame
             if sv['type'] == 'frame':
                 if sv['word'] not in frame_list:
