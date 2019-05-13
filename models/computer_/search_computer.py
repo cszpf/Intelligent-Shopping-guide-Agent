@@ -157,7 +157,7 @@ def searchComputer(condition):
 
     if '处理器' in condition and condition['处理器'][0][0] != 'whatever':
         for con in condition['处理器']:
-            if con[1] == '>=':
+            if con[1] == '=':
                 res = res.filter(Computer.cpu.contains(con[0]))
 
 

@@ -12,6 +12,25 @@ from collections import defaultdict
 from search_computer import searchComputer
 
 
+def split_all(s, target=',.?，。？！!'):
+    '''
+    split a sentence by target
+    :param s: input sentence
+    :param target: target string
+    :return:a list of string
+    '''
+    sent = []
+    line = ''
+    for word in s:
+        if word not in target:
+            line += word
+        else:
+            sent.append(line)
+            line = ''
+    if line != '':
+        sent.append(line)
+    return sent
+
 def trans_number(num):
     '''
     transfer chinese number to 1-9
@@ -38,22 +57,21 @@ def trans_price(s):
     for i, digit in enumerate(digit_char):
         s = s.replace(digit, str(i + 1))
     s = s.replace('两', str(2))
-    match = re.match(r'^[\d+\.*\d*万]*[\d+千]*[\d+百]*[\d+十]*[\d+]*$',s)
+    match = re.match(r'^[\d+\.*\d*万]*[\d+千]*[\d+百]*[\d+十]*[\d+]*$', s)
     if match:
-        base = {'万':10000,'千':1000,'百':100,'十':10}
+        base = {'万': 10000, '千': 1000, '百': 100, '十': 10}
         total = 0
         cache = ''
         for digit in s:
             if digit not in base:
                 cache += digit
             else:
-                total += float(cache)*base[digit]
+                total += float(cache) * base[digit]
                 cache = ''
-        if cache!='':
+        if cache != '':
             total += float(cache)
         return total
     return -1
-
 
 
 def get_random_sentence(sentence_list):
@@ -128,6 +146,7 @@ def extract_cpu(s):
             break
     res = []
     for cpu in cpu_set:
+        cpu = cpu.replace('-', ' ')
         res.append({'type': 'cpu', 'word': cpu})
     return res
 
@@ -478,7 +497,7 @@ class Computer_Dialogue():
         res = defaultdict(lambda: [])
         # entities = tag['entities']
         op_dict = {'l': '>=', 'm': '=', 'u': '<='}
-        bi_tag = ['brand', 'experience', 'function']
+        bi_tag = ['brand', 'experience', 'function', 'cpu']
         for t in tag:
             op = '='
             if t['type'] in bi_tag:
@@ -582,7 +601,7 @@ class Computer_Dialogue():
                     continue
             # check price
             if 'price' in sv['type']:
-                price =  trans_price(sv['word'])
+                price = trans_price(sv['word'])
                 if price == -1:
                     continue
                 sv['word'] = str(price)
@@ -602,13 +621,19 @@ class Computer_Dialogue():
         :return:[{'type':'','word':''}]
         '''
         print("extract")
-        tag = self.nlu.phone_slot_predict(sentence)['entities']
+        sents = split_all(sentence)
+        tag = []
+        for sent in sents:
+            tag.extend(self.nlu.phone_slot_predict(sent)['entities'])
         for word in exp_synonyms:
             if word in sentence:
                 tag.append({'type': 'experience', 'word': word})
+        func_words = set()
         for word in func_synonyms:
             if word in sentence:
-                tag.append({'type': 'function', 'word': word})
+                func_words.add(func_synonyms[word])
+        for word in func_words:
+            tag.append({'type': 'function', 'word': word})
         cpus = extract_cpu(sentence)
         tag.extend(cpus)
         tag = self.slot_validate_check(tag)

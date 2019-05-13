@@ -595,9 +595,12 @@ class Camera_Dialogue():
         for word in exp_synonyms:
             if word in sentence:
                 tag.append({'type': 'experience', 'word': word})
+        func_words = set()
         for word in func_synonyms:
             if word in sentence:
-                tag.append({'type': 'function', 'word': word})
+                func_words.add(func_synonyms[word])
+        for word in func_words:
+            tag.append({'type': 'function', 'word': word})
         tag = self.slot_validate_check(tag)
         return tag
 

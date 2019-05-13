@@ -20,7 +20,7 @@ from intention_part.main import load_aspect_sentiment
 from requirement_part.main import clean as requirement_clean
 
 
-def split_all(s, target):
+def split_all(s, target=',.?，。？！!'):
     '''
     split a sentence by target
     :param s: input sentence
@@ -179,7 +179,6 @@ class NLUService(object):
         :param sentence:
         :return: the label of the sentence like ( no_need ) for the sentence "我不要华为的".
         """
-
         sentence = requirement_clean(sentence)
         sentence_list = [sentence]
         sentence_term_doc = self.requirement_tfidf_model.transform(sentence_list)
