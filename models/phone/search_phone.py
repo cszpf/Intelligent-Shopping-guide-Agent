@@ -8,7 +8,13 @@ from sqlalchemy import or_, not_, and_
 import re
 
 from collections import defaultdict
-from static_data_phone import nameToColumn, cpu_level, function_attr, func_synonyms,exp_synonyms
+from static_data_phone import nameToColumn, cpu_level, function_attr, func_synonyms, exp_synonyms
+
+import os
+import sys
+
+sys.path.append(os.path.join(os.path.dirname(__file__), os.path.pardir))
+from mysql_config import mysql_user,mysql_pw
 
 Base = declarative_base()
 
@@ -37,14 +43,14 @@ class Phone(Base):
         if s is None:
             return "无"
         return s
-    
+
     def convert_bytes_to_str(self):
-        self.cpu = self.cpu.decode('utf8') if type(self.cpu)==bytes else self.cpu
-        self.camera_front = self.camera_front.decode('utf8') if type(self.camera_front)==bytes else self.camera_front
-        self.camera_back = self.camera_back.decode('utf8') if type(self.camera_back)==bytes else self.camera_back
-        self.name = self.name.decode('utf8') if type(self.name)==bytes else self.name
-        self.brand = self.brand.decode('utf8') if type(self.brand)==bytes else self.brand
-        self.tags = self.tags.decode('utf8') if type(self.tags)==bytes else self.tags
+        self.cpu = self.cpu.decode('utf8') if type(self.cpu) == bytes else self.cpu
+        self.camera_front = self.camera_front.decode('utf8') if type(self.camera_front) == bytes else self.camera_front
+        self.camera_back = self.camera_back.decode('utf8') if type(self.camera_back) == bytes else self.camera_back
+        self.name = self.name.decode('utf8') if type(self.name) == bytes else self.name
+        self.brand = self.brand.decode('utf8') if type(self.brand) == bytes else self.brand
+        self.tags = self.tags.decode('utf8') if type(self.tags) == bytes else self.tags
 
     def __repr__(self):
         name = self.toStr(self.name)
@@ -54,11 +60,13 @@ class Phone(Base):
         disk = self.toStr(self.disk)
         size = self.toStr(self.size)
         camera_back = self.toStr(self.camera_back)
-        return "<Phone(型号=%s, 价格=%s, 屏幕大小=%s英寸, 运行内存=%sGB, 内存大小=%sGB, 像素：%s万)>" % (name, price, size, memory, disk, camera_back)
+        return "<Phone(型号=%s, 价格=%s, 屏幕大小=%s英寸, 运行内存=%sGB, 内存大小=%sGB, 像素：%s万)>" % (
+        name, price, size, memory, disk, camera_back)
 
 
-engine = create_engine('mysql+mysqlconnector://root:120834+1s@127.0.0.1:3306/dialog?charset=utf8')
+engine = create_engine('mysql+mysqlconnector://%s:%s@127.0.0.1:3306/dialog?charset=utf8'%(mysql_user,mysql_pw))
 Session = sessionmaker(engine)
+
 
 def better_cpu(item, requriment):
     if item.cpu is None:
@@ -84,6 +92,7 @@ def better_memory(item, requriment):
     else:
         return False
 
+
 def convert_bytes_to_str(res):
     result = []
     for item in res:
@@ -92,6 +101,7 @@ def convert_bytes_to_str(res):
                 item[key] = item[key].decode('uitf8')
         result.append(item)
     return result
+
 
 def searchPhone(condition):
     '''
@@ -128,7 +138,6 @@ def searchPhone(condition):
             if con[1] == '<=':
                 res = res.filter(Phone.pixel_back <= con[0])
 
-    
     if '运行内存' in condition and condition['运行内存'][0][0] != 'whatever':
         for con in condition['运行内存']:
             if con[1] == '>=':
@@ -137,7 +146,7 @@ def searchPhone(condition):
                 res = res.filter(Phone.memory == con[0])
             if con[1] == '<=':
                 res = res.filter(Phone.memory <= con[0])
-    
+
     if '内存' in condition and condition['内存'][0][0] != 'whatever':
         for con in condition['内存']:
             if con[1] == '>=':
@@ -146,7 +155,6 @@ def searchPhone(condition):
                 res = res.filter(Phone.memory == con[0])
             if con[1] == '<=':
                 res = res.filter(Phone.memory <= con[0])
-    
 
     if '机身内存' in condition and condition['机身内存'][0][0] != 'whatever':
         for con in condition['机身内存']:
@@ -156,7 +164,7 @@ def searchPhone(condition):
                 res = res.filter(Phone.disk == con[0])
             if con[1] == '<=':
                 res = res.filter(Phone.disk <= con[0])
-    
+
     if '硬盘' in condition and condition['硬盘'][0][0] != 'whatever':
         for con in condition['硬盘']:
             if con[1] == '>=':

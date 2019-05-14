@@ -121,3 +121,4 @@ app/backend/NLU/indent_classification/node_modules/
 *.pk
 *.model
 *.csv
+*.h5

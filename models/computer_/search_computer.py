@@ -10,6 +10,12 @@ import re
 from collections import defaultdict
 from static_data_computer import nameToColumn, cpu_level, gpu_level, function_attr,func_synonyms
 
+import os
+import sys
+
+sys.path.append(os.path.join(os.path.dirname(__file__), os.path.pardir))
+from mysql_config import mysql_user,mysql_pw
+
 Base = declarative_base()
 
 
@@ -63,7 +69,7 @@ class Computer(Base):
         return "<Computer(型号=%s, 价格=%s, cpu=%s, 内存=%sGB, 硬盘=%sGB, gpu：%s)>" % (name, price, cpu, memory, disk, gpu)
 
 
-engine = create_engine('mysql+mysqlconnector://root:120834+1s@127.0.0.1:3306/dialog?charset=utf8')
+engine = create_engine('mysql+mysqlconnector://%s:%s@127.0.0.1:3306/dialog?charset=utf8'%(mysql_user,mysql_pw))
 Session = sessionmaker(engine)
 
 

@@ -10,6 +10,12 @@ import re
 from collections import defaultdict
 from static_data_camera import  function_attr, func_synonyms, exp_synonyms, name_to_column
 
+import os
+import sys
+
+sys.path.append(os.path.join(os.path.dirname(__file__), os.path.pardir))
+from mysql_config import mysql_user,mysql_pw
+
 Base = declarative_base()
 
 
@@ -54,7 +60,7 @@ class Camera(Base):
         return "<Camera(型号=%s, 价格=%s元, 有效像素=%s万, 画幅=%s, 级别=%s)>" % (name, price, pixel, frame, level)
 
 
-engine = create_engine('mysql+mysqlconnector://root:120834+1s@127.0.0.1:3306/dialog?charset=utf8')
+engine = create_engine('mysql+mysqlconnector://%s:%s@127.0.0.1:3306/dialog?charset=utf8'%(mysql_user,mysql_pw))
 Session = sessionmaker(engine)
 
 def convert_bytes_to_str(res):
