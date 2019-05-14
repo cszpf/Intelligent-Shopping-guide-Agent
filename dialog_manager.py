@@ -38,6 +38,7 @@ class DialogManager:
         self.finish = {}
         self.record_history = False
 
+
     def save_log(self, token, type, reason=None):
         if not self.record_history:
             return
@@ -98,7 +99,7 @@ class DialogManager:
             print(e)
             self.save_log(token, 'error', str(e))
             self.error_flag[token] = True
-            raise
+            # raise
 
 
     def hello(self):
@@ -108,10 +109,19 @@ class DialogManager:
                         "你好，我可以帮你挑选手机/电脑/相机，请问你想买的是什么?"]
         return getRandomSentence(sentenceList)
 
+    def return_error(self,token):
+        res = {}
+        sentence_list =  ['抱歉，系统似乎出现了点故障，重新操作试试？']
+        res['response'] = getRandomSentence(sentence_list)
+        res['showResult'] = False
+        res['slot_value'] = {}
+        res['error'] = False
+        del self.error_flag[token]
+        return res
+
     def response(self, token):
         if token in self.error_flag and self.error_flag[token]:
-            self.reset(token)
-            return {'error': True}
+            return self.return_error(token)
         self.load_session(token)
         if self.domain is None:
             res = {}
@@ -144,11 +154,9 @@ class DialogManager:
                 print(e)
                 self.save_log(token, 'error', str(e))
                 self.error_flag[token] = True
-                raise
+                # raise
             if token in self.error_flag and self.error_flag[token]:
-                return {
-                    'error': True
-                }
+                return self.return_error(token)
             return res
 
     def reset(self, token):
