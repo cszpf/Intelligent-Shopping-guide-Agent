@@ -7,7 +7,7 @@ from save_and_load import *
 import json
 import re
 from static_data_phone import necessaryTag, labelToTag, ask_slot, listInfo, adjustableSlot, \
-    whatever_word, yes_word, no_word, func_synonyms, exp_synonyms, function_attr, brand_list, tagToLabel
+    whatever_word, yes_word, no_word, func_synonyms, exp_synonyms, function_attr, brand_list, tagToLabel,fail_slot
 from collections import defaultdict
 from search_phone import searchPhone
 
@@ -150,6 +150,7 @@ class Phone_Dialogue():
         self.nlu = nlu
         self.asked = []
         self.asked_more = False
+        self.extract_none = False
 
     def save(self):
         '''
@@ -163,7 +164,8 @@ class Phone_Dialogue():
             'expected': self.expected,
             'morewhat': self.morewhat,
             'asked': self.asked,
-            'asked_more': self.asked_more
+            'asked_more': self.asked_more,
+            'extract_none': self.extract_none
         }
         return json.dumps(model)
 
@@ -181,6 +183,7 @@ class Phone_Dialogue():
         self.morewhat = m['morewhat']
         self.asked = m['asked']
         self.asked_more = m['asked_more']
+        self.extract_none = m['extract_none']
         if self.state == 'result':
             res = self.search(self.slot_value)
             self.result_list = res
@@ -202,6 +205,7 @@ class Phone_Dialogue():
         self.finish = False
         self.asked = []
         self.asked_more = False
+        self.extract_none = False
 
     def change_state(self, state, last_state=None):
         '''
@@ -356,7 +360,11 @@ class Phone_Dialogue():
         if self.state == 'ask':
             # 检查必须的slot_value，如果没有的话就发出提问
             if self.ask_slot != '':
-                return get_random_sentence(ask_slot[self.ask_slot])
+                if self.extract_none:
+                    self.extract_none = False
+                    return get_random_sentence(fail_slot[self.ask_slot])
+                else:
+                    return get_random_sentence(ask_slot[self.ask_slot])
             unasked = []
             for slot in necessaryTag:
                 if slot not in self.asked:
@@ -379,6 +387,8 @@ class Phone_Dialogue():
                 return get_random_sentence(sentence_list)
             else:
                 # not first ask
+                if self.extract_none:
+                    return get_random_sentence(fail_slot['more'])
                 sentence_list = ['好的，请问还有其他的要求吗?']
                 return get_random_sentence(sentence_list)
 
@@ -463,6 +473,8 @@ class Phone_Dialogue():
                 tag = self.nlu.confirm_slot(tag, sentence)
                 to_add = self.fill_message(tag)
                 self.write(to_add)
+                if len(to_add) == 0:
+                    self.extract_none = True
 
     def ask(self, sentence):
         '''
@@ -486,6 +498,8 @@ class Phone_Dialogue():
                 tag = self.nlu.confirm_slot(tag, sentence)
                 to_add = self.fill_message(tag)
                 self.write(to_add)
+                if len(to_add) == 0:
+                    self.extract_none = True
             if self.check_necessary():
                 self.change_state('ask_more')
 
