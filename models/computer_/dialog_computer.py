@@ -464,7 +464,7 @@ class Computer_Dialogue():
             print(tag)
             if len(tag) == 0 and intent == 'whatever':
                 if self.ask_slot != '':
-                    self.write({nameToColumn[self.ask_slot]: [('whatever', '=')]})
+                    self.write({self.ask_slot: [('whatever', '=')]})
             else:
                 tag = self.nlu.confirm_slot(tag, sentence)
                 to_add = self.fill_message(tag)
@@ -487,7 +487,7 @@ class Computer_Dialogue():
             print(tag)
             if len(tag) == 0 and intent == 'whatever':
                 if self.ask_slot != '':
-                    self.write({nameToColumn[self.ask_slot]: [('whatever', '=')]})
+                    self.write({self.ask_slot: [('whatever', '=')]})
             else:
                 tag = self.nlu.confirm_slot(tag, sentence)
                 to_add = self.fill_message(tag)
@@ -573,6 +573,7 @@ class Computer_Dialogue():
                 self.ask_slot = ''
             self.slot_value[t] = table[t]
             self.asked.append(t)
+        print("write done")
 
     def check_choice(self, sentence):
         '''
@@ -627,6 +628,9 @@ class Computer_Dialogue():
         number = re.compile(r'^\d+$')
         for sv in sv_pair:
             # check brand
+            if sv['word'] == 'whatever':
+                filtered_sv.append(sv)
+                continue
             if sv['type'] == 'brand':
                 if sv['word'] not in brand_list:
                     continue
@@ -664,7 +668,9 @@ class Computer_Dialogue():
             tag.extend(self.nlu.phone_slot_predict(sent)['entities'])
             intent = self.nlu.requirement_predict(sent)
             if intent == 'whatever':
+                print("name to column")
                 tag.append({'type': nameToColumn[self.ask_slot], 'word': 'whatever'})
+        print(tag)
         for word in exp_synonyms:
             if word in sentence:
                 tag.append({'type': 'experience', 'word': word})

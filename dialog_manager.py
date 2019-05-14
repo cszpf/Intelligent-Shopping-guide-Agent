@@ -99,6 +99,7 @@ class DialogManager:
             self.save_log(token, 'error', str(e))
             self.error_flag[token] = True
 
+
     def hello(self):
         print("hello")
         sentenceList = ["你好，请问有什么可以帮到您吗？您可以通过导购助手挑选合适你的手机,电脑或者相机。",
@@ -142,6 +143,7 @@ class DialogManager:
                 print(e)
                 self.save_log(token, 'error', str(e))
                 self.error_flag[token] = True
+                raise
             if token in self.error_flag and self.error_flag[token]:
                 return {
                     'error': True
