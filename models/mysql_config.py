@@ -1,2 +1,2 @@
 mysql_user = 'root'
-mysql_pw = '120834+1s'
+mysql_pw = '123456'
