@@ -469,7 +469,7 @@ class Camera_Dialogue():
             print(tag)
             if len(tag) == 0 and intent == 'whatever':
                 if self.ask_slot != '':
-                    self.write({name_to_column[self.ask_slot]: [('whatever', '=')]})
+                    self.write({self.ask_slot: [('whatever', '=')]})
             else:
                 tag = self.nlu.confirm_slot(tag, sentence)
                 to_add = self.fill_message(tag)
@@ -609,6 +609,9 @@ class Camera_Dialogue():
                      '多功能照相机', '家用摄像机']
         for sv in sv_pair:
             # check brand
+            if sv['word'] == 'whatever':
+                filtered_sv.append(sv)
+                continue
             if sv['type'] == 'brand':
                 if sv['word'] not in brand_list:
                     continue

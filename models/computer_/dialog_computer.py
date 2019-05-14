@@ -6,8 +6,8 @@ sys.path.append(os.path.dirname(__file__))
 from save_and_load import *
 import json
 import re
-from static_data_computer import necessaryTag, labelToTag, ask_slot, listInfo, nameToColumn, adjustableSlot, \
-    whatever_word, yes_word, no_word, func_synonyms, exp_synonyms, function_attr, brand_list
+from static_data_computer import necessaryTag, labelToTag, ask_slot, listInfo, adjustableSlot, \
+    whatever_word, yes_word, no_word, func_synonyms, exp_synonyms, function_attr, brand_list, tagToLabel
 from collections import defaultdict
 from search_computer import searchComputer
 
@@ -93,6 +93,7 @@ def get_change_intent(domain, sentence):
     :return:(target,positive) a tuple contains a change target and a value to measure whether to change
     '''
     changeable_slot = ['价格', '硬盘', '内存']
+    target_to_label = {'价格': 'price', '硬盘': 'disk', '内存': 'memory'}
     pos_word = ['贵', '高', '大', '好']
     neg_word = ['便宜', '小', '低', '糟糕', '少', '差']
     positive_count = 0
@@ -108,6 +109,8 @@ def get_change_intent(domain, sentence):
             target = '价格'
         elif any(w in sentence for w in ['高', '低']):
             target = '价格?'
+
+    target = target_to_label[target]
 
     tooWord = ['太', '有点', '过于', '不够']
     for word in pos_word:
@@ -180,7 +183,7 @@ class Computer_Dialogue():
             'expected': self.expected,
             'morewhat': self.morewhat,
             'asked': self.asked,
-            'asked_more':self.asked_more
+            'asked_more': self.asked_more
         }
         return json.dumps(model)
 
@@ -280,12 +283,12 @@ class Computer_Dialogue():
         :param morewhat:(target,positive) : ('价格',1) ,positive>0 means adjust higher value
         :return:None
         '''
-        print(morewhat)
         result = self.get_result()
+        print("do adjust:", morewhat)
         print(result)
         if morewhat[0] in adjustableSlot:
-            upper = max([item[adjustableSlot[morewhat[0]]] for item in result if adjustableSlot[morewhat[0]] in item])
-            lower = min([item[adjustableSlot[morewhat[0]]] for item in result if adjustableSlot[morewhat[0]] in item])
+            upper = max([item[morewhat[0]] for item in result if morewhat[0] in item])
+            lower = min([item[morewhat[0]] for item in result if morewhat[0] in item])
             if morewhat[1] > 0:
                 self.slot_value[morewhat[0]] = [(upper, '>=')]
             else:
@@ -300,9 +303,10 @@ class Computer_Dialogue():
         '''
         # 用户输入中包含了修正的tag
         targetWord = ['价格']
+        target_to_label = {'价格': 'price'}
         for word in targetWord:
             if word in sentence:
-                self.morewhat = (word, self.morewhat[1])
+                self.morewhat = (target_to_label[word], self.morewhat[1])
                 self.do_adjust(self.morewhat)
 
         intent = self.nlu.intention_predict(sentence)
@@ -392,15 +396,14 @@ class Computer_Dialogue():
 
         if self.state == 'ask_more':
             if not self.asked_more:
-                #first ask
+                # first ask
                 sentence_list = ['请问您还有其他需求吗?']
                 self.asked_more = True
                 return get_random_sentence(sentence_list)
             else:
-                #not first ask
+                # not first ask
                 sentence_list = ['好的，请问还有其他的要求吗?']
-                return  get_random_sentence(sentence_list)
-
+                return get_random_sentence(sentence_list)
 
         if self.state == 'list':
             self.change_state('ask')
@@ -419,13 +422,13 @@ class Computer_Dialogue():
 
         if self.state == 'adjust_confirm':
             target = self.morewhat[0].replace('?', '')
-            if target == '价格':
-                self.expected = '价格'
+            if target == 'price':
+                self.expected = 'price'
                 if self.morewhat[1] <= 0:
                     return get_random_sentence(["请问您是需要更贵的产品吗?"])
                 else:
                     return get_random_sentence(["请问您是需要更便宜的产品吗?"])
-            #if target == '内存'
+            # if target == '内存'
 
         if self.state == 'confirm_choice':
             sentence_list = ["即将为您预订以下商品，是否确认？"]
@@ -446,7 +449,7 @@ class Computer_Dialogue():
                 return False
         return True
 
-    def ask_more(self,sentence):
+    def ask_more(self, sentence):
         '''
         check slot every time
         check yes or no,too
@@ -454,14 +457,13 @@ class Computer_Dialogue():
         :param sentence:
         :return:None
         '''
+        print("ask more")
         intent = self.nlu.intention_predict(sentence)
         if intent == 'answer_no':
             self.change_state('result')
         else:
             tag = self.extract(sentence)
             intent = self.nlu.requirement_predict(sentence)
-            print(sentence, intent)
-            print(tag)
             if len(tag) == 0 and intent == 'whatever':
                 if self.ask_slot != '':
                     self.write({self.ask_slot: [('whatever', '=')]})
@@ -486,6 +488,7 @@ class Computer_Dialogue():
             print(sentence, intent)
             print(tag)
             if len(tag) == 0 and intent == 'whatever':
+                print("write directly")
                 if self.ask_slot != '':
                     self.write({self.ask_slot: [('whatever', '=')]})
             else:
@@ -513,7 +516,7 @@ class Computer_Dialogue():
         :param s:
         :return:
         '''
-        match = re.search(r'(\d+)', s)
+        match = re.search(r'(\d+[\.\d+]*)', s)
         if match:
             return float(match.group(1))
         else:
@@ -525,37 +528,34 @@ class Computer_Dialogue():
         :param tag:[{'type': 'pixel_m', 'word': '我要3000万像素的'}]
         :return:{'像素':[(3000,'=')]}
         '''
-        print("fill_message")
-        print(tag)
+        print("fill_message", tag)
         if len(tag) == 0:
             return {}
         res = defaultdict(lambda: [])
         # entities = tag['entities']
         op_dict = {'l': '>=', 'm': '=', 'u': '<='}
-        bi_tag = ['brand', 'experience', 'function', 'cpu']
+        bi_tag = ['brand', 'experience', 'function', 'cpu', 'gpu']
         for t in tag:
             op = '='
-            t['type'] = t['type'].lower()
+            name = t['type']
             if t['type'] in bi_tag:
-                name = labelToTag[t['type']]
                 if t['need']:
                     res[name].append((t['word'], '='))
                 else:
                     res[name].append((t['word'], '!='))
             else:
-                t['type'] = t['type'].replace('memory_size', 'memory')
-                t['type'] = t['type'].replace('ram', 'memory')
-                name = t['type']
+                if t['word'] == 'whatever':
+                    res[name] = [('whatever', '=')]
+                    continue
                 if t['type'].find('_') != -1:
                     name_ = t['type'].split('_')
                     name = name_[0]
                     op = op_dict[name_[1]]
                 value = self.filterNum(t['word'])
                 if value > 0:
-                    res[labelToTag[name]].append((value, op))
+                    res[name].append((value, op))
         res = dict(res)
-        print("fill message result:")
-        print(res)
+        print("fill message result:", res)
         return res
 
     def write(self, table):
@@ -565,13 +565,25 @@ class Computer_Dialogue():
         :return:None
         '''
         # table：待写入的slot-value
-        print("write")
-        print(table)
+        print("write", table)
         for t in table:
             if t == self.ask_slot:
                 self.asked.append(self.ask_slot)
                 self.ask_slot = ''
-            self.slot_value[t] = table[t]
+            if t not in self.slot_value:
+                self.slot_value[t] = []
+            if t in ['experience', 'function']:
+                self.slot_value[t].extend(table[t])
+                attr_set = set()
+                squeeze = []
+                for attr in self.slot_value[t]:
+                    if attr[0] not in attr_set:
+                        attr_set.add(attr[0])
+                        squeeze.append(attr)
+                self.slot_value[t] = squeeze
+
+            else:
+                self.slot_value[t] = table[t]
             self.asked.append(t)
         print("write done")
 
@@ -624,13 +636,16 @@ class Computer_Dialogue():
                 return False
 
     def slot_validate_check(self, sv_pair):
+        print("validate check:", sv_pair)
+        sv_pair = [pair for pair in sv_pair if pair['type'].split('_')[0] in tagToLabel]
+        print("filter illegal slot:", sv_pair)
         filtered_sv = []
         number = re.compile(r'^\d+$')
         for sv in sv_pair:
-            # check brand
             if sv['word'] == 'whatever':
                 filtered_sv.append(sv)
                 continue
+            # check brand
             if sv['type'] == 'brand':
                 if sv['word'] not in brand_list:
                     continue
@@ -642,6 +657,7 @@ class Computer_Dialogue():
                     continue
             # check price
             if 'price' in sv['type']:
+                sv['word'] = sv['word'].replace('元', '').replace('块', '')
                 price = trans_price(sv['word'])
                 if price == -1:
                     continue
@@ -653,6 +669,7 @@ class Computer_Dialogue():
                 if not re.match(number, disk):
                     continue
             filtered_sv.append(sv)
+        print("after check:", filtered_sv)
         return filtered_sv
 
     def extract(self, sentence):
@@ -661,16 +678,15 @@ class Computer_Dialogue():
         :param sentence:user input
         :return:[{'type':'','word':''}]
         '''
-        print("extract")
+        print("extract", sentence)
         sents = split_all(sentence)
         tag = []
         for sent in sents:
-            tag.extend(self.nlu.phone_slot_predict(sent)['entities'])
+            tag.extend(self.nlu.computer_slot_predict(sent)['entities'])
             intent = self.nlu.requirement_predict(sent)
             if intent == 'whatever':
-                print("name to column")
-                tag.append({'type': nameToColumn[self.ask_slot], 'word': 'whatever'})
-        print(tag)
+                if self.ask_slot != '':
+                    tag.append({'type': self.ask_slot, 'word': 'whatever'})
         for word in exp_synonyms:
             if word in sentence:
                 tag.append({'type': 'experience', 'word': word})
@@ -682,6 +698,12 @@ class Computer_Dialogue():
             tag.append({'type': 'function', 'word': word})
         cpus = extract_cpu(sentence)
         tag.extend(cpus)
+        print("extarct res:", tag)
+        # 修正tag为数据库标签
+        for t in tag:
+            for word in labelToTag:
+                t['type'] = t['type'].replace(word, labelToTag[word])
+        print("change tag name:", tag)
         tag = self.slot_validate_check(tag)
         return tag
 
@@ -724,33 +746,29 @@ class Computer_Dialogue():
         return current slot table
         :return: slot_table dict,{'slot':'value'}
         '''
+        print("get slot table", self.slot_value)
         res = {}
         op_dict = {'<=': '小于', '=': '', '>=': '大于', '!=': '不要'}
+        order = {'!=': 0, '=': 2, '<=': 1, '>=': 1}
         for slot in self.slot_value:
-            if slot in ['体验要求', '功能要求']:
+            if slot in ['experience', 'function']:
                 continue
+            sv = sorted(self.slot_value[slot], key=lambda x: order[x[1]], reverse=True)
             sentence_list = []
-            for con in self.slot_value[slot]:
+            for con in sv:
                 word = con[0] if con[0] != 'whatever' else '不限'
                 sentence_list.append(op_dict[con[1]] + str(word))
-            slot = nameToColumn[slot]
             res[slot] = ','.join(sentence_list)
 
-        if '体验要求' in self.slot_value:
-            sentence_list = []
-            for word in self.slot_value['体验要求']:
-                if word[1] != '!=':
-                    sentence_list.append(word[0])
-            if len(sentence_list) > 0:
-                res['experience'] = ','.join(sentence_list)
-
-        if '功能要求' in self.slot_value:
-            sentence_list = []
-            for word in self.slot_value['功能要求']:
-                if word[1] != '!=':
-                    sentence_list.append(word[0])
-            if len(sentence_list) > 0:
-                res['function'] = ','.join(sentence_list)
+        for slot in ['experience', 'function']:
+            if slot in self.slot_value:
+                sentence_list = []
+                for word in self.slot_value[slot]:
+                    if word[1] != '!=':
+                        sentence_list.append(word[0])
+                if len(sentence_list) > 0:
+                    res[slot] = ','.join(sentence_list)
+        print("slot table:", res)
         return res
 
 

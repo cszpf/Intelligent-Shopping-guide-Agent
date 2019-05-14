@@ -475,7 +475,7 @@ class Phone_Dialogue():
             print(tag)
             if len(tag) == 0 and intent == 'whatever':
                 if self.ask_slot != '':
-                    self.write({nameToColumn[self.ask_slot]: [('whatever', '=')]})
+                    self.write({self.ask_slot: [('whatever', '=')]})
             else:
                 tag = self.nlu.confirm_slot(tag, sentence)
                 to_add = self.fill_message(tag)
@@ -612,6 +612,9 @@ class Phone_Dialogue():
         number = re.compile(r'^\d+$')
         for sv in sv_pair:
             # check brand
+            if sv['word'] == 'whatever':
+                filtered_sv.append(sv)
+                continue
             if sv['type'] == 'brand':
                 if sv['word'] not in brand_list:
                     continue

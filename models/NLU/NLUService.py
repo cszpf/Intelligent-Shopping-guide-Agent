@@ -193,9 +193,8 @@ class NLUService(object):
         :param mode: 1. aspect-based sentiment 2. intention based 3. rule based
         :return: slot_list with need attr
         '''
-        print("confirm slot")
-        print(slot_list)
-        print(sentence)
+        print("confirm slot", slot_list)
+        print("confirm slot", sentence)
         if mode == 1:
             for item in slot_list:
                 slot = item['word']
@@ -224,36 +223,46 @@ class NLUService(object):
                     item['need'] = False
                 return slot_list
         else:
-            intent = self.requirement_predict(sentence)
-            no_word = ['不要', '不是', '否定', '否认', '不对', '不可以', '不行', '别', '否', '不', '差']
-            except_word = ['不卡', '不坏', '没问题', '不糟糕']
-            for item in slot_list:
-                if item['type'] not in ['function', 'experience']:
-                    if intent == 'need':
-                        item['need'] = True
-                    if intent == 'no_need':
-                        item['need'] = False
-                    if intent == 'whatever':
-                        item['need'] = True
-                    continue
-
-                slot = item['word']
-                sentence = split_all(sentence, ',.?，。？！!')
-                for sent in sentence:
-                    if slot not in sent:
+            sents = split_all(sentence)
+            for sent in sents:
+                # 匹配4G和4g
+                sent = sent.lower()
+                intent = self.requirement_predict(sent)
+                no_word = ['不要', '不是', '否定', '否认', '不对', '不可以', '不行', '别', '否', '不', '差']
+                except_word = ['不卡', '不坏', '没问题', '不糟糕']
+                for item in slot_list:
+                    if item['word'] not in sent:
                         continue
-                    negative = False
-                    for word in no_word:
-                        if word in sent:
-                            negative = True
-                            break
-                    if negative:
-                        for word in except_word:
+                    if item['type'] not in ['function', 'experience']:
+                        if intent == 'need':
+                            item['need'] = True
+                        if intent == 'no_need':
+                            item['need'] = False
+                        if intent == 'whatever':
+                            item['need'] = True
+                        continue
+
+                    slot = item['word']
+                    sentence = split_all(sentence, ',.?，。？！!')
+                    for sent in sentence:
+                        if slot not in sent:
+                            continue
+                        negative = False
+                        for word in no_word:
                             if word in sent:
-                                negative = False
+                                negative = True
                                 break
-                    if negative:
-                        item['need'] = False
-                    else:
-                        item['need'] = True
+                        if negative:
+                            for word in except_word:
+                                if word in sent:
+                                    negative = False
+                                    break
+                        if negative:
+                            item['need'] = False
+                        else:
+                            item['need'] = True
+            for item in slot_list:
+                if item['word'] == 'whatever':
+                    item['need'] = True
+            print("confirm result", slot_list)
             return slot_list

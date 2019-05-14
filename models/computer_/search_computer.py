@@ -8,7 +8,7 @@ from sqlalchemy import or_, not_, and_
 import re
 
 from collections import defaultdict
-from static_data_computer import nameToColumn, cpu_level, gpu_level, function_attr,func_synonyms
+from static_data_computer import cpu_level, gpu_level, function_attr,func_synonyms
 
 import os
 import sys
@@ -123,19 +123,19 @@ def convert_bytes_to_str(res):
 def searchComputer(condition):
     session = Session()
     res = session.query(Computer)
-    print(condition)
-    if '品牌' in condition and condition['品牌'][0][0] != 'whatever':
+    print("search",condition)
+    if 'brand' in condition and condition['brand'][0][0] != 'whatever':
         brandList = []
-        for brand in condition['品牌']:
+        for brand in condition['brand']:
             if brand[1] == '=':
                 brandList.append(Computer.name.contains(brand[0]))
         res = res.filter(or_(*brandList))
-        for brand in condition['品牌']:
+        for brand in condition['brand']:
             if brand[1] == '!=':
                 res = res.filter(not_(Computer.name.contains(brand[0])))
 
-    if '价格' in condition and condition['价格'][0][0] != 'whatever':
-        for con in condition['价格']:
+    if 'price' in condition and condition['price'][0][0] != 'whatever':
+        for con in condition['price']:
             if con[1] == '>=':
                 res = res.filter(Computer.price >= con[0])
             if con[1] == '=':
@@ -143,8 +143,8 @@ def searchComputer(condition):
             if con[1] == '<=':
                 res = res.filter(Computer.price <= con[0])
 
-    if '内存' in condition and condition['内存'][0][0] != 'whatever':
-        for con in condition['内存']:
+    if 'memory' in condition and condition['memory'][0][0] != 'whatever':
+        for con in condition['memory']:
             if con[1] == '>=':
                 res = res.filter(Computer.memory >= con[0])
             if con[1] == '=':
@@ -152,8 +152,8 @@ def searchComputer(condition):
             if con[1] == '<=':
                 res = res.filter(Computer.memory <= con[0])
 
-    if '硬盘' in condition and condition['硬盘'][0][0] != 'whatever':
-        for con in condition['硬盘']:
+    if 'disk' in condition and condition['disk'][0][0] != 'whatever':
+        for con in condition['disk']:
             if con[1] == '>=':
                 res = res.filter(Computer.disk >= con[0])
             if con[1] == '=':
@@ -161,8 +161,8 @@ def searchComputer(condition):
             if con[1] == '<=':
                 res = res.filter(Computer.disk <= con[0])
 
-    if '处理器' in condition and condition['处理器'][0][0] != 'whatever':
-        for con in condition['处理器']:
+    if 'cpu' in condition and condition['cpu'][0][0] != 'whatever':
+        for con in condition['cpu']:
             if con[1] == '=':
                 res = res.filter(Computer.cpu.contains(con[0]))
 
@@ -171,9 +171,9 @@ def searchComputer(condition):
     for item in res:
         item.convert_bytes_to_str()
     score = defaultdict(lambda: 0)
-    if '功能要求' in condition:
+    if 'function' in condition:
         checker_dict = {'cpu': better_cpu, 'gpu': better_gpu, 'memory': better_memory}
-        for func in condition['功能要求']:
+        for func in condition['function']:
             attr_requirement = function_attr[func_synonyms[func[0]]]
             for attr in attr_requirement:
                 checker = checker_dict[attr]
@@ -183,8 +183,8 @@ def searchComputer(condition):
                     else:
                         score[item.index] -= 1
 
-    if '体验要求' in condition:
-        experience = [con[0] for con in condition['体验要求']]
+    if 'experience' in condition:
+        experience = [con[0] for con in condition['experience']]
         for exp in experience:
             for item in res:
                 if item.tags is not None and exp in item.tags:

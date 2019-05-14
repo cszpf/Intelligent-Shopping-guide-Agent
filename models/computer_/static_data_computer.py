@@ -15,30 +15,29 @@ brand_list = '''
 brand_list = brand_list.replace('\n', '').lower().split()
 
 # 必须的slot
-necessaryTag = ['品牌', '价格', '内存']
+necessaryTag = ['brand', 'price', 'memory']
 # NLU的label和中文tag之间的转换
-labelToTag = {'brand': '品牌',
-              'price': '价格',
-              'memory': '内存',
-              'disk': '硬盘大小',
-              'cpu': '处理器',
-              'gpu': '显卡',
-              'experience': '体验要求',
-              'function': '功能要求'}
+labelToTag = {'brand': 'brand',
+              'price': 'price',
+              'rom_size': 'memory',
+              'disk_size': 'disk',
+              'cpu': 'cpu',
+              'gpu': 'gpu',
+              'experience': 'experience',
+              'function': 'function',
+              }
+tagToLabel = {labelToTag[k]: k for k in labelToTag}
 # 针对每一个slot的发问
-ask_slot = {'品牌': ['请问你喜欢什么牌子呢？', '请问你需要什么牌子的呢?'],
-            '价格': ['请问你预算多少？', '请问什么价位的合适呢?', '请问预期的价位是多少呢?'],
-            '内存': ['请问运行内存需要多大呢？', '请问对运行内存有什么需求吗?']}
+ask_slot = {'brand': ['请问你喜欢什么牌子呢？', '请问你需要什么牌子的呢?'],
+            'price': ['请问你预算多少？', '请问什么价位的合适呢?', '请问预期的价位是多少呢?'],
+            'memory': ['请问运行内存需要多大呢？', '请问对运行内存有什么需求吗?']}
 # informable slot的回复
-listInfo = {'品牌': ['畅销的品牌有惠普,戴尔,华硕呢', '比较畅销的牌子有惠普,戴尔,华硕等'],
-            '价格': ['一般常见的价位有3000以下,3000-7000或者以上的呢'],
-            '内存': ['常见的内存规格分为4G，6G，8G,16G等等']}
+listInfo = {'brand': ['畅销的品牌有惠普,戴尔,华硕呢', '比较畅销的牌子有惠普,戴尔,华硕等'],
+            'price': ['一般常见的价位有3000以下,3000-7000或者以上的呢'],
+            'memory': ['常见的内存规格分为4G，6G，8G,16G等等']}
 
-# 将中文的slot转成数据库的字段
-nameToColumn = {'品牌': 'brand', '价格': 'price', '内存': 'memory', '硬盘': 'disk',
-                '处理器': 'cpu', '显卡': 'gpu', '型号': 'name', '体验要求': 'experience', '功能要求': 'function'}
 # 可以进行调整的字段
-adjustableSlot = {'价格': 'price', '内存': 'memory', '硬盘': 'disk'}
+adjustableSlot = ['price', 'memory', 'disk']
 # 表示无所谓的词语
 whatever_word = ['随意', '随便', '都行', '可以', '没关系']
 # 确认的回复
