@@ -6,38 +6,34 @@ sys.path.append(os.path.dirname(__file__))
 from save_and_load import load, read_list
 
 # 必须的slot
-necessary_tag = ['品牌', '级别', '画幅', '类型','价格']
+necessary_tag = ['brand', 'level', 'frame', 'type', 'price']
 # NLU的label和中文tag之间的转换
-label_to_tag = {'brand': '品牌',
-              'price': '价格',
-              'pixel': '像素',
-              'level': '级别',
-              'frame': '画幅',
-              'type': '类型',
-              'screen': '屏幕',
-              'shutter': '快门',
-              'experience': '体验要求',
-              'function': '功能要求'}
+label_to_tag = {'brand': 'brand',
+                'price': 'price',
+                'pixel': 'pixel',
+                'level': 'level',
+                'frame': 'frame',
+                'type': 'type',
+                'screen': 'screen',
+                'shutter': 'shutter',
+                'experience': 'experience',
+                'function': 'function'}
+tagToLabel = {label_to_tag[k]: k for k in label_to_tag}
 # 针对每一个slot的发问
-ask_slot = {'品牌': ['请问你喜欢什么牌子呢？', '请问你需要什么牌子的呢?'],
-            '价格': ['请问你预算多少？', '请问什么价位的合适呢?', '请问预期的价位是多少呢?'],
-            '画幅': ['请问需要全画幅还是半画幅呢？', '相机画幅一般分为全画幅和半画幅,请问需要哪一种呢？'],
-            '级别': ['请问你需要入门级,中端,还是高端的相机？', '相机可分为入门级，中端和高端,请问你需要哪一种级别的呢?'],
-            '类型': ['请问你想要什么类型的相机呢？比如微单，卡片机，单反等']}
+ask_slot = {'brand': ['请问你喜欢什么牌子呢？', '请问你需要什么牌子的呢?'],
+            'price': ['请问你预算多少？', '请问什么价位的合适呢?', '请问预期的价位是多少呢?'],
+            'frame': ['请问需要全画幅还是半画幅呢？', '相机画幅一般分为全画幅和半画幅,请问需要哪一种呢？'],
+            'level': ['请问你需要入门级,中端,还是高端的相机？', '相机可分为入门级，中端和高端,请问你需要哪一种级别的呢?'],
+            'type': ['请问你想要什么类型的相机呢？比如微单，卡片机，单反等']}
 # informable slot的回复
-list_info = {'品牌': ['畅销的品牌有佳能、索尼呢', '比较受欢迎的牌子有佳能、索尼等'],
-            '价格': ['一般常见的价位有5000左右的,1万左右的或者1万以上的呢'],
-             '画幅':['画幅大致分为全画幅和半画幅，详细介绍可以参考https://zhuanlan.zhihu.com/p/36878963'],
-             '级别':['如果没有经验的用户，建议入门级哦～如果有一定了解可以选择中端或者高端的相机'],
-             '类型':['相机类型丰富，详细介绍可以参考https://www.zhihu.com/question/20048256']}
+list_info = {'brand': ['畅销的品牌有佳能、索尼呢', '比较受欢迎的牌子有佳能、索尼等'],
+             'price': ['一般常见的价位有5000左右的,1万左右的或者1万以上的呢'],
+             'frame': ['画幅大致分为全画幅和半画幅，详细介绍可以参考https://zhuanlan.zhihu.com/p/36878963'],
+             'level': ['如果没有经验的用户，建议入门级哦～如果有一定了解可以选择中端或者高端的相机'],
+             'type': ['相机类型丰富，详细介绍可以参考https://www.zhihu.com/question/20048256']}
 
-# 将中文的slot转成数据库的字段
-name_to_column = {'品牌': 'name', '价格': 'price',
-                '像素': 'pixel', '画幅': 'frame', '级别': 'level',
-                '类型': 'type', '快门': 'shutter', '屏幕': 'screen',
-                '体验要求': 'experience', '功能要求': 'function'}
 # 可以进行调整的字段
-adjustable_slot = {'价格': 'price', '像素': 'pixel', '画幅': 'frame', '级别': 'level','类型':'type'}
+adjustable_slot = ['price', 'pixel', 'frame', 'level', 'type']
 # 表示无所谓的词语
 whatever_word = ['随意', '随便', '都行', '可以', '没关系']
 # 确认的回复

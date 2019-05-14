@@ -8,13 +8,13 @@ from sqlalchemy import or_, not_, and_
 import re
 
 from collections import defaultdict
-from static_data_phone import nameToColumn, cpu_level, function_attr, func_synonyms, exp_synonyms
+from static_data_phone import cpu_level, function_attr, func_synonyms, exp_synonyms
 
 import os
 import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), os.path.pardir))
-from mysql_config import mysql_user,mysql_pw
+from mysql_config import mysql_user, mysql_pw
 
 Base = declarative_base()
 
@@ -61,10 +61,10 @@ class Phone(Base):
         size = self.toStr(self.size)
         camera_back = self.toStr(self.camera_back)
         return "<Phone(型号=%s, 价格=%s, 屏幕大小=%s英寸, 运行内存=%sGB, 内存大小=%sGB, 像素：%s万)>" % (
-        name, price, size, memory, disk, camera_back)
+            name, price, size, memory, disk, camera_back)
 
 
-engine = create_engine('mysql+mysqlconnector://%s:%s@127.0.0.1:3306/dialog?charset=utf8'%(mysql_user,mysql_pw))
+engine = create_engine('mysql+mysqlconnector://%s:%s@127.0.0.1:3306/dialog?charset=utf8' % (mysql_user, mysql_pw))
 Session = sessionmaker(engine)
 
 
@@ -109,19 +109,19 @@ def searchPhone(condition):
     '''
     session = Session()
     res = session.query(Phone)
-    print(condition)
-    if '品牌' in condition and condition['品牌'][0][0] != 'whatever':
+    print("search:", condition)
+    if 'brand' in condition and condition['brand'][0][0] != 'whatever':
         brandList = []
-        for brand in condition['品牌']:
+        for brand in condition['brand']:
             if brand[1] == '=':
                 brandList.append(Phone.brand.contains(brand[0]))
         res = res.filter(or_(*brandList))
-        for brand in condition['品牌']:
+        for brand in condition['brand']:
             if brand[1] == '!=':
                 res = res.filter(not_(Phone.brand.contains(brand[0])))
 
-    if '价格' in condition and condition['价格'][0][0] != 'whatever':
-        for con in condition['价格']:
+    if 'price' in condition and condition['price'][0][0] != 'whatever':
+        for con in condition['price']:
             if con[1] == '>=':
                 res = res.filter(Phone.price >= con[0])
             if con[1] == '=':
@@ -129,8 +129,8 @@ def searchPhone(condition):
             if con[1] == '<=':
                 res = res.filter(Phone.price <= con[0])
 
-    if '像素' in condition and condition['像素'][0][0] != 'whatever':
-        for con in condition['像素']:
+    if 'pixelb' in condition and condition['pixelb'][0][0] != 'whatever':
+        for con in condition['pixelb']:
             if con[1] == '>=':
                 res = res.filter(Phone.pixel_back >= con[0])
             if con[1] == '=':
@@ -138,8 +138,8 @@ def searchPhone(condition):
             if con[1] == '<=':
                 res = res.filter(Phone.pixel_back <= con[0])
 
-    if '运行内存' in condition and condition['运行内存'][0][0] != 'whatever':
-        for con in condition['运行内存']:
+    if 'memory' in condition and condition['memory'][0][0] != 'whatever':
+        for con in condition['memory']:
             if con[1] == '>=':
                 res = res.filter(Phone.memory >= con[0])
             if con[1] == '=':
@@ -147,17 +147,8 @@ def searchPhone(condition):
             if con[1] == '<=':
                 res = res.filter(Phone.memory <= con[0])
 
-    if '内存' in condition and condition['内存'][0][0] != 'whatever':
-        for con in condition['内存']:
-            if con[1] == '>=':
-                res = res.filter(Phone.memory >= con[0])
-            if con[1] == '=':
-                res = res.filter(Phone.memory == con[0])
-            if con[1] == '<=':
-                res = res.filter(Phone.memory <= con[0])
-
-    if '机身内存' in condition and condition['机身内存'][0][0] != 'whatever':
-        for con in condition['机身内存']:
+    if 'disk' in condition and condition['disk'][0][0] != 'whatever':
+        for con in condition['disk']:
             if con[1] == '>=':
                 res = res.filter(Phone.disk >= con[0])
             if con[1] == '=':
@@ -165,17 +156,8 @@ def searchPhone(condition):
             if con[1] == '<=':
                 res = res.filter(Phone.disk <= con[0])
 
-    if '硬盘' in condition and condition['硬盘'][0][0] != 'whatever':
-        for con in condition['硬盘']:
-            if con[1] == '>=':
-                res = res.filter(Phone.disk >= con[0])
-            if con[1] == '=':
-                res = res.filter(Phone.disk == con[0])
-            if con[1] == '<=':
-                res = res.filter(Phone.disk <= con[0])
-
-    if '屏幕大小' in condition and condition['屏幕大小'][0][0] != 'whatever':
-        for con in condition['屏幕大小']:
+    if 'size' in condition and condition['size'][0][0] != 'whatever':
+        for con in condition['size']:
             if con[1] == '>=':
                 res = res.filter(Phone.size >= con[0])
             if con[1] == '=':
@@ -187,9 +169,9 @@ def searchPhone(condition):
     for item in res:
         item.convert_bytes_to_str()
     score = defaultdict(lambda: 0)
-    if '功能要求' in condition:
+    if 'function' in condition:
         checker_dict = {'cpu': better_cpu, 'memory': better_memory}
-        for func in condition['功能要求']:
+        for func in condition['function']:
             attr_requirement = function_attr[func[0]]
             for attr in attr_requirement:
                 checker = checker_dict[attr]
@@ -199,8 +181,8 @@ def searchPhone(condition):
                     else:
                         score[item.index] -= 1
 
-    if '体验要求' in condition:
-        experience = [con[0] for con in condition['体验要求']]
+    if 'experience' in condition:
+        experience = [con[0] for con in condition['experience']]
         for exp in experience:
             for item in res:
                 if item.tags is not None and exp in item.tags:

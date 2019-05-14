@@ -8,7 +8,7 @@ from sqlalchemy import or_, not_, and_
 import re
 
 from collections import defaultdict
-from static_data_camera import  function_attr, func_synonyms, exp_synonyms, name_to_column
+from static_data_camera import  function_attr, func_synonyms, exp_synonyms
 
 import os
 import sys
@@ -77,22 +77,22 @@ def search_camera(condition):
     '''
     {'negative': {'品牌': [('华为', '=')]}, '价格': [(3000.0, '>=')]}
     '''
-    print(condition)
+    print("search:",condition)
     session = Session()
     res = session.query(Camera)
 
-    if '品牌' in condition and condition['品牌'][0][0] != 'whatever':
+    if 'brand' in condition and condition['brand'][0][0] != 'whatever':
         brandList = []
-        for brand in condition['品牌']:
+        for brand in condition['brand']:
             if brand[1] == '=':
                 brandList.append(Camera.brand.contains(brand[0]))
         res = res.filter(or_(*brandList))
-        for brand in condition['品牌']:
+        for brand in condition['brand']:
             if brand[1] == '!=':
                 res = res.filter(not_(Camera.brand.contains(brand[0])))
 
-    if '价格' in condition and condition['价格'][0][0] != 'whatever':
-        for con in condition['价格']:
+    if 'price' in condition and condition['price'][0][0] != 'whatever':
+        for con in condition['price']:
             if con[1] == '>=':
                 res = res.filter(Camera.price >= con[0])
             if con[1] == '=':
@@ -100,8 +100,8 @@ def search_camera(condition):
             if con[1] == '<=':
                 res = res.filter(Camera.price <= con[0])
 
-    if '像素' in condition and condition['像素'][0][0] != 'whatever':
-        for con in condition['像素']:
+    if 'pixel' in condition and condition['pixel'][0][0] != 'whatever':
+        for con in condition['pixel']:
             if con[1] == '>=':
                 res = res.filter(Camera.pixel >= con[0])
             if con[1] == '=':
@@ -109,8 +109,8 @@ def search_camera(condition):
             if con[1] == '<=':
                 res = res.filter(Camera.pixel <= con[0])
 
-    if '画幅' in condition and condition['画幅'][0][0] != 'whatever':
-        for con in condition['画幅']:
+    if 'frame' in condition and condition['frame'][0][0] != 'whatever':
+        for con in condition['frame']:
             if con[0] == '半画幅':
                 res = res.filter(Camera.frame != '全画幅')
             else:
@@ -120,20 +120,19 @@ def search_camera(condition):
     res = res.order_by(Camera.index).all()
     for item in res:
         item.convert_bytes_to_str()
-    print(len(res))
     res_dict = [item.__dict__ for item in res]
     score = defaultdict(lambda: 0)
-    equal_label = ['级别', '屏幕', '类型', '快门']
+    equal_label = ['level', 'screen', 'type', 'shutter']
     for label in equal_label:
         if label in condition and condition[label][0][0] != 'whatever':
             for con in condition[label]:
                 if con[1] == '=':
                     for item in res_dict:
-                        if con[0] in item[name_to_column[label]]:
+                        if con[0] in item[label]:
                             score[item['index']] += 1
 
-    if '功能要求' in condition:
-        requirement = [con[0] for con in condition['功能要求']]
+    if 'function' in condition:
+        requirement = [con[0] for con in condition['function']]
 
         for req in requirement:
             attrs = function_attr[func_synonyms[req]]
@@ -157,8 +156,8 @@ def search_camera(condition):
                             if term == item[attr]:
                                 score[item['index']] += 1
 
-    if '体验要求' in condition:
-        experience = [con[0] for con in condition['体验要求']]
+    if 'experience' in condition:
+        experience = [con[0] for con in condition['experience']]
         for exp in experience:
             for item in res:
                 if item.tags is not None and exp in item.tags:

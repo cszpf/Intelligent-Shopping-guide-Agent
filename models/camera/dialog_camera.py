@@ -6,8 +6,8 @@ sys.path.append(os.path.dirname(__file__))
 from save_and_load import *
 import json
 import re
-from static_data_camera import necessary_tag, label_to_tag, ask_slot, list_info, name_to_column, adjustable_slot, \
-    whatever_word, yes_word, no_word, func_synonyms, exp_synonyms, function_attr, brand_list
+from static_data_camera import necessary_tag, label_to_tag, ask_slot, list_info, adjustable_slot, \
+    whatever_word, yes_word, no_word, func_synonyms, exp_synonyms, function_attr, brand_list, tagToLabel
 from collections import defaultdict
 from search_camera import search_camera
 
@@ -30,6 +30,7 @@ def split_all(s, target=',.?，。？！!'):
     if line != '':
         sent.append(line)
     return sent
+
 
 def trans_number(num):
     '''
@@ -92,6 +93,7 @@ def get_change_intent(domain, sentence):
     :return:(target,positive) a tuple contains a change target and a value to measure whether to change
     '''
     changeable_slot = ['价格', '像素']
+    target_to_label = {'价格': 'price', '像素': 'pixel'}
     pos_word = ['贵', '高', '大', '好']
     neg_word = ['便宜', '小', '低', '糟糕', '少', '差']
     positive_count = 0
@@ -108,6 +110,7 @@ def get_change_intent(domain, sentence):
         elif any(w in sentence for w in ['高', '低']):
             target = '价格?'
 
+    target = target_to_label[target]
     too_word = ['太', '有点', '过于', '不够']
     for word in pos_word:
         if word in sentence:
@@ -159,7 +162,7 @@ class Camera_Dialogue():
             'expected': self.expected,
             'morewhat': self.morewhat,
             'asked': self.asked,
-            'asked_more':self.asked_more
+            'asked_more': self.asked_more
         }
         return json.dumps(model)
 
@@ -259,12 +262,12 @@ class Camera_Dialogue():
         :param morewhat:(target,positive) : ('价格',1) ,positive>0 means adjust higher value
         :return:None
         '''
-        print(morewhat)
+        print("do adjust:", morewhat)
         result = self.get_result()
         print(result)
         if morewhat[0] in adjustable_slot:
-            upper = max([item[adjustable_slot[morewhat[0]]] for item in result if adjustable_slot[morewhat[0]] in item])
-            lower = min([item[adjustable_slot[morewhat[0]]] for item in result if adjustable_slot[morewhat[0]] in item])
+            upper = max([item[morewhat[0]] for item in result if morewhat[0] in item])
+            lower = min([item[morewhat[0]] for item in result if morewhat[0] in item])
             if morewhat[1] > 0:
                 self.slot_value[morewhat[0]] = [(upper, '>=')]
             else:
@@ -278,9 +281,10 @@ class Camera_Dialogue():
         :return: None
         '''
         targetWord = ['价格', '像素']
+        target_to_label = {'价格': 'price', '像素': 'pixel'}
         for word in targetWord:
             if word in sentence:
-                self.morewhat = (word, self.morewhat[1])
+                self.morewhat = (target_to_label[word], self.morewhat[1])
                 self.do_adjust(self.morewhat)
 
         intent = self.nlu.intention_predict(sentence)
@@ -369,14 +373,14 @@ class Camera_Dialogue():
 
         if self.state == 'ask_more':
             if not self.asked_more:
-                #first ask
+                # first ask
                 sentence_list = ['请问您还有其他需求吗?']
                 self.asked_more = True
                 return get_random_sentence(sentence_list)
             else:
-                #not first ask
+                # not first ask
                 sentence_list = ['好的，请问还有其他的要求吗?']
-                return  get_random_sentence(sentence_list)
+                return get_random_sentence(sentence_list)
 
         if self.state == 'list':
             self.change_state('ask')
@@ -395,8 +399,8 @@ class Camera_Dialogue():
 
         if self.state == 'adjust_confirm':
             target = self.morewhat[0].replace('?', '')
-            if target == '价格':
-                self.expected = '价格'
+            if target == 'price':
+                self.expected = 'price'
                 if self.morewhat[1] <= 0:
                     return get_random_sentence(["请问您是需要更贵的产品吗?"])
                 else:
@@ -428,7 +432,7 @@ class Camera_Dialogue():
                 return False
         return True
 
-    def ask_more(self,sentence):
+    def ask_more(self, sentence):
         '''
         check slot every time
         check yes or no,too
@@ -442,11 +446,9 @@ class Camera_Dialogue():
         else:
             tag = self.extract(sentence)
             intent = self.nlu.requirement_predict(sentence)
-            print(sentence, intent)
-            print(tag)
             if len(tag) == 0 and intent == 'whatever':
                 if self.ask_slot != '':
-                    self.write({name_to_column[self.ask_slot]: [('whatever', '=')]})
+                    self.write({self.ask_slot: [('whatever', '=')]})
             else:
                 tag = self.nlu.confirm_slot(tag, sentence)
                 to_add = self.fill_message(tag)
@@ -495,7 +497,7 @@ class Camera_Dialogue():
         :param s:
         :return:
         '''
-        match = re.search(r'(\d+)', s)
+        match = re.search(r'(\d+[\.\d+]*)', s)
         if match:
             return float(match.group(1))
         else:
@@ -507,8 +509,7 @@ class Camera_Dialogue():
         :param tag:[{'type': 'pixel_m', 'word': '我要3000万像素的'}]
         :return:{'像素':[(3000,'=')]}
         '''
-        print("fill_message")
-        print(tag)
+        print("fill_message", tag)
         if len(tag) == 0:
             return {}
         res = defaultdict(lambda: [])
@@ -517,22 +518,25 @@ class Camera_Dialogue():
         bi_tag = ['brand', 'experience', 'function', 'frame', 'type', 'level']
         for t in tag:
             op = '='
+            name = t['type']
             if t['type'] in bi_tag:
-                name = label_to_tag[t['type']]
                 if t['need']:
                     res[name].append((t['word'], '='))
                 else:
                     res[name].append((t['word'], '!='))
             else:
+                if t['word'] == 'whatever':
+                    res[name] = [('whatever', '=')]
+                    continue
                 if t['type'].find('_') != -1:
                     name_ = t['type'].split('_')
                     name = name_[0]
                     op = op_dict[name_[1]]
                 value = self.filterNum(t['word'])
                 if value > 0:
-                    res[label_to_tag[name]].append((value, op))
+                    res[name].append((value, op))
         res = dict(res)
-        print(res)
+        print("fill message result:", res)
         return res
 
     def write(self, table):
@@ -542,14 +546,27 @@ class Camera_Dialogue():
         :return:None
         '''
         # table：待写入的slot-value
-        print("write")
-        print(table)
+        print("write", table)
         for t in table:
             if t == self.ask_slot:
                 self.asked.append(self.ask_slot)
                 self.ask_slot = ''
-            self.slot_value[t] = table[t]
+            if t not in self.slot_value:
+                self.slot_value[t] = []
+            if t in ['experience', 'function']:
+                self.slot_value[t].extend(table[t])
+                attr_set = set()
+                squeeze = []
+                for attr in self.slot_value[t]:
+                    if attr[0] not in attr_set:
+                        attr_set.add(attr[0])
+                        squeeze.append(attr)
+                self.slot_value[t] = squeeze
+
+            else:
+                self.slot_value[t] = table[t]
             self.asked.append(t)
+        print("write done")
 
     def check_choice(self, sentence):
         '''
@@ -600,6 +617,10 @@ class Camera_Dialogue():
                 return False
 
     def slot_validate_check(self, sv_pair):
+        print("validate check:", sv_pair)
+        sv_pair = [pair for pair in sv_pair if pair['type'].split('_')[0] in tagToLabel]
+        print("filter illegal slot:", sv_pair)
+
         filtered_sv = []
         number = re.compile(r'^\d+$')
         frame_list = ['APS-C画幅', '全画幅', '中画幅', 'm4/3画幅', 'APS-H画幅', 'APS画幅', '半画幅']
@@ -617,6 +638,7 @@ class Camera_Dialogue():
                     continue
             # check price
             if 'price' in sv['type']:
+                sv['word'] = sv['word'].replace('元', '').replace('块', '')
                 price = trans_price(sv['word'])
                 if price == -1:
                     continue
@@ -638,7 +660,7 @@ class Camera_Dialogue():
                 if sv['word'] not in type_list:
                     continue
             filtered_sv.append(sv)
-
+        print("after check:", filtered_sv)
         return filtered_sv
 
     def extract(self, sentence):
@@ -649,7 +671,8 @@ class Camera_Dialogue():
             tag.extend(self.nlu.camera_slot_predict(sent)['entities'])
             intent = self.nlu.requirement_predict(sent)
             if intent == 'whatever':
-                tag.append({'type': name_to_column[self.ask_slot], 'word': 'whatever'})
+                if self.ask_slot != '':
+                    tag.append({'type': self.ask_slot, 'word': 'whatever'})
         for word in exp_synonyms:
             if word in sentence:
                 tag.append({'type': 'experience', 'word': word})
@@ -659,6 +682,12 @@ class Camera_Dialogue():
                 func_words.add(func_synonyms[word])
         for word in func_words:
             tag.append({'type': 'function', 'word': word})
+        print("extarct res:", tag)
+        # 修正tag为数据库标签
+        for t in tag:
+            for word in label_to_tag:
+                t['type'] = t['type'].replace(word, label_to_tag[word])
+        print("change tag name:", tag)
         tag = self.slot_validate_check(tag)
         return tag
 
@@ -688,33 +717,33 @@ class Camera_Dialogue():
         return res
 
     def get_slot_table(self):
+        '''
+        return current slot table
+        :return: slot_table dict,{'slot':'value'}
+        '''
+        print("get slot table", self.slot_value)
         res = {}
         op_dict = {'<=': '小于', '=': '', '>=': '大于', '!=': '不要'}
+        order = {'!=': 0, '=': 2, '<=': 1, '>=': 1}
         for slot in self.slot_value:
-            if slot in ['体验要求', '功能要求']:
+            if slot in ['experience', 'function']:
                 continue
+            sv = sorted(self.slot_value[slot], key=lambda x: order[x[1]], reverse=True)
             sentence_list = []
-            for con in self.slot_value[slot]:
+            for con in sv:
                 word = con[0] if con[0] != 'whatever' else '不限'
                 sentence_list.append(op_dict[con[1]] + str(word))
-            slot = name_to_column[slot]
             res[slot] = ','.join(sentence_list)
 
-        if '体验要求' in self.slot_value:
-            sentence_list = []
-            for word in self.slot_value['体验要求']:
-                if word[1] != '!=':
-                    sentence_list.append(word[0])
-            if len(sentence_list) > 0:
-                res['experience'] = ','.join(sentence_list)
-
-        if '功能要求' in self.slot_value:
-            sentence_list = []
-            for word in self.slot_value['功能要求']:
-                if word[1] != '!=':
-                    sentence_list.append(word[0])
-            if len(sentence_list) > 0:
-                res['function'] = ','.join(sentence_list)
+        for slot in ['experience', 'function']:
+            if slot in self.slot_value:
+                sentence_list = []
+                for word in self.slot_value[slot]:
+                    if word[1] != '!=':
+                        sentence_list.append(word[0])
+                if len(sentence_list) > 0:
+                    res[slot] = ','.join(sentence_list)
+        print("slot table:", res)
         return res
 
 

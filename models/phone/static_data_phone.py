@@ -1,34 +1,32 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
+
 sys.path.append(os.path.dirname(__file__))
-from save_and_load import load,read_list,read
+from save_and_load import load, read_list, read
 
 # 必须的slot
-necessaryTag = ['品牌', '价格']
+necessaryTag = ['brand', 'price']
 # NLU的label和中文tag之间的转换
-labelToTag = {'brand': '品牌',
-              'price': '价格',
-              'screenSize': '屏幕大小',
-              'memory': '机身内存',
-              'pixel': '像素',
-              'ram': '运行内存',
-              'experience': '体验要求',
-              'function': '配置要求'}
+labelToTag = {'brand': 'brand',
+              'price': 'price',
+              'memory_size': 'disk',
+              'pixel': 'pixelb',
+              'screen_size': 'size',
+              'experience': 'experience',
+              'function': 'function'}
+tagToLabel = {labelToTag[k]: k for k in labelToTag}
 # 针对每一个slot的发问
-ask_slot = {'品牌': ['请问你喜欢什么牌子呢？', '请问你需要什么牌子的呢?'],
-            '价格': ['请问你预算多少？', '请问什么价位的合适呢?', '请问预期的价位是多少呢?'],
-            '内存': ['请问运行内存需要多大呢？', '请问对运行内存有什么需求吗?']}
+ask_slot = {'brand': ['请问你喜欢什么牌子呢？', '请问你需要什么牌子的呢?'],
+            'price': ['请问你预算多少？', '请问什么价位的合适呢?', '请问预期的价位是多少呢?'],
+            'memory': ['请问运行内存需要多大呢？', '请问对运行内存有什么需求吗?']}
 # informable slot的回复
-listInfo = {'品牌': ['畅销的品牌有华为，小米，苹果呢', '比较受欢迎的牌子有苹果，小米，华为等'],
-            '价格': ['一般常见的价位有1000-2000,2000-3000或者3000以上的呢'],
-            '内存': ['常见的内存规格分为4G，6G，8G']}
+listInfo = {'brand': ['畅销的品牌有华为，小米，苹果呢', '比较受欢迎的牌子有苹果，小米，华为等'],
+            'price': ['一般常见的价位有1000-2000,2000-3000或者3000以上的呢'],
+            'memory': ['常见的内存规格分为4G，6G，8G']}
 
-# 将中文的slot转成数据库的字段
-nameToColumn = {'品牌': 'brand', '价格': 'price', '机身内存': 'disk', '运行内存': 'memory','内存':'memory','硬盘':'disk',
-                '像素': 'pixel_back', '屏幕大小': 'size', '体验要求': 'experience', '配置要求': 'function'}
 # 可以进行调整的字段
-adjustableSlot = {'价格': 'price', '像素': 'pixel_back', '硬盘': 'disk', '尺寸': 'size', '内存': 'memory'}
+adjustableSlot = ['price', 'pixelb', 'disk', 'size', 'memory']
 # 表示无所谓的词语
 whatever_word = ['随意', '随便', '都行', '可以', '没关系']
 # 确认的回复
@@ -54,6 +52,7 @@ SUGAR 黑莓 海信 AGM 黑鲨 索尼 谷歌 LG 酷派 VERTU 中国移动 飞利
 brand_list = brand_list.split()
 brand_list = [brand.strip() for brand in brand_list]
 brand_list = [brand for brand in brand_list if brand]
+
 
 def load_function(file_path):
     file = read_list(file_path)
@@ -105,4 +104,3 @@ good_words = read_list(path + '/data/good_words_phone.txt')
 bad_words = read_list(path + '/data/bad_words_phone.txt')
 
 exp_synonyms = load_exp_synonyms(path + '/data/phone_aspect_words.txt')
-
