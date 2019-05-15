@@ -524,6 +524,9 @@ class Camera_Dialogue():
         :param tag:[{'type': 'pixel_m', 'word': '我要3000万像素的'}]
         :return:{'像素':[(3000,'=')]}
         '''
+        for t in tag:
+            if t['need'] is None:
+                t['need'] = True
         print("fill_message", tag)
         if len(tag) == 0:
             return {}
@@ -694,9 +697,10 @@ class Camera_Dialogue():
         func_words = set()
         for word in func_synonyms:
             if word in sentence:
+                if func_synonyms[word] in func_words:
+                    continue
                 func_words.add(func_synonyms[word])
-        for word in func_words:
-            tag.append({'type': 'function', 'word': word})
+                tag.append({'type': 'function', 'word': word})
         print("extarct res:", tag)
         # 修正tag为数据库标签
         for t in tag:
