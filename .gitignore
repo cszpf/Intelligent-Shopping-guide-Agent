@@ -123,4 +123,5 @@ app/backend/NLU/indent_classification/node_modules/
 *.csv
 *.h5
 
+mysql_config.py
 dialog_logs

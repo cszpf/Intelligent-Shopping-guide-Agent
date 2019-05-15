@@ -81,7 +81,7 @@ class DialogManager:
             self.create_session(token)
 
     def user(self, domain, sentence, token):
-        if domain == 'other':
+        if domain == 'other' or domain == 'undefined':
             self.hello_flag[token] = True
             return
         if token in self.hello_flag:
