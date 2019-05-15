@@ -411,6 +411,7 @@ class Computer_Dialogue():
             else:
                 # not first ask
                 if self.extract_none:
+                    self.extract_none = False
                     return get_random_sentence(fail_slot['more'])
                 sentence_list = ['好的，请问还有其他的要求吗?']
                 return get_random_sentence(sentence_list)
@@ -685,6 +686,15 @@ class Computer_Dialogue():
             filtered_sv.append(sv)
         print("after check:", filtered_sv)
         return filtered_sv
+
+    def get_about_intention(self,sentence):
+        '''
+        type 1: 要内存大的（出现target和目标词
+        type 2: 要便宜点的（隐藏的目标
+        :param sentence:
+        :return:
+        '''
+        pass
 
     def extract(self, sentence):
         '''
