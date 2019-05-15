@@ -52,6 +52,13 @@ def check_sentiment_polarity(s):
         if word in s:
             return word, 'mid'
 
+    for word in down_word:
+        if word in s:
+            for neg in no_word:
+                if neg in s:
+                    return word, 'mid'
+            return word, 'down'
+
     for word in up_word:
         if word in s:
             for neg in no_word:
@@ -59,12 +66,6 @@ def check_sentiment_polarity(s):
                     return word, 'mid'
             return word, 'up'
 
-    for word in down_word:
-        if word in s:
-            for neg in no_word:
-                if neg in s:
-                    return word, 'mid'
-            return word, 'down'
 
     return '', 'none'
 
