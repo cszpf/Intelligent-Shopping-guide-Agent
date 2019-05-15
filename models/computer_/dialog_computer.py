@@ -66,7 +66,6 @@ def check_sentiment_polarity(s):
                     return word, 'mid'
             return word, 'up'
 
-
     return '', 'none'
 
 
@@ -213,6 +212,7 @@ class Computer_Dialogue():
         self.prefix = ''
         self.preset = []
         self.result_offset = 0
+        self.current_commit_sv = []
 
     def save(self):
         '''
@@ -230,7 +230,8 @@ class Computer_Dialogue():
             'extract_none': self.extract_none,
             'prefix': self.prefix,
             'preset': self.preset,
-            'offset': self.result_offset
+            'offset': self.result_offset,
+            'current_commit': self.current_commit_sv
         }
         return json.dumps(model)
 
@@ -252,6 +253,7 @@ class Computer_Dialogue():
         self.prefix = m['prefix']
         self.preset = m['preset']
         self.result_offset = m['offset']
+        self.current_commit_sv = m['current_commit']
         if self.state == 'result':
             res = self.search(self.slot_value)
             self.result_list = res
@@ -277,6 +279,7 @@ class Computer_Dialogue():
         self.preset = []
         self.prefix = ''
         self.result_offset = 0
+        self.current_commit_sv = []
 
     def change_state(self, state, last_state=None):
         '''
@@ -448,6 +451,39 @@ class Computer_Dialogue():
                     prefix += '预设价格为%s元左右,' % str(int(item[2]))
             self.prefix = prefix
             self.preset = []
+        elif len(self.current_commit_sv) > 0:
+            sentence_list = ['好的～', '明白～','好嘞，']
+            prefix = get_random_sentence(sentence_list)
+            commit_str = self.get_slot_table(self.current_commit_sv)
+            print("current commit:", commit_str)
+            label_to_name = {'brand': '品牌',
+                             'price': '价格',
+                             'memory': '内存',
+                             'disk': '硬盘',
+                             'cpu': 'cpu',
+                             'gpu': 'gpu',
+                             'experience': '体验要求',
+                             'function': '功能要求',
+                             }
+            for item in commit_str:
+                if item in ['brand', 'price']:
+                    if self.state == 'result':
+                        prefix += '修改%s为%s,' % (label_to_name[item], commit_str[item])
+                    else:
+                        prefix += '%s%s,' % (label_to_name[item], commit_str[item])
+                if item in ['memory', 'disk']:
+                    if self.state == 'result':
+                        prefix += '修改%s为%sGB,' % (label_to_name[item], commit_str[item])
+                    else:
+                        prefix += '%s%sGB,' % (label_to_name[item], commit_str[item])
+                if item in ['cpu', 'gpu', 'experience', 'function']:
+                    if self.state == 'result':
+                        prefix += '修改%s为%s,' % (label_to_name[item], commit_str[item])
+                    else:
+                        prefix += '%s为%s,' % (label_to_name[item], commit_str[item])
+
+            self.prefix = prefix
+            self.current_commit_sv = []
 
         if self.state == 'ask':
             # 检查必须的slot_value，如果没有的话就发出提问
@@ -511,9 +547,13 @@ class Computer_Dialogue():
             self.result_list = res
             if len(res) == 0:
                 sentence_list = ["暂时没找到合适的商品哦，换个条件试试?"]
-                return get_random_sentence(sentence_list)
+                res = self.prefix + get_random_sentence(sentence_list)
+                self.prefix = ''
+                return res
             sentence_list = ["为您推荐以下商品,可回复第几个进行选择,回复“查看更多”可以显示其他商品哦～"]
-            return get_random_sentence(sentence_list)
+            res = self.prefix + get_random_sentence(sentence_list)
+            self.prefix = ''
+            return res
 
         if self.state == 'adjust_confirm':
             target = self.morewhat[0].replace('?', '')
@@ -706,6 +746,8 @@ class Computer_Dialogue():
             else:
                 self.slot_value[t] = table[t]
             self.asked.append(t)
+        if len(table) > 0:
+            self.current_commit_sv = table
         print("write done")
 
     def check_choice(self, sentence):
@@ -898,29 +940,35 @@ class Computer_Dialogue():
             res.append(temp)
         return res
 
-    def get_slot_table(self):
+    def get_slot_table(self, slot_value=None):
         '''
         return current slot table
         :return: slot_table dict,{'slot':'value'}
         '''
-        print("get slot table", self.slot_value)
+        if slot_value is None:
+            slot_value = self.slot_value
+        print("get slot table", slot_value)
         res = {}
         op_dict = {'<=': '小于', '=': '', '>=': '大于', '!=': '不要'}
         order = {'!=': 0, '=': 2, '<=': 1, '>=': 1}
-        for slot in self.slot_value:
+        for slot in slot_value:
             if slot in ['experience', 'function']:
                 continue
-            sv = sorted(self.slot_value[slot], key=lambda x: order[x[1]], reverse=True)
+            sv = sorted(slot_value[slot], key=lambda x: order[x[1]], reverse=True)
             sentence_list = []
             for con in sv:
                 word = con[0] if con[0] != 'whatever' else '不限'
-                sentence_list.append(op_dict[con[1]] + str(word))
+                try:
+                    word = str(int(word))
+                except ValueError:
+                    word = str(word)
+                sentence_list.append(op_dict[con[1]] + word)
             res[slot] = ','.join(sentence_list)
 
         for slot in ['experience', 'function']:
-            if slot in self.slot_value:
+            if slot in slot_value:
                 sentence_list = []
-                for word in self.slot_value[slot]:
+                for word in slot_value[slot]:
                     if word[1] != '!=':
                         sentence_list.append(word[0])
                 if len(sentence_list) > 0:
