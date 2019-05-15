@@ -421,6 +421,8 @@ class Phone_Dialogue():
                     return get_random_sentence(fail_slot[self.ask_slot])
                 else:
                     return get_random_sentence(ask_slot[self.ask_slot])
+            else:
+                self.extract_none = False
             unasked = []
             for slot in necessaryTag:
                 if slot not in self.asked:
