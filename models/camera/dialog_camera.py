@@ -760,6 +760,7 @@ class Camera_Dialogue():
         :param sentence:
         :return:[(type:'',word:'')]
         '''
+        print("get about intention")
         res = []
         # type 1
         target_word = ['价格']
@@ -772,17 +773,19 @@ class Camera_Dialogue():
                     type_1_flag = True
                     label = target_to_label[word]
                     preset_value = preset[label][level]
-                    res.append((label, preset_value))
+                    res.append({'type': label, 'word': str(preset_value)})
                     self.preset.append((label, level))
         # type 2
         if not type_1_flag:
             sentiment, level = check_sentiment_polarity(sentence)
             if level != 'none':
                 if self.ask_slot != '':
-                    label = target_to_label[self.ask_slot]
-                    preset_value = preset[label][level]
-                    res.append((label, preset_value))
-                    self.preset.append((label, level))
+                    label = self.ask_slot
+                    if label in preset:
+                        preset_value = preset[label][level]
+                        res.append({'type': label, 'word': str(preset_value)})
+                        self.preset.append((label, level))
+        print("about intention result:", res)
 
         return res
 
