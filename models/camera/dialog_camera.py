@@ -388,6 +388,7 @@ class Camera_Dialogue():
             else:
                 # not first ask
                 if self.extract_none:
+                    self.extract_none = False
                     return get_random_sentence(fail_slot['more'])
                 sentence_list = ['好的，请问还有其他的要求吗?']
                 return get_random_sentence(sentence_list)
