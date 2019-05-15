@@ -147,7 +147,8 @@ def get_change_intent(domain, sentence):
         elif any(w in sentence for w in ['高', '低']):
             target = '价格?'
 
-    target = target_to_label[target]
+    if target != '':
+        target = target_to_label[target]
 
     tooWord = ['太', '有点', '过于', '不够']
     for word in pos_word:

@@ -42,7 +42,7 @@ def check_sentiment_polarity(s):
     :param s: input sentence
     :return: hit_word,level(up/mid/down/none)
     '''
-    mid_word = ['中等', '差不多', '一般', '正常', '普通']
+    mid_word = ['中等', '差不多', '一般', '正常', '普通', '够用']
     up_word = ['贵', '高', '大', '好']
     down_word = ['便宜', '小', '低配', '糟糕', '少', '差']
     no_word = ['不要', '不是', '否定', '否认', '不对', '不可以', '不行', '别', '否', '不', '没']
@@ -147,7 +147,8 @@ def get_change_intent(domain, sentence):
         elif any(w in sentence for w in ['高', '低']):
             target = '价格?'
 
-    target = target_to_label[target]
+    if target != '':
+        target = target_to_label[target]
 
     tooWord = ['太', '有点', '过于', '不够']
     for word in pos_word:
@@ -270,6 +271,7 @@ class Computer_Dialogue():
         self.asked_more = False
         self.extract_none = False
         self.preset = []
+        self.prefix = ''
 
     def change_state(self, state, last_state=None):
         '''
@@ -535,6 +537,7 @@ class Computer_Dialogue():
             to_add = self.fill_message(tag)
             self.write(to_add)
             if len(to_add) == 0:
+                print("set extract none to True")
                 self.extract_none = True
 
     def ask(self, sentence):
@@ -605,6 +608,9 @@ class Computer_Dialogue():
         :param tag:[{'type': 'pixel_m', 'word': '我要3000万像素的'}]
         :return:{'像素':[(3000,'=')]}
         '''
+        for t in tag:
+            if t['need'] is None:
+                t['need'] = True
         print("fill_message", tag)
         if len(tag) == 0:
             return {}
@@ -758,8 +764,8 @@ class Computer_Dialogue():
         '''
         res = []
         # type 1
-        target_word = ['价格', '内存', '硬盘', '品牌', '牌子', '价钱']
-        target_to_label = {'价格': 'price', '价钱': 'price', '内存': 'memory', '硬盘': 'disk', '品牌': 'brand', '牌子': 'brand'}
+        target_word = ['价格', '内存', '硬盘', '价钱']
+        target_to_label = {'价格': 'price', '价钱': 'price', '内存': 'memory', '硬盘': 'disk'}
         type_1_flag = False
         for word in target_word:
             if word in sentence:
