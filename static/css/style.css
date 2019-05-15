@@ -167,7 +167,7 @@ width: 0;
 
 /*write_box*/
 .write_box{ height:100px; overflow:hidden; -moz-border-radius:5px; -webkit-border-radius:5px; border-radius:5px; overflow:hidden;}
-.write_area{ border:2px solid #E3E8ED; border-bottom:none; padding:5px; outline:none; color:#505b69; margin:0; vertical-align:bottom; width:-moz-calc(100% - 14px); width:-webkit-calc(100% - 14px); width:calc(100% - 14px); height:56px;}
+.write_area{ border:2px solid #E3E8ED; border-bottom:none; padding:5px; outline:none; color:#505b69; margin:0; vertical-align:bottom; width:-moz-calc(100% - 14px); width:-webkit-calc(100% - 14px); width:100%; height:56px;}
 .facebox{ height:32px; width:100%; background-color:#E3E8ED;}
 .sub_but{ float:right; padding:0 25px; background-color:#7E90A5; outline:none; border:none; height:32px; cursor:pointer; line-height:30px; color:#FFF;}
 
