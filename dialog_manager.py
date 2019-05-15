@@ -122,7 +122,7 @@ class DialogManager:
         res['showResult'] = False
         res['slot_value'] = {}
         res['error'] = False
-        del self.error_flag[token]
+        self.error_flag[token] = False
         return res
 
     def response(self, token):
