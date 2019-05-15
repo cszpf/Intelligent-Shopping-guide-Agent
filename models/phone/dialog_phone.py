@@ -191,6 +191,7 @@ class Phone_Dialogue():
         self.extract_none = False
         self.prefix = ''
         self.preset = []
+        self.result_offset = 0
 
     def save(self):
         '''
@@ -207,7 +208,8 @@ class Phone_Dialogue():
             'asked_more': self.asked_more,
             'extract_none': self.extract_none,
             'prefix': self.prefix,
-            'preset': self.preset
+            'preset': self.preset,
+            'offset':self.result_offset
         }
         return json.dumps(model)
 
@@ -228,6 +230,7 @@ class Phone_Dialogue():
         self.extract_none = m['extract_none']
         self.prefix = m['prefix']
         self.preset = m['preset']
+        self.result_offset = m['offset']
         if self.state == 'result':
             res = self.search(self.slot_value)
             self.result_list = res
@@ -252,6 +255,7 @@ class Phone_Dialogue():
         self.extract_none = False
         self.prefix = ''
         self.preset = []
+        self.result_offset = 0
 
     def change_state(self, state, last_state=None):
         '''
@@ -379,15 +383,20 @@ class Phone_Dialogue():
         :param sentence:user input
         :return:None
         '''
+        if '查看更多' in sentence:
+            self.result_offset += 5
+            return
         if self.check_choice(sentence):
             self.change_state('done')
             self.finish = True
+
             return
         tag = self.extract(sentence)
         if len(tag) > 0:
             tag = self.nlu.confirm_slot(tag, sentence)
             to_add = self.fill_message(tag)
             self.write(to_add)
+            self.result_offset = 0
 
         morewhat = get_change_intent('phone', sentence)
         if morewhat[1] != 0:
@@ -397,6 +406,7 @@ class Phone_Dialogue():
             elif morewhat[0] != '':
                 self.change_state('do_adjust')
                 self.do_adjust(morewhat)
+                self.result_offset = 0
 
     def response(self):
         '''
@@ -451,7 +461,7 @@ class Phone_Dialogue():
             if len(res) == 0:
                 sentence_list = ["暂时没找到合适的商品哦，换个条件试试?"]
                 return get_random_sentence(sentence_list)
-            sentence_list = ["为您推荐以下商品,可回复第几个进行选择"]
+            sentence_list = ["为您推荐以下商品,可回复第几个进行选择,回复“查看更多”可以显示其他商品哦～"]
             return get_random_sentence(sentence_list)
 
         if self.state == 'adjust_confirm':
@@ -821,9 +831,9 @@ class Phone_Dialogue():
         # 调用这个函数进行数据库查询
         condition = slot_value_table
         result = searchPhone(condition)
-        self.result_list = result
+        self.result_list = result[self.result_offset:self.result_offset + 5]
 
-        return result[0:5]
+        return self.result_list
 
     def get_result(self):
         '''
