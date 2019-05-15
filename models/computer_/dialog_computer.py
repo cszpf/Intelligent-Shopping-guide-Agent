@@ -452,7 +452,7 @@ class Computer_Dialogue():
             self.prefix = prefix
             self.preset = []
         elif len(self.current_commit_sv) > 0:
-            sentence_list = ['好的～', '明白～','好嘞，']
+            sentence_list = ['好的～', '明白～', '好嘞，']
             prefix = get_random_sentence(sentence_list)
             commit_str = self.get_slot_table(self.current_commit_sv)
             print("current commit:", commit_str)
@@ -473,9 +473,14 @@ class Computer_Dialogue():
                         prefix += '%s%s,' % (label_to_name[item], commit_str[item])
                 if item in ['memory', 'disk']:
                     if self.state == 'result':
-                        prefix += '修改%s为%sGB,' % (label_to_name[item], commit_str[item])
+                        prefix += '修改%s为%s' % (label_to_name[item], commit_str[item])
                     else:
-                        prefix += '%s%sGB,' % (label_to_name[item], commit_str[item])
+                        prefix += '%s%s' % (label_to_name[item], commit_str[item])
+                    if '不限' not in commit_str[item]:
+                        prefix += 'GB,'
+                    else:
+                        prefix += ','
+
                 if item in ['cpu', 'gpu', 'experience', 'function']:
                     if self.state == 'result':
                         prefix += '修改%s为%s,' % (label_to_name[item], commit_str[item])
@@ -879,12 +884,27 @@ class Computer_Dialogue():
         print("extract", sentence)
         sents = split_all(sentence)
         tag = []
+        name_to_label = {'牌子': 'brand', '品牌': 'brand', '价格': 'price', '价钱': 'price', '内存': 'memory', '硬盘': 'disk',
+                         '存储': 'disk'}
         for sent in sents:
             tag.extend(self.nlu.computer_slot_predict(sent)['entities'])
             intent = self.nlu.requirement_predict(sent)
+            for word in whatever_word:
+                if word in sent:
+                    intent = 'whatever'
+            print(sent, intent)
             if intent == 'whatever':
+                get_slot = False
+                for word in name_to_label:
+                    if word in sent:
+                        tag.append({'type': name_to_label[word], 'word': 'whatever'})
+                        get_slot = True
+                        break
+                if get_slot:
+                    continue
                 if self.ask_slot != '':
                     tag.append({'type': self.ask_slot, 'word': 'whatever'})
+
         for word in exp_synonyms:
             if word in sentence:
                 tag.append({'type': 'experience', 'word': word})

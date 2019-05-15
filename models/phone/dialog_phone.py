@@ -450,20 +450,34 @@ class Phone_Dialogue():
                         prefix += '%s%s,' % (label_to_name[item], commit_str[item])
                 if item == 'pixelb':
                     if self.state == 'result':
-                        prefix += '修改%s为%s万,' % (label_to_name[item], commit_str[item])
+                        prefix += '修改%s为%s' % (label_to_name[item], commit_str[item])
                     else:
-                        prefix += '%s%s万,' % (label_to_name[item], commit_str[item])
+                        prefix += '%s%s' % (label_to_name[item], commit_str[item])
+                    if '不限' not in commit_str[item]:
+                        prefix += '万,'
+                    else:
+                        prefix += ','
+
                 if item == 'size':
                     if self.state == 'result':
-                        prefix += '修改%s为%s英寸,' % (label_to_name[item], commit_str[item])
+                        prefix += '修改%s为%s,' % (label_to_name[item], commit_str[item])
                     else:
-                        prefix += '%s%s英寸,' % (label_to_name[item], commit_str[item])
+                        prefix += '%s%s,' % (label_to_name[item], commit_str[item])
+                    if '不限' not in commit_str[item]:
+                        prefix += '英寸,'
+                    else:
+                        prefix += ','
 
                 if item in ['memory', 'disk']:
                     if self.state == 'result':
-                        prefix += '修改%s为%sGB,' % (label_to_name[item], commit_str[item])
+                        prefix += '修改%s为%s,' % (label_to_name[item], commit_str[item])
                     else:
-                        prefix += '%s%sGB,' % (label_to_name[item], commit_str[item])
+                        prefix += '%s%s,' % (label_to_name[item], commit_str[item])
+                    if '不限' not in commit_str[item]:
+                        prefix += 'GB,'
+                    else:
+                        prefix += ','
+
                 if item in ['cpu', 'gpu', 'experience', 'function']:
                     if self.state == 'result':
                         prefix += '修改%s为%s,' % (label_to_name[item], commit_str[item])
@@ -880,10 +894,24 @@ class Phone_Dialogue():
         print("extract", sentence)
         sents = split_all(sentence)
         tag = []
+        name_to_label = {'牌子': 'brand', '品牌': 'brand', '价格': 'price', '价钱': 'price', '内存': 'memory', '硬盘': 'disk',
+                         '存储': 'disk', '空间': 'disk', '像素': 'pixel', '屏幕': 'screen'}
         for sent in sents:
             tag.extend(self.nlu.phone_slot_predict(sent)['entities'])
             intent = self.nlu.requirement_predict(sent)
+            for word in whatever_word:
+                if word in sent:
+                    intent = 'whatever'
+            print(sent, intent)
             if intent == 'whatever':
+                get_slot = False
+                for word in name_to_label:
+                    if word in sent:
+                        tag.append({'type': name_to_label[word], 'word': 'whatever'})
+                        get_slot = True
+                        break
+                if get_slot:
+                    continue
                 if self.ask_slot != '':
                     tag.append({'type': self.ask_slot, 'word': 'whatever'})
         for word in exp_synonyms:
