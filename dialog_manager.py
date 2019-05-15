@@ -106,7 +106,7 @@ class DialogManager:
             print(e)
             self.save_log(token, 'error', str(e))
             self.error_flag[token] = True
-            raise
+            # raise
 
 
     def hello(self):
@@ -168,7 +168,7 @@ class DialogManager:
                 print(e)
                 self.save_log(token, 'error', str(e))
                 self.error_flag[token] = True
-                raise
+                # raise
             if token in self.error_flag and self.error_flag[token]:
                 return self.return_error(token)
             return res

@@ -14,7 +14,8 @@ labelToTag = {'brand': 'brand',
               'pixel': 'pixelb',
               'screen_size': 'size',
               'experience': 'experience',
-              'function': 'function'}
+              'function': 'function',
+              'ram_size': 'memory'}
 tagToLabel = {labelToTag[k]: k for k in labelToTag}
 # 针对每一个slot的发问
 ask_slot = {'brand': ['请问你喜欢什么牌子呢？', '请问你需要什么牌子的呢?'],
