@@ -122,3 +122,5 @@ app/backend/NLU/indent_classification/node_modules/
 *.model
 *.csv
 *.h5
+
+dialog_logs

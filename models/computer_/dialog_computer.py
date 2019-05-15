@@ -537,7 +537,7 @@ class Computer_Dialogue():
             to_add = self.fill_message(tag)
             self.write(to_add)
             if len(to_add) == 0:
-                print("set extract none to True")
+                print("set extract none to True,from ask more")
                 self.extract_none = True
 
     def ask(self, sentence):
@@ -574,6 +574,7 @@ class Computer_Dialogue():
                         to_add = self.fill_message(tag)
                         self.write(to_add)
                     if len(to_add) == 0:
+                        print("set extract none to True,from ask")
                         self.extract_none = True
             if self.check_necessary():
                 self.change_state('ask_more')
