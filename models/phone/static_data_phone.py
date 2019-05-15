@@ -32,6 +32,12 @@ fail_slot = {
     'more': ['不好意思哟，这个小C暂时理解不了哦~']
 }
 
+preset = {
+    'price': {'up': 3000, 'mid': 2000, 'down': 1000},
+    'memory': {'up': 6, 'mid': 4, 'down': 2},
+    'disk': {'up': 128, 'mid': 64, 'down': 32},
+}
+
 # 可以进行调整的字段
 adjustableSlot = ['price', 'pixelb', 'disk', 'size', 'memory']
 # 表示无所谓的词语

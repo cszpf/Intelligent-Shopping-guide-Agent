@@ -7,9 +7,46 @@ from save_and_load import *
 import json
 import re
 from static_data_phone import necessaryTag, labelToTag, ask_slot, listInfo, adjustableSlot, \
-    whatever_word, yes_word, no_word, func_synonyms, exp_synonyms, function_attr, brand_list, tagToLabel,fail_slot
+    whatever_word, yes_word, no_word, func_synonyms, exp_synonyms, function_attr, brand_list, tagToLabel, fail_slot, \
+    preset
 from collections import defaultdict
 from search_phone import searchPhone
+
+
+def check_sentiment_polarity(s):
+    '''
+    要贵一点的
+    不要太贵了
+    差不多就行
+    中等的吧
+    :param s: input sentence
+    :return: hit_word,level(up/mid/down/none)
+    '''
+    mid_word = ['中等', '差不多', '一般', '正常', '普通']
+    up_word = ['贵', '高', '大', '好']
+    down_word = ['便宜', '小', '低配', '糟糕', '少', '差']
+    no_word = ['不要', '不是', '否定', '否认', '不对', '不可以', '不行', '别', '否', '不', '没']
+    tooWord = ['太', '有点', '过于', '不够']
+
+    for word in mid_word:
+        if word in s:
+            return word, 'mid'
+
+    for word in up_word:
+        if word in s:
+            for neg in no_word:
+                if neg in s:
+                    return word, 'mid'
+            return word, 'up'
+
+    for word in down_word:
+        if word in s:
+            for neg in no_word:
+                if neg in s:
+                    return word, 'mid'
+            return word, 'down'
+
+    return '', 'none'
 
 
 def split_all(s, target=',.?，。？！!'):
@@ -151,6 +188,8 @@ class Phone_Dialogue():
         self.asked = []
         self.asked_more = False
         self.extract_none = False
+        self.prefix = ''
+        self.preset = []
 
     def save(self):
         '''
@@ -165,7 +204,9 @@ class Phone_Dialogue():
             'morewhat': self.morewhat,
             'asked': self.asked,
             'asked_more': self.asked_more,
-            'extract_none': self.extract_none
+            'extract_none': self.extract_none,
+            'prefix': self.prefix,
+            'preset': self.preset
         }
         return json.dumps(model)
 
@@ -184,6 +225,8 @@ class Phone_Dialogue():
         self.asked = m['asked']
         self.asked_more = m['asked_more']
         self.extract_none = m['extract_none']
+        self.prefix = m['prefix']
+        self.preset = m['preset']
         if self.state == 'result':
             res = self.search(self.slot_value)
             self.result_list = res
@@ -206,6 +249,8 @@ class Phone_Dialogue():
         self.asked = []
         self.asked_more = False
         self.extract_none = False
+        self.prefix = ''
+        self.preset = []
 
     def change_state(self, state, last_state=None):
         '''
@@ -458,24 +503,30 @@ class Phone_Dialogue():
         :param sentence:
         :return:None
         '''
-        print("ask more")
+        print("ask more", sentence)
         intent = self.nlu.intention_predict(sentence)
+        print("intent", intent)
         if intent == 'answer_no':
             self.change_state('result')
+            return
         else:
-            tag = self.extract(sentence)
-            intent = self.nlu.requirement_predict(sentence)
-            print(sentence, intent)
-            print(tag)
-            if len(tag) == 0 and intent == 'whatever':
-                if self.ask_slot != '':
-                    self.write({self.ask_slot: [('whatever', '=')]})
-            else:
-                tag = self.nlu.confirm_slot(tag, sentence)
-                to_add = self.fill_message(tag)
-                self.write(to_add)
-                if len(to_add) == 0:
-                    self.extract_none = True
+            for word in no_word:
+                if word in sentence:
+                    self.change_state('result')
+                    return
+
+        tag = self.extract(sentence)
+        intent = self.nlu.requirement_predict(sentence)
+        if len(tag) == 0 and intent == 'whatever':
+            if self.ask_slot != '':
+                self.write({self.ask_slot: [('whatever', '=')]})
+        else:
+            tag = self.nlu.confirm_slot(tag, sentence)
+            to_add = self.fill_message(tag)
+            self.write(to_add)
+            if len(to_add) == 0:
+                print("set extract none to True")
+                self.extract_none = True
 
     def ask(self, sentence):
         '''
@@ -500,7 +551,17 @@ class Phone_Dialogue():
                 to_add = self.fill_message(tag)
                 self.write(to_add)
                 if len(to_add) == 0:
-                    self.extract_none = True
+                    tag = []
+                    sents = split_all(sentence)
+                    for sent in sents:
+                        tag.extend(self.get_about_intention(sent))
+                    if len(tag) > 0:
+                        for t in tag:
+                            t['need'] = True
+                        to_add = self.fill_message(tag)
+                        self.write(to_add)
+                    if len(to_add) == 0:
+                        self.extract_none = True
             if self.check_necessary():
                 self.change_state('ask_more')
 
@@ -681,6 +742,40 @@ class Phone_Dialogue():
             filtered_sv.append(sv)
             print("after check:", filtered_sv)
         return filtered_sv
+
+    def get_about_intention(self, sentence):
+        '''
+        type 1: 要内存大的（出现target和目标词
+        type 2: 要便宜点的（隐藏的目标为当前的slot
+        :param sentence:
+        :return:[(type:'',word:'')]
+        '''
+        res = []
+        # type 1
+        target_word = ['价格', '内存', '硬盘', '价钱', 'rom', 'ram', '存储', '容量', '空间']
+        target_to_label = {'价格': 'price', '价钱': 'price', '内存': 'memory', '硬盘': 'disk', 'ram': 'memory',
+                           'rom': 'disk', '存储': 'disk', '容量': 'disk', '空间': 'disk'}
+        type_1_flag = False
+        for word in target_word:
+            if word in sentence:
+                sentiment, level = check_sentiment_polarity(sentence)
+                if level != 'none':
+                    type_1_flag = True
+                    label = target_to_label[word]
+                    preset_value = preset[label][level]
+                    res.append((label, preset_value))
+                    self.preset.append((label, level))
+        # type 2
+        if not type_1_flag:
+            sentiment, level = check_sentiment_polarity(sentence)
+            if level != 'none':
+                if self.ask_slot != '':
+                    label = target_to_label[self.ask_slot]
+                    preset_value = preset[label][level]
+                    res.append((label, preset_value))
+                    self.preset.append((label, level))
+
+        return res
 
     def extract(self, sentence):
         '''
