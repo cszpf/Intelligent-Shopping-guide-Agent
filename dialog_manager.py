@@ -37,6 +37,7 @@ class DialogManager:
         self.history = defaultdict(lambda: [])
         self.finish = {}
         self.record_history = False
+        self.hello_flag = {}
 
 
     def save_log(self, token, type, reason=None):
@@ -80,6 +81,11 @@ class DialogManager:
             self.create_session(token)
 
     def user(self, domain, sentence, token):
+        if domain == 'other':
+            self.hello_flag[token] = True
+            return
+        if token in self.hello_flag:
+            del self.hello_flag[token]
         self.load_session(token)
         print("domain:", domain)
         print("input:", sentence)
@@ -120,6 +126,13 @@ class DialogManager:
         return res
 
     def response(self, token):
+        if token in self.hello_flag and self.hello_flag[token]:
+            res = {}
+            res['response'] = self.hello()
+            res['showResult'] = False
+            res['slot_value'] = {}
+            res['error'] = False
+            return res
         if token in self.error_flag and self.error_flag[token]:
             return self.return_error(token)
         self.load_session(token)
