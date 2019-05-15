@@ -435,6 +435,19 @@ class Computer_Dialogue():
         NLG module,generating response according to current state
         :return:dialog response
         '''
+        if len(self.preset) > 0:
+            sentence_list = ['好的～根据您的需求，小助手', '收到～小助手帮您把']
+            prefix = get_random_sentence(sentence_list)
+            for item in self.preset:
+                if item[0] == 'memory':
+                    prefix += '预设内存为%sGB,' % str(int(item[2]))
+                if item[0] == 'disk':
+                    prefix += '预设硬盘大小为%sGB,' % str(int(item[2]))
+                if item[0] == 'price':
+                    prefix += '预设价格为%s元左右,' % str(int(item[2]))
+            self.prefix = prefix
+            self.preset = []
+
         if self.state == 'ask':
             # 检查必须的slot_value，如果没有的话就发出提问
             unasked = []
@@ -442,9 +455,15 @@ class Computer_Dialogue():
                 if self.extract_none:
                     # 上一轮没有抽取到信息
                     self.extract_none = False
-                    return get_random_sentence(fail_slot[self.ask_slot])
+                    res = self.prefix + get_random_sentence(fail_slot[self.ask_slot])
+                    self.prefix = ''
+                    return res
                 else:
-                    return get_random_sentence(ask_slot[self.ask_slot])
+                    res = self.prefix + get_random_sentence(ask_slot[self.ask_slot])
+                    self.prefix = ''
+                    return res
+            else:
+                self.extract_none = False
             for slot in necessaryTag:
                 if slot not in self.asked:
                     unasked.append(slot)
@@ -452,7 +471,9 @@ class Computer_Dialogue():
                 num = np.random.randint(len(unasked))
                 slot = unasked[num]
                 self.ask_slot = slot
-                return get_random_sentence(ask_slot[slot])
+                res = self.prefix + get_random_sentence(ask_slot[slot])
+                self.prefix = ''
+                return res
             # 如果到了这里，说明所有的slot都问完了,转入ask_more
             else:
                 self.change_state('ask_more')
@@ -463,14 +484,20 @@ class Computer_Dialogue():
                 # first ask
                 sentence_list = ['请问您还有其他需求吗?']
                 self.asked_more = True
-                return get_random_sentence(sentence_list)
+                res = self.prefix + get_random_sentence(sentence_list)
+                self.prefix = ''
+                return res
             else:
                 # not first ask
                 if self.extract_none:
                     self.extract_none = False
-                    return get_random_sentence(fail_slot['more'])
+                    res = self.prefix + get_random_sentence(fail_slot['more'])
+                    self.prefix = ''
+                    return res
                 sentence_list = ['好的，请问还有其他的要求吗?']
-                return get_random_sentence(sentence_list)
+                res = self.prefix + get_random_sentence(sentence_list)
+                self.prefix = ''
+                return res
 
         if self.state == 'list':
             self.change_state('ask')
@@ -786,7 +813,7 @@ class Computer_Dialogue():
                     label = target_to_label[word]
                     preset_value = preset[label][level]
                     res.append({'type': label, 'word': str(preset_value)})
-                    self.preset.append((label, level))
+                    self.preset.append((label, level, str(preset_value)))
         # type 2
         if not type_1_flag:
             sentiment, level = check_sentiment_polarity(sentence)
@@ -796,7 +823,7 @@ class Computer_Dialogue():
                     if label in preset:
                         preset_value = preset[label][level]
                         res.append({'type': label, 'word': str(preset_value)})
-                        self.preset.append((label, level))
+                        self.preset.append((label, level, str(preset_value)))
         print("about intention result:", res)
         return res
 
