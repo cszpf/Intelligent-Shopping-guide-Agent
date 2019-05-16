@@ -487,6 +487,9 @@ class Phone_Dialogue():
             self.prefix = prefix
             self.current_commit_sv = []
 
+        self.preset = []
+        self.current_commit_sv = []
+
         if self.state == 'ask':
             # 检查必须的slot_value,如果没有的话就发出提问
             if self.ask_slot != '':
@@ -547,12 +550,13 @@ class Phone_Dialogue():
             res = self.search(self.slot_value)
             self.result_list = res
             if len(res) == 0:
-                sentence_list = ["小助手暂时没找到合适的商品哦,换个条件试试?","小助手翻遍了数据库,还是没找到合适的商品,换个条件试试？",
-                                 "客官的要求太独特了,小助手找不到符合的商品,可否换个条件试试?","小助手尽力了，但是还是没有找到合适的商品，换个条件试试？"]
+                sentence_list = ["小助手暂时没找到合适的商品哦,换个条件试试?", "小助手翻遍了数据库,还是没找到合适的商品,换个条件试试？",
+                                 "客官的要求太独特了,小助手找不到符合的商品,可否换个条件试试?", "小助手尽力了，但是还是没有找到合适的商品，换个条件试试？"]
                 res = self.prefix + get_random_sentence(sentence_list)
                 self.prefix = ''
                 return res
-            sentence_list = ["为客官推荐以下商品,可回复第几个进行选择,回复“查看更多”可以显示其他商品哦～","经过小助手精挑细选，使出蛮荒之力，给客官推荐以下几款产品，回复第几个即可选择哟，回复“查看更多”可以显示其他商品～"]
+            sentence_list = ["为客官推荐以下商品,可回复第几个进行选择,回复“查看更多”可以显示其他商品哦～",
+                             "经过小助手精挑细选，使出蛮荒之力，给客官推荐以下几款产品，回复第几个即可选择哟，回复“查看更多”可以显示其他商品～"]
             res = self.prefix + get_random_sentence(sentence_list)
             self.prefix = ''
             return res
@@ -578,7 +582,7 @@ class Phone_Dialogue():
             return get_random_sentence(sentence_list)
 
         if self.state == 'done':
-            sentence_list = ["本次服务已结束,谢谢您的使用","小助手成功完成任务啦，我们下次再见～","小助手服务结束了哦～谢谢客官的支持！"]
+            sentence_list = ["本次服务已结束,谢谢您的使用", "小助手成功完成任务啦，我们下次再见～", "小助手服务结束了哦～谢谢客官的支持！"]
             self.finish = True
             return get_random_sentence(sentence_list)
 
@@ -613,11 +617,11 @@ class Phone_Dialogue():
         if intent == 'answer_no':
             self.change_state('result')
             return
-        else:
-            for word in no_word:
-                if word in sentence:
-                    self.change_state('result')
-                    return
+        # else:
+        #     for word in no_word:
+        #         if word in sentence:
+        #             self.change_state('result')
+        #             return
 
         tag = self.extract(sentence)
         intent = self.nlu.requirement_predict(sentence)
@@ -629,7 +633,7 @@ class Phone_Dialogue():
             to_add = self.fill_message(tag)
             self.write(to_add)
             if len(to_add) == 0:
-                print("set extract none to True")
+                print("set extract none to True,from ask more")
                 self.extract_none = True
 
     def ask(self, sentence):

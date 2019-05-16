@@ -172,7 +172,7 @@ def searchPhone(condition):
     if 'function' in condition:
         checker_dict = {'cpu': better_cpu, 'memory': better_memory}
         for func in condition['function']:
-            attr_requirement = function_attr[func[0]]
+            attr_requirement = function_attr[func_synonyms[func[0]]]
             for attr in attr_requirement:
                 checker = checker_dict[attr]
                 for item in res:

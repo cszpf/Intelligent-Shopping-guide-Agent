@@ -490,6 +490,9 @@ class Computer_Dialogue():
             self.prefix = prefix
             self.current_commit_sv = []
 
+        self.preset = []
+        self.current_commit_sv = []
+
         if self.state == 'ask':
             # 检查必须的slot_value,如果没有的话就发出提问
             unasked = []
@@ -604,11 +607,11 @@ class Computer_Dialogue():
         if intent == 'answer_no':
             self.change_state('result')
             return
-        else:
-            for word in no_word:
-                if word in sentence:
-                    self.change_state('result')
-                    return
+        # else:
+        #     for word in no_word:
+        #         if word in sentence:
+        #             self.change_state('result')
+        #             return
 
         tag = self.extract(sentence)
         intent = self.nlu.requirement_predict(sentence)

@@ -8,13 +8,13 @@ from sqlalchemy import or_, not_, and_
 import re
 
 from collections import defaultdict
-from static_data_camera import  function_attr, func_synonyms, exp_synonyms
+from static_data_camera import function_attr, func_synonyms, exp_synonyms
 
 import os
 import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), os.path.pardir))
-from mysql_config import mysql_user,mysql_pw
+from mysql_config import mysql_user, mysql_pw
 
 Base = declarative_base()
 
@@ -60,8 +60,9 @@ class Camera(Base):
         return "<Camera(型号=%s, 价格=%s元, 有效像素=%s万, 画幅=%s, 级别=%s)>" % (name, price, pixel, frame, level)
 
 
-engine = create_engine('mysql+mysqlconnector://%s:%s@127.0.0.1:3306/dialog?charset=utf8'%(mysql_user,mysql_pw))
+engine = create_engine('mysql+mysqlconnector://%s:%s@127.0.0.1:3306/dialog?charset=utf8' % (mysql_user, mysql_pw))
 Session = sessionmaker(engine)
+
 
 def convert_bytes_to_str(res):
     result = []
@@ -77,7 +78,7 @@ def search_camera(condition):
     '''
     {'negative': {'品牌': [('华为', '=')]}, '价格': [(3000.0, '>=')]}
     '''
-    print("search:",condition)
+    print("search:", condition)
     session = Session()
     res = session.query(Camera)
 
@@ -116,11 +117,11 @@ def search_camera(condition):
             else:
                 res = res.filter(Camera.frame == con[0])
 
-
     res = res.order_by(Camera.index).all()
     for item in res:
         item.convert_bytes_to_str()
     res_dict = [item.__dict__ for item in res]
+    res_dict = [item for item in res_dict if item is not None]
     score = defaultdict(lambda: 0)
     equal_label = ['level', 'screen', 'type', 'shutter']
     for label in equal_label:
@@ -128,11 +129,13 @@ def search_camera(condition):
             for con in condition[label]:
                 if con[1] == '=':
                     for item in res_dict:
+                        if item[label] is None:
+                            continue
                         if con[0] in item[label]:
                             score[item['index']] += 1
 
     if 'function' in condition:
-        requirement = [con[0] for con in condition['function']]
+        requirement = [func_synonyms[con[0]] for con in condition['function']]
 
         for req in requirement:
             attrs = function_attr[func_synonyms[req]]
@@ -181,6 +184,6 @@ def search_camera(condition):
 
 
 if __name__ == "__main__":
-    condition = {'品牌': [('索尼', '=')], '价格': [(10000, '=')]}
+    condition = {'level': [['入门级', '=']], 'brand': [['佳能', '=']], 'price': [[5000.0, '=']], 'type': [['微单', '=']], 'frame': [['whatever', '=']]}
     result = search_camera(condition)
     print(result)

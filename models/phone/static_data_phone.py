@@ -56,7 +56,7 @@ path = os.path.dirname(__file__)
 cpu_level = load(path + '/data/phone_cpu_level.data')
 
 brand_list = '''
-OPPO vivo 华为 荣耀 三星 苹果 一加 努比亚 魅族 联想 金立 中兴 Moto 锤子科技 360 国美手机 小米 夏普 华硕 美图 诺基亚 HTC 8848
+OPPO vivo 华为 荣耀 三星 苹果 一加 努比亚 魅族 联想 金立 中兴 Moto 锤子 360 国美手机 小米 夏普 华硕 美图 诺基亚 HTC 8848
 SUGAR 黑莓 海信 AGM 黑鲨 索尼 谷歌 LG 酷派 VERTU 中国移动 飞利浦 联想 ZUK 小辣椒 TCL 天语 YotaPhone 长虹 MANNROG 微软
 格力 朵唯 纽曼 雷蛇 大神 传音 ivvi 海尔 酷比 索野 康佳 誉品 乐目 邦华 COMIO 青橙 创星 卡布奇诺 独影天幕 詹姆士 21克 汇威 百合
 波导 守护宝 ioutdoor 保千里 私人医生 阿尔卡特 朗界 E人E本 红鸟 sonim PPTV 尼凯恩 innos 云狐 新石器 柯达 会播 富可视 VEB
@@ -113,6 +113,7 @@ def load_exp_synonyms(file_path):
 
 function_attr = load_function(path + '/data/phone_func_attr.txt')
 func_synonyms = load_func_synonyms(path + '/data/phone_func_synonyms.txt')
+print(func_synonyms)
 
 good_words = read_list(path + '/data/good_words_phone.txt')
 bad_words = read_list(path + '/data/bad_words_phone.txt')

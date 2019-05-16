@@ -2,7 +2,7 @@
 cpu:骁龙410
 memory:2GB
 
-刺激战场
+和平精英
 cpu:骁龙415
 memory:3GB
 

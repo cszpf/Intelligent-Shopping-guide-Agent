@@ -45,7 +45,7 @@ fail_slot = {
 
 preset = {
     'price': {'up': 7000, 'mid': 5000, 'down': 3000},
-    'memory': {'up': 8, 'mid': 6, 'down': 4},
+    'memory': {'up': 8, 'mid': 4, 'down': 4},
     'disk': {'up': 512, 'mid': 256, 'down': 128},
 }
 
