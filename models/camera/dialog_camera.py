@@ -522,13 +522,12 @@ class Camera_Dialogue():
             if self.ask_slot != '':
                 if self.extract_none:
                     self.extract_none = False
-                    res = self.prefix + get_random_sentence(fail_slot[self.ask_slot])
-                    self.prefix = ''
-                    return res
-                else:
-                    res = self.prefix + get_random_sentence(ask_slot[self.ask_slot])
-                    self.prefix = ''
-                    return res
+                    res = self.prefix + get_random_sentence(fail_slot[self.ask_slot])+'。'
+                    self.prefix = res
+
+                res = self.prefix + get_random_sentence(ask_slot[self.ask_slot])
+                self.prefix = ''
+                return res
             else:
                 self.extract_none = False
             unasked = []
@@ -983,6 +982,15 @@ class Camera_Dialogue():
     def get_result(self):
         return_slot = ['name', 'price', 'type', 'level', 'pixel', 'screen', 'shutter']
         res = []
+        frame = ''
+        level = ''
+        print("slot table:",self.slot_value)
+
+        if 'frame' in self.slot_value and len(self.slot_value['frame']) > 0:
+            frame = self.slot_value['frame'][0][0]
+        if 'level' in self.slot_value and len(self.slot_value['level']) > 0:
+            level = self.slot_value['level'][0][0]
+
         result_list = self.result_list
         for item in result_list:
             temp = {}
@@ -993,6 +1001,10 @@ class Camera_Dialogue():
                         temp[key] = itemDict[key]
                     elif itemDict[key] is not None:
                         temp[key] = itemDict[key]
+                    if key == 'level' and level!='' and level!='whatever':
+                        temp[key] =level
+                    if key == 'frame' and frame!='' and frame!='whatever':
+                        temp[key] =frame
 
             res.append(temp)
         return res

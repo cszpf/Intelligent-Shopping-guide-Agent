@@ -30,3 +30,8 @@ cpu:i5 3520m
 
 办公
 memory:4GB
+
+ai
+cpu:i5 7440hq
+memory:8GB
+gpu:GTX 1060

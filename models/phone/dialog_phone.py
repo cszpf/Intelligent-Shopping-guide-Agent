@@ -544,13 +544,12 @@ class Phone_Dialogue():
             if self.ask_slot != '':
                 if self.extract_none:
                     self.extract_none = False
-                    res = self.prefix + get_random_sentence(fail_slot[self.ask_slot])
-                    self.prefix = ''
-                    return res
-                else:
-                    res = self.prefix + get_random_sentence(ask_slot[self.ask_slot])
-                    self.prefix = ''
-                    return res
+                    res = self.prefix + get_random_sentence(fail_slot[self.ask_slot]) + '。'
+                    self.prefix = res
+
+                res = self.prefix + get_random_sentence(ask_slot[self.ask_slot])
+                self.prefix = ''
+                return res
             else:
                 self.extract_none = False
             unasked = []

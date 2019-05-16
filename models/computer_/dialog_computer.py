@@ -544,10 +544,13 @@ class Computer_Dialogue():
             # 检查必须的slot_value,如果没有的话就发出提问
             unasked = []
             if self.ask_slot != '':
-                if self.extract_none:
-                    # 上一轮没有抽取到信息
-                    self.extract_none = False
-                    res = self.prefix + get_random_sentence(fail_slot[self.ask_slot])
+                if self.ask_slot != '':
+                    if self.extract_none:
+                        self.extract_none = False
+                        res = self.prefix + get_random_sentence(fail_slot[self.ask_slot]) + '。'
+                        self.prefix = res
+
+                    res = self.prefix + get_random_sentence(ask_slot[self.ask_slot])
                     self.prefix = ''
                     return res
                 else:

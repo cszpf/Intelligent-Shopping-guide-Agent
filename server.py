@@ -22,7 +22,7 @@ def dialog():
     if sentence is None:
         return jsonify({'error': 'bad request'})
     sentence = sentence.strip()
-
+    sentence = sentence.lower()
     manager.user(domain, sentence, token)
     res = manager.response(token)
     print("本轮用时:", time.time() - begin_time)

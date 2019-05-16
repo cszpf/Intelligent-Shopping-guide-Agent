@@ -18,3 +18,4 @@ word
 excel
 ppt
 游戏
+ai AI 神经网络 深度学习 机器学习
