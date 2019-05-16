@@ -129,8 +129,8 @@ def get_change_intent(domain, sentence):
     :param sentence:user input
     :return:(target,positive) a tuple contains a change target and a value to measure whether to change
     '''
-    changeable_slot = ['价格', '硬盘', '内存', '像素', '尺寸']
-    target_to_label = {'价格': 'price', '硬盘': 'disk', '内存': 'memory', '像素': 'pixelb', '尺寸': 'size'}
+    changeable_slot = ['价格', '硬盘', '内存', '像素', '尺寸', '屏幕']
+    target_to_label = {'价格': 'price', '硬盘': 'disk', '内存': 'memory', '像素': 'pixelb', '尺寸': 'size', '屏幕': 'size'}
     pos_word = ['贵', '高', '大', '好']
     neg_word = ['便宜', '小', '低', '糟糕', '少', '差']
     positive_count = 0
@@ -443,7 +443,7 @@ class Phone_Dialogue():
                 self.change_state('confirm_end')
                 return
 
-    def confirm_end(self,sentence):
+    def confirm_end(self, sentence):
         intention = self.nlu.intention_predict(sentence)
         if intention == 'answer_yes':
             self.change_state('done')
@@ -459,7 +459,6 @@ class Phone_Dialogue():
             if word in sentence:
                 self.change_state('done')
                 return
-
 
     def response(self):
         '''
