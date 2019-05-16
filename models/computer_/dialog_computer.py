@@ -440,7 +440,7 @@ class Computer_Dialogue():
         :return:dialog response
         '''
         if len(self.preset) > 0:
-            sentence_list = ['好的～根据您的需求，小助手', '收到～小助手帮您把']
+            sentence_list = ['好的～根据客官的需求,小助手', '收到～小助手帮客官', '明白了！善解人意的小助手帮客官']
             prefix = get_random_sentence(sentence_list)
             for item in self.preset:
                 if item[0] == 'memory':
@@ -452,7 +452,7 @@ class Computer_Dialogue():
             self.prefix = prefix
             self.preset = []
         elif len(self.current_commit_sv) > 0:
-            sentence_list = ['好的～', '明白～', '好嘞，']
+            sentence_list = ['好的～', '明白～', '好咧,', '好的哟,', '没问题,']
             prefix = get_random_sentence(sentence_list)
             commit_str = self.get_slot_table(self.current_commit_sv)
             print("current commit:", commit_str)
@@ -491,7 +491,7 @@ class Computer_Dialogue():
             self.current_commit_sv = []
 
         if self.state == 'ask':
-            # 检查必须的slot_value，如果没有的话就发出提问
+            # 检查必须的slot_value,如果没有的话就发出提问
             unasked = []
             if self.ask_slot != '':
                 if self.extract_none:
@@ -516,7 +516,7 @@ class Computer_Dialogue():
                 res = self.prefix + get_random_sentence(ask_slot[slot])
                 self.prefix = ''
                 return res
-            # 如果到了这里，说明所有的slot都问完了,转入ask_more
+            # 如果到了这里,说明所有的slot都问完了,转入ask_more
             else:
                 self.change_state('ask_more')
                 return self.response()
@@ -524,7 +524,7 @@ class Computer_Dialogue():
         if self.state == 'ask_more':
             if not self.asked_more:
                 # first ask
-                sentence_list = ['请问您还有其他需求吗?']
+                sentence_list = ['请问客官还有其他需求吗?', '请问客官还有进一步的需求吗?']
                 self.asked_more = True
                 res = self.prefix + get_random_sentence(sentence_list)
                 self.prefix = ''
@@ -536,7 +536,7 @@ class Computer_Dialogue():
                     res = self.prefix + get_random_sentence(fail_slot['more'])
                     self.prefix = ''
                     return res
-                sentence_list = ['好的，请问还有其他的要求吗?']
+                sentence_list = ['请问客官还有其他需求吗?', '请问客官还有进一步的需求吗?']
                 res = self.prefix + get_random_sentence(sentence_list)
                 self.prefix = ''
                 return res
@@ -551,11 +551,12 @@ class Computer_Dialogue():
             res = self.search(self.slot_value)
             self.result_list = res
             if len(res) == 0:
-                sentence_list = ["暂时没找到合适的商品哦，换个条件试试?"]
+                sentence_list = ["小助手暂时没找到合适的商品哦,换个条件试试?","小助手翻遍了数据库,还是没找到合适的商品,换个条件试试？",
+                                 "客官的要求太独特了,小助手找不到符合的商品,可否换个条件试试?","小助手尽力了，但是还是没有找到合适的商品，换个条件试试？"]
                 res = self.prefix + get_random_sentence(sentence_list)
                 self.prefix = ''
                 return res
-            sentence_list = ["为您推荐以下商品,可回复第几个进行选择,回复“查看更多”可以显示其他商品哦～"]
+            sentence_list = ["为客官推荐以下商品,可回复第几个进行选择,回复“查看更多”可以显示其他商品哦～","经过小助手精挑细选，使出蛮荒之力，给客官推荐以下几款产品，回复第几个即可选择哟，回复“查看更多”可以显示其他商品～"]
             res = self.prefix + get_random_sentence(sentence_list)
             self.prefix = ''
             return res
@@ -565,17 +566,17 @@ class Computer_Dialogue():
             if target == 'price':
                 self.expected = 'price'
                 if self.morewhat[1] <= 0:
-                    return get_random_sentence(["请问您是需要更贵的产品吗?"])
+                    return get_random_sentence(["请问客官是需要更贵的产品吗?"])
                 else:
-                    return get_random_sentence(["请问您是需要更便宜的产品吗?"])
+                    return get_random_sentence(["请问客官是需要更便宜的产品吗?"])
             # if target == '内存'
 
         if self.state == 'confirm_choice':
-            sentence_list = ["即将为您预订以下商品，是否确认？"]
+            sentence_list = ["即将为您预订以下商品,是否确认？"]
             return get_random_sentence(sentence_list)
 
         if self.state == 'done':
-            sentence_list = ["本次服务已结束，谢谢您的使用"]
+            sentence_list = ["本次服务已结束,谢谢您的使用","小助手成功完成任务啦，我们下次再见～","小助手服务结束了哦～谢谢客官的支持！"]
             self.finish = True
             return get_random_sentence(sentence_list)
 

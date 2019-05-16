@@ -26,7 +26,7 @@ class DialogManager:
         self.dialog = None
         self.reponseText = ''
         self.nlu = NLUService()
-        # self.dialogs = {'computer': Computer_Dialogue(), 'phone': Phone_Dialogue()}
+        # self.dialogs = {}
         self.dialogs = {'phone': Phone_Dialogue(self.nlu), 'camera': Camera_Dialogue(self.nlu),
                         'computer': Computer_Dialogue(self.nlu)}
         self.dialog_session = {}
@@ -111,14 +111,14 @@ class DialogManager:
 
     def hello(self):
         print("hello")
-        sentenceList = ["你好，请问有什么可以帮到您吗？您可以通过导购助手挑选合适你的手机,电脑或者相机。",
-                        "你好，请问需要什么服务？导购助手可以帮助您选购手机/电脑/相机。",
-                        "你好，我可以帮你挑选手机/电脑/相机，请问你想买的是什么?"]
+        sentenceList = ["你好！我是智能导购小助手！客官想买什么产品呢？我们支持电脑/相机/手机哦",
+                        "你好这位客官！我是智能导购小助手,你可以向我咨询电脑/相机/手机这几款产品哦,有什么想买的吗？",
+                        "你好,我是智能小助手,可以帮你挑选手机/电脑/相机哦,请问你想买什么?"]
         return getRandomSentence(sentenceList)
 
     def return_error(self,token):
         res = {}
-        sentence_list =  ['抱歉，系统似乎出现了点故障，重新操作试试？']
+        sentence_list =  ['抱歉,小助手似乎出现了点故障，重新操作试试？']
         res['response'] = getRandomSentence(sentence_list)
         res['showResult'] = False
         res['slot_value'] = {}

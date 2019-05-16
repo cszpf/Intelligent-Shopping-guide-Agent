@@ -20,7 +20,7 @@ def dialog():
     domain = request.args.get('domain')
     sentence = request.args.get('message')
     if sentence is None:
-        return jsonify({'error':'bad request'})
+        return jsonify({'error': 'bad request'})
     sentence = sentence.strip()
 
     manager.user(domain, sentence, token)
@@ -37,6 +37,7 @@ def resetDialog():
     manager.reset(token)
     return "reset done!"
 
+
 @app.route('/error_dialog', methods=['GET', 'POST'])
 def error_dialog():
     token = request.args.get('token')
@@ -51,11 +52,11 @@ def intent_classifier(filename):
 
 
 if __name__ == '__main__':
-    manager.user('computer', '我想买电脑','init')
+    manager.user('computer', '我想买电脑', 'init')
     manager.reset('init')
-    manager.user('phone', '我想买手机','init')
+    manager.user('phone', '我想买手机', 'init')
     manager.reset('init')
-    manager.user('camera', '我想买相机','init')
+    manager.user('camera', '我想买相机', 'init')
     manager.reset('init')
     manager.record_history = True
     app.run('0.0.0.0', port='5000')
