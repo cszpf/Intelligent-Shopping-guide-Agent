@@ -401,16 +401,38 @@ class Phone_Dialogue():
             to_add = self.fill_message(tag)
             self.write(to_add)
             self.result_offset = 0
+            return
 
         morewhat = get_change_intent('phone', sentence)
         if morewhat[1] != 0:
             if '?' in morewhat[0]:
                 self.change_state('adjust_confirm')
                 self.morewhat = morewhat
+                return
             elif morewhat[0] != '':
                 self.change_state('do_adjust')
                 self.do_adjust(morewhat)
                 self.result_offset = 0
+                return
+        # 处理“看看别的牌子”这类的请求
+        name_to_label = {'牌子': 'brand', '品牌': 'brand', '价格': 'price', '价钱': 'price', '内存': 'memory', '硬盘': 'disk',
+                         '存储': 'disk', '空间': 'disk', '像素': 'pixel', '屏幕': 'screen'}
+        other_word = ['别的', '其他', '另外', '其它']
+        sents = split_all(sentence)
+        tags = {}
+        for sent in sents:
+            # 切分句子
+            for word in name_to_label:
+                # 检查到slot词
+                if word in sent:
+                    for other in other_word:
+                        # 检查到[其他]词
+                        if other in sent:
+                            label = name_to_label[word]
+                            if label not in tags:
+                                tags[label] = [('whatever', '=')]
+        self.write(tags)
+
 
     def response(self):
         '''
@@ -521,9 +543,9 @@ class Phone_Dialogue():
                 return self.response()
 
         if self.state == 'ask_more':
+            sentence_list = ['请问客官还有其他需求吗?', '请问客官还有进一步的需求吗?']
             if not self.asked_more:
                 # first ask
-                sentence_list = ['请问客官还有其他需求吗?', '请问客官还有进一步的需求吗?']
                 self.asked_more = True
                 res = self.prefix + get_random_sentence(sentence_list)
                 self.prefix = ''
@@ -532,10 +554,9 @@ class Phone_Dialogue():
                 # not first ask
                 if self.extract_none:
                     self.extract_none = False
-                    res = self.prefix + get_random_sentence(fail_slot['more'])
+                    res = self.prefix + get_random_sentence(fail_slot['more']) + get_random_sentence(sentence_list)
                     self.prefix = ''
                     return res
-                sentence_list = ['请问客官还有其他需求吗?', '请问客官还有进一步的需求吗?']
                 res = self.prefix + get_random_sentence(sentence_list)
                 self.prefix = ''
                 return res
@@ -633,8 +654,18 @@ class Phone_Dialogue():
             to_add = self.fill_message(tag)
             self.write(to_add)
             if len(to_add) == 0:
-                print("set extract none to True,from ask more")
-                self.extract_none = True
+                tag = []
+                sents = split_all(sentence)
+                for sent in sents:
+                    tag.extend(self.get_about_intention(sent))
+                if len(tag) > 0:
+                    for t in tag:
+                        t['need'] = True
+                    to_add = self.fill_message(tag)
+                    self.write(to_add)
+                if len(to_add) == 0:
+                    print("set extract_none to True from ask more")
+                    self.extract_none = True
 
     def ask(self, sentence):
         '''

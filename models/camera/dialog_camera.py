@@ -400,16 +400,37 @@ class Camera_Dialogue():
             to_add = self.fill_message(tag)
             self.write(to_add)
             self.result_offset = 0
+            return
 
         morewhat = get_change_intent('camera', sentence)
         if morewhat[1] != 0:
             if '?' in morewhat[0]:
                 self.change_state('adjust_confirm')
                 self.morewhat = morewhat
+                return
             elif morewhat[0] != '':
                 self.change_state('do_adjust')
                 self.do_adjust(morewhat)
                 self.result_offset = 0
+                return
+        # 处理“看看别的牌子”这类的请求
+        name_to_label = {'牌子': 'brand', '品牌': 'brand', '价格': 'price', '价钱': 'price',
+                         '像素': 'pixel', '屏幕': 'screen', '类型': 'type', '级别': 'level', '画幅': 'frame'}
+        other_word = ['别的', '其他', '另外', '其它']
+        sents = split_all(sentence)
+        tags = {}
+        for sent in sents:
+            # 切分句子
+            for word in name_to_label:
+                # 检查到slot词
+                if word in sent:
+                    for other in other_word:
+                        # 检查到[其他]词
+                        if other in sent:
+                            label = name_to_label[word]
+                            if label not in tags:
+                                tags[label] = [('whatever', '=')]
+        self.write(tags)
 
     def response(self):
         '''
@@ -422,6 +443,8 @@ class Camera_Dialogue():
             for item in self.preset:
                 if item[0] == 'price':
                     prefix += '预设价格为%s元左右,' % str(int(item[2]))
+                if item[0] == 'pixel':
+                    prefix += '预设像素为%s万左右,' % str(int(item[2]))
             self.prefix = prefix
             self.preset = []
         elif len(self.current_commit_sv) > 0:
@@ -498,9 +521,9 @@ class Camera_Dialogue():
                 return self.response()
 
         if self.state == 'ask_more':
+            sentence_list = ['请问客官还有其他需求吗?', '请问客官还有进一步的需求吗?']
             if not self.asked_more:
                 # first ask
-                sentence_list = ['请问客官还有其他需求吗?', '请问客官还有进一步的需求吗?']
                 self.asked_more = True
                 res = self.prefix + get_random_sentence(sentence_list)
                 self.prefix = ''
@@ -509,10 +532,9 @@ class Camera_Dialogue():
                 # not first ask
                 if self.extract_none:
                     self.extract_none = False
-                    res = self.prefix + get_random_sentence(fail_slot['more'])
+                    res = self.prefix + get_random_sentence(fail_slot['more']) + get_random_sentence(sentence_list)
                     self.prefix = ''
                     return res
-                sentence_list = ['请问客官还有其他需求吗?', '请问客官还有进一步的需求吗?']
                 res = self.prefix + get_random_sentence(sentence_list)
                 self.prefix = ''
                 return res
@@ -527,12 +549,13 @@ class Camera_Dialogue():
             res = self.search(self.slot_value)
             self.result_list = res
             if len(res) == 0:
-                sentence_list = ["小助手暂时没找到合适的商品哦,换个条件试试?","小助手翻遍了数据库,还是没找到合适的商品,换个条件试试？",
-                                 "客官的要求太独特了,小助手找不到符合的商品,可否换个条件试试?","小助手尽力了，但是还是没有找到合适的商品，换个条件试试？"]
+                sentence_list = ["小助手暂时没找到合适的商品哦,换个条件试试?", "小助手翻遍了数据库,还是没找到合适的商品,换个条件试试？",
+                                 "客官的要求太独特了,小助手找不到符合的商品,可否换个条件试试?", "小助手尽力了，但是还是没有找到合适的商品，换个条件试试？"]
                 res = self.prefix + get_random_sentence(sentence_list)
                 self.prefix = ''
                 return res
-            sentence_list = ["为客官推荐以下商品,可回复第几个进行选择,回复“查看更多”可以显示其他商品哦～","经过小助手精挑细选，使出蛮荒之力，给客官推荐以下几款产品，回复第几个即可选择哟，回复“查看更多”可以显示其他商品～"]
+            sentence_list = ["为客官推荐以下商品,可回复第几个进行选择,回复“查看更多”可以显示其他商品哦～",
+                             "经过小助手精挑细选，使出蛮荒之力，给客官推荐以下几款产品，回复第几个即可选择哟，回复“查看更多”可以显示其他商品～"]
             res = self.prefix + get_random_sentence(sentence_list)
             self.prefix = ''
             return res
@@ -551,7 +574,7 @@ class Camera_Dialogue():
             return get_random_sentence(sentence_list)
 
         if self.state == 'done':
-            sentence_list = ["本次服务已结束,谢谢您的使用","小助手成功完成任务啦，我们下次再见～","小助手服务结束了哦～谢谢客官的支持！"]
+            sentence_list = ["本次服务已结束,谢谢您的使用", "小助手成功完成任务啦，我们下次再见～", "小助手服务结束了哦～谢谢客官的支持！"]
             self.finish = True
             return get_random_sentence(sentence_list)
 
@@ -602,8 +625,17 @@ class Camera_Dialogue():
             to_add = self.fill_message(tag)
             self.write(to_add)
             if len(to_add) == 0:
-                print("set extract none to True")
-                self.extract_none = True
+                tag = []
+                sents = split_all(sentence)
+                for sent in sents:
+                    tag.extend(self.get_about_intention(sent))
+                if len(tag) > 0:
+                    for t in tag:
+                        t['need'] = True
+                    to_add = self.fill_message(tag)
+                    self.write(to_add)
+                if len(to_add) == 0:
+                    self.extract_none = True
 
     def ask(self, sentence):
         '''
@@ -841,8 +873,8 @@ class Camera_Dialogue():
         print("get about intention")
         res = []
         # type 1
-        target_word = ['价格']
-        target_to_label = {'价格': 'price'}
+        target_word = ['价格', '像素', '价钱', '定价']
+        target_to_label = {'价格': 'price', '价钱': 'price', '定价': 'price', '像素': 'pixel'}
         type_1_flag = False
         for word in target_word:
             if word in sentence:

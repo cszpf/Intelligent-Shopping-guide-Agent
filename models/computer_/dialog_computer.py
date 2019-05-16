@@ -429,10 +429,30 @@ class Computer_Dialogue():
             if '?' in morewhat[0]:
                 self.change_state('adjust_confirm')
                 self.morewhat = morewhat
+                return
             elif morewhat[0] != '':
                 self.change_state('do_adjust')
                 self.do_adjust(morewhat)
                 self.result_offset = 0
+                return
+        # 处理“看看别的牌子”这类的请求
+        name_to_label = {'牌子': 'brand', '品牌': 'brand', '价格': 'price', '价钱': 'price', '内存': 'memory', '硬盘': 'disk',
+                         '存储': 'disk'}
+        other_word = ['别的', '其他', '另外', '其它']
+        sents = split_all(sentence)
+        tags = {}
+        for sent in sents:
+            # 切分句子
+            for word in name_to_label:
+                # 检查到slot词
+                if word in sent:
+                    for other in other_word:
+                        # 检查到[其他]词
+                        if other in sent:
+                            label = name_to_label[word]
+                            if label not in tags:
+                                tags[label] = [('whatever', '=')]
+        self.write(tags)
 
     def response(self):
         '''
@@ -525,9 +545,9 @@ class Computer_Dialogue():
                 return self.response()
 
         if self.state == 'ask_more':
+            sentence_list = ['请问客官还有其他需求吗?', '请问客官还有进一步的需求吗?']
             if not self.asked_more:
                 # first ask
-                sentence_list = ['请问客官还有其他需求吗?', '请问客官还有进一步的需求吗?']
                 self.asked_more = True
                 res = self.prefix + get_random_sentence(sentence_list)
                 self.prefix = ''
@@ -536,10 +556,9 @@ class Computer_Dialogue():
                 # not first ask
                 if self.extract_none:
                     self.extract_none = False
-                    res = self.prefix + get_random_sentence(fail_slot['more'])
+                    res = self.prefix + get_random_sentence(fail_slot['more']) + get_random_sentence(sentence_list)
                     self.prefix = ''
                     return res
-                sentence_list = ['请问客官还有其他需求吗?', '请问客官还有进一步的需求吗?']
                 res = self.prefix + get_random_sentence(sentence_list)
                 self.prefix = ''
                 return res
@@ -554,12 +573,13 @@ class Computer_Dialogue():
             res = self.search(self.slot_value)
             self.result_list = res
             if len(res) == 0:
-                sentence_list = ["小助手暂时没找到合适的商品哦,换个条件试试?","小助手翻遍了数据库,还是没找到合适的商品,换个条件试试？",
-                                 "客官的要求太独特了,小助手找不到符合的商品,可否换个条件试试?","小助手尽力了，但是还是没有找到合适的商品，换个条件试试？"]
+                sentence_list = ["小助手暂时没找到合适的商品哦,换个条件试试?", "小助手翻遍了数据库,还是没找到合适的商品,换个条件试试？",
+                                 "客官的要求太独特了,小助手找不到符合的商品,可否换个条件试试?", "小助手尽力了，但是还是没有找到合适的商品，换个条件试试？"]
                 res = self.prefix + get_random_sentence(sentence_list)
                 self.prefix = ''
                 return res
-            sentence_list = ["为客官推荐以下商品,可回复第几个进行选择,回复“查看更多”可以显示其他商品哦～","经过小助手精挑细选，使出蛮荒之力，给客官推荐以下几款产品，回复第几个即可选择哟，回复“查看更多”可以显示其他商品～"]
+            sentence_list = ["为客官推荐以下商品,可回复第几个进行选择,回复“查看更多”可以显示其他商品哦～",
+                             "经过小助手精挑细选，使出蛮荒之力，给客官推荐以下几款产品，回复第几个即可选择哟，回复“查看更多”可以显示其他商品～"]
             res = self.prefix + get_random_sentence(sentence_list)
             self.prefix = ''
             return res
@@ -579,7 +599,7 @@ class Computer_Dialogue():
             return get_random_sentence(sentence_list)
 
         if self.state == 'done':
-            sentence_list = ["本次服务已结束,谢谢您的使用","小助手成功完成任务啦，我们下次再见～","小助手服务结束了哦～谢谢客官的支持！"]
+            sentence_list = ["本次服务已结束,谢谢您的使用", "小助手成功完成任务啦，我们下次再见～", "小助手服务结束了哦～谢谢客官的支持！"]
             self.finish = True
             return get_random_sentence(sentence_list)
 
@@ -623,8 +643,18 @@ class Computer_Dialogue():
             to_add = self.fill_message(tag)
             self.write(to_add)
             if len(to_add) == 0:
-                print("set extract none to True,from ask more")
-                self.extract_none = True
+                tag = []
+                sents = split_all(sentence)
+                for sent in sents:
+                    tag.extend(self.get_about_intention(sent))
+                if len(tag) > 0:
+                    for t in tag:
+                        t['need'] = True
+                    to_add = self.fill_message(tag)
+                    self.write(to_add)
+                if len(to_add) == 0:
+                    print("set extract_none to True from ask more")
+                    self.extract_none = True
 
     def ask(self, sentence):
         '''
