@@ -326,6 +326,8 @@ class Computer_Dialogue():
             self.adjust_confirm(sentence)
         elif self.state == 'ask_more':
             self.ask_more(sentence)
+        elif self.state == 'confirm_end':
+            self.confirm_end(sentence)
 
     def list_slot(self, sentence):
         '''
@@ -453,6 +455,31 @@ class Computer_Dialogue():
                             if label not in tags:
                                 tags[label] = [('whatever', '=')]
         self.write(tags)
+        if len(tags) > 0:
+            return
+        # 检查用户是否说了不要
+        end_word = ['不要', '算了', '结束', '不看', '没有']
+        for word in end_word:
+            if word in sentence:
+                self.change_state('confirm_end')
+                return
+
+    def confirm_end(self,sentence):
+        intention = self.nlu.intention_predict(sentence)
+        if intention == 'answer_yes':
+            self.change_state('done')
+            return
+        if intention == 'answer_no':
+            self.change_state('result')
+            return
+        for word in no_word:
+            if word in sentence:
+                self.change_state('result')
+                return
+        for word in yes_word:
+            if word in sentence:
+                self.change_state('done')
+                return
 
     def response(self):
         '''
@@ -601,6 +628,10 @@ class Computer_Dialogue():
         if self.state == 'done':
             sentence_list = ["本次服务已结束,谢谢您的使用", "小助手成功完成任务啦，我们下次再见～", "小助手服务结束了哦～谢谢客官的支持！"]
             self.finish = True
+            return get_random_sentence(sentence_list)
+
+        if self.state == 'confirm_end':
+            sentence_list = ["请问是否要终止本轮对话?", "检测到结束倾向，客官是否结束对话？", "请问客官是想要结束搜索吗？"]
             return get_random_sentence(sentence_list)
 
     def check_necessary(self):
