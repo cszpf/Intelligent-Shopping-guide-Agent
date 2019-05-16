@@ -138,7 +138,10 @@ def search_camera(condition):
         requirement = [func_synonyms[con[0]] for con in condition['function']]
 
         for req in requirement:
-            attrs = function_attr[func_synonyms[req]]
+            name = func_synonyms[req]
+            if name not in function_attr:
+                continue
+            attrs = function_attr[name]
             for attr in attrs:
                 if attr == 'price':
                     if ',' in attrs[attr]:

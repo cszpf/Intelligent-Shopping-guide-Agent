@@ -174,7 +174,10 @@ def searchComputer(condition):
     if 'function' in condition:
         checker_dict = {'cpu': better_cpu, 'gpu': better_gpu, 'memory': better_memory}
         for func in condition['function']:
-            attr_requirement = function_attr[func_synonyms[func[0]]]
+            name = func_synonyms[func[0]]
+            if name not in function_attr:
+                continue
+            attr_requirement = function_attr[name]
             for attr in attr_requirement:
                 checker = checker_dict[attr]
                 for item in res:
@@ -207,4 +210,4 @@ def searchComputer(condition):
     return res_
 
 if __name__ == '__main__':
-    pass
+    res = searchComputer({'memory': [[8.0, '>=']], 'brand': [['whatever', '=']], 'function': [['ps', '=']], 'price': [[7000.0, '=']]})
