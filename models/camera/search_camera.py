@@ -33,6 +33,7 @@ class Camera(Base):
     type = Column(String)
     screen = Column(String)
     shutter = Column(String)
+    tags = Column(String)
 
     def toStr(self, s):
         if type(s) == float:
@@ -195,6 +196,6 @@ def search_camera(condition):
 
 
 if __name__ == "__main__":
-    condition = {'level': [['入门级', '=']], 'brand': [['佳能', '=']], 'price': [[5000.0, '=']], 'type': [['微单', '=']], 'frame': [['whatever', '=']]}
+    condition =  {'frame': [['全画幅', '=']], 'level': [['中端', '=']], 'price': [[10000.0, '=']], 'type': [['微单', '=']], 'brand': [['索尼', '=']], 'experience': [['续航', '=']]}
     result = search_camera(condition)
     print(result)
