@@ -100,6 +100,10 @@ def search_camera(condition):
                 res = res.filter(and_(Camera.price >= con[0] - 3000, Camera.price <= con[0] + 3000))
             if con[1] == '<=':
                 res = res.filter(Camera.price <= con[0])
+            if con[1] == '<':
+                res = res.filter(Camera.price < con[0])
+            if con[1] == '>':
+                res = res.filter(Camera.price > con[0])
 
     if 'pixel' in condition and condition['pixel'][0][0] != 'whatever':
         for con in condition['pixel']:
@@ -108,6 +112,10 @@ def search_camera(condition):
             if con[1] == '=':
                 res = res.filter(and_(Camera.pixel >= con[0] - 500, Camera.pixel <= con[0] + 500))
             if con[1] == '<=':
+                res = res.filter(Camera.pixel <= con[0])
+            if con[1] == '<':
+                res = res.filter(Camera.pixel <= con[0])
+            if con[1] == '>':
                 res = res.filter(Camera.pixel <= con[0])
 
     if 'frame' in condition and condition['frame'][0][0] != 'whatever':

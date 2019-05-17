@@ -128,6 +128,10 @@ def searchPhone(condition):
                 res = res.filter(and_(Phone.price >= con[0] - 500, Phone.price <= con[0] + 500))
             if con[1] == '<=':
                 res = res.filter(Phone.price <= con[0])
+            if con[1] == '<':
+                res = res.filter(Phone.price < con[0])
+            if con[1] == '>':
+                res = res.filter(Phone.price > con[0])
 
     if 'pixelb' in condition and condition['pixelb'][0][0] != 'whatever':
         for con in condition['pixelb']:
@@ -137,6 +141,10 @@ def searchPhone(condition):
                 res = res.filter(and_(Phone.pixel_back >= con[0] - 500, Phone.pixel_back <= con[0] + 500))
             if con[1] == '<=':
                 res = res.filter(Phone.pixel_back <= con[0])
+            if con[1] == '<':
+                res = res.filter(Phone.pixel_back < con[0])
+            if con[1] == '>':
+                res = res.filter(Phone.pixel_back > con[0])
 
     if 'memory' in condition and condition['memory'][0][0] != 'whatever':
         for con in condition['memory']:
@@ -146,6 +154,10 @@ def searchPhone(condition):
                 res = res.filter(Phone.memory == con[0])
             if con[1] == '<=':
                 res = res.filter(Phone.memory <= con[0])
+            if con[1] == '<':
+                res = res.filter(Phone.memory < con[0])
+            if con[1] == '>':
+                res = res.filter(Phone.memory > con[0])
 
     if 'disk' in condition and condition['disk'][0][0] != 'whatever':
         for con in condition['disk']:
@@ -155,6 +167,10 @@ def searchPhone(condition):
                 res = res.filter(Phone.disk == con[0])
             if con[1] == '<=':
                 res = res.filter(Phone.disk <= con[0])
+            if con[1] == '<':
+                res = res.filter(Phone.disk < con[0])
+            if con[1] == '>':
+                res = res.filter(Phone.disk > con[0])
 
     if 'size' in condition and condition['size'][0][0] != 'whatever':
         for con in condition['size']:
@@ -164,6 +180,10 @@ def searchPhone(condition):
                 res = res.filter(Phone.size == con[0])
             if con[1] == '<=':
                 res = res.filter(Phone.size <= con[0])
+            if con[1] == '<':
+                res = res.filter(Phone.size < con[0])
+            if con[1] == '>':
+                res = res.filter(Phone.size > con[0])
 
     res = res.order_by(Phone.index).all()
     for item in res:

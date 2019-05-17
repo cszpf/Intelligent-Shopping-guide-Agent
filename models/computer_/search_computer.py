@@ -142,6 +142,10 @@ def searchComputer(condition):
                 res = res.filter(and_(Computer.price >= con[0] - 1000, Computer.price <= con[0] + 1000))
             if con[1] == '<=':
                 res = res.filter(Computer.price <= con[0])
+            if con[1] == '<':
+                res = res.filter(Computer.price < con[0])
+            if con[1] == '>':
+                res = res.filter(Computer.price > con[0])
 
     if 'memory' in condition and condition['memory'][0][0] != 'whatever':
         for con in condition['memory']:
@@ -151,6 +155,10 @@ def searchComputer(condition):
                 res = res.filter(Computer.memory == con[0])
             if con[1] == '<=':
                 res = res.filter(Computer.memory <= con[0])
+            if con[1] == '<':
+                res = res.filter(Computer.memory < con[0])
+            if con[1] == '>':
+                res = res.filter(Computer.memory > con[0])
 
     if 'disk' in condition and condition['disk'][0][0] != 'whatever':
         for con in condition['disk']:
@@ -160,6 +168,10 @@ def searchComputer(condition):
                 res = res.filter(Computer.disk == con[0])
             if con[1] == '<=':
                 res = res.filter(Computer.disk <= con[0])
+            if con[1] == '<':
+                res = res.filter(Computer.disk < con[0])
+            if con[1] == '>':
+                res = res.filter(Computer.disk > con[0])
 
     if 'cpu' in condition and condition['cpu'][0][0] != 'whatever':
         for con in condition['cpu']:

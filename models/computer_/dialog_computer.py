@@ -30,6 +30,7 @@ def split_all(s, target=',.?，。？！!'):
             line = ''
     if line != '':
         sent.append(line)
+    sent = [line for line in sent if line != '']
     return sent
 
 
@@ -201,7 +202,7 @@ class Computer_Dialogue():
         self.ask_slot = ""
         self.expected = ''
         self.result_list = None
-        self.choice = {}
+        self.choice = []
         self.morewhat = None
         self.show_result = False
         self.finish = False
@@ -226,6 +227,7 @@ class Computer_Dialogue():
             'expected': self.expected,
             'morewhat': self.morewhat,
             'asked': self.asked,
+            'choice': self.choice,
             'asked_more': self.asked_more,
             'extract_none': self.extract_none,
             'prefix': self.prefix,
@@ -254,6 +256,7 @@ class Computer_Dialogue():
         self.preset = m['preset']
         self.result_offset = m['offset']
         self.current_commit_sv = m['current_commit']
+        self.choice = m['choice']
         if self.state == 'result':
             res = self.search(self.slot_value)
             self.result_list = res
@@ -269,7 +272,7 @@ class Computer_Dialogue():
         self.ask_slot = ""
         self.expected = ''
         self.result_list = None
-        self.choice = {}
+        self.choice = []
         self.morewhat = None
         self.show_result = False
         self.finish = False
@@ -293,7 +296,7 @@ class Computer_Dialogue():
             self.last_state = self.state
         else:
             self.last_state = last_state
-        if state in ['result', 'confirm_choice']:
+        if state in ['result', 'confirm_choice', 'done']:
             self.show_result = True
         else:
             self.show_result = False
@@ -347,12 +350,24 @@ class Computer_Dialogue():
         print("do adjust:", morewhat)
         print(result)
         if morewhat[0] in adjustableSlot:
-            upper = max([item[morewhat[0]] for item in result if morewhat[0] in item])
-            lower = min([item[morewhat[0]] for item in result if morewhat[0] in item])
-            if morewhat[1] > 0:
-                self.slot_value[morewhat[0]] = [(upper, '>=')]
+            value = [item[morewhat[0]] for item in result if morewhat[0] in item]
+            value = sorted(value, reverse=True)
+            upper = max(value)
+            lower = min(value)
+            if len(value) > 1:
+                upper = value[1]
+                lower = value[-2]
+            if upper == lower:
+                # 全部都是一样的值,执行严格大于
+                if morewhat[1] > 0:
+                    self.slot_value[morewhat[0]] = [(upper, '>')]
+                else:
+                    self.slot_value[morewhat[0]] = [(lower, '<')]
             else:
-                self.slot_value[morewhat[0]] = [(lower, '<=')]
+                if morewhat[1] > 0:
+                    self.slot_value[morewhat[0]] = [(upper, '>=')]
+                else:
+                    self.slot_value[morewhat[0]] = [(lower, '=<')]
         self.change_state('result')
 
     def adjust_confirm(self, sentence):
@@ -464,7 +479,7 @@ class Computer_Dialogue():
                 self.change_state('confirm_end')
                 return
 
-    def confirm_end(self,sentence):
+    def confirm_end(self, sentence):
         intention = self.nlu.intention_predict(sentence)
         if intention == 'answer_yes':
             self.change_state('done')
@@ -630,8 +645,12 @@ class Computer_Dialogue():
 
         if self.state == 'done':
             sentence_list = ["本次服务已结束,谢谢您的使用", "小助手成功完成任务啦，我们下次再见～", "小助手服务结束了哦～谢谢客官的支持！"]
+            prefix = ''
+            if len(self.choice) > 0:
+                prefix = '这是客官选择的商品,'
             self.finish = True
-            return get_random_sentence(sentence_list)
+
+            return prefix + get_random_sentence(sentence_list)
 
         if self.state == 'confirm_end':
             sentence_list = ["请问是否要终止本轮对话?", "检测到结束倾向，客官是否结束对话？", "请问客官是想要结束搜索吗？"]
@@ -841,9 +860,9 @@ class Computer_Dialogue():
             if '倒数' in sentence or '最后' in sentence:
                 index = -index
             if index > 0:
-                self.choice = self.result_list[index - 1]
+                self.choice = self.get_result([self.result_list[index - 1]])
             else:
-                self.choice = self.result_list[index]
+                self.choice = self.get_result(self.result_list[index])
             return True
 
         pattern = re.compile('[第|最后]([一二三四五12345])')
@@ -855,14 +874,14 @@ class Computer_Dialogue():
             if '倒数' in sentence or '最后' in sentence:
                 index = -index
             if index > 0:
-                self.choice = self.result_list[index - 1]
+                self.choice = self.get_result([self.result_list[index - 1]])
             else:
-                self.choice = self.result_list[index]
+                self.choice = self.get_result([self.result_list[index]])
             return True
         else:
             intent = self.nlu.requirement_predict(sentence)
             if intent == 'whatever':
-                self.choice = self.result_list[0]
+                self.choice = self.get_result([self.result_list[0]])
                 return True
             else:
                 for word in whatever_word:
@@ -1007,14 +1026,15 @@ class Computer_Dialogue():
 
         return self.result_list
 
-    def get_result(self):
+    def get_result(self, result_list=None):
         '''
         stringify result
         :return: result list contains result string
         '''
         return_slot = ['name', 'price', 'memory', 'disk', 'cpu_name', 'gpu_name']
         res = []
-        result_list = self.result_list
+        if result_list is None:
+            result_list = self.result_list
         for item in result_list:
             temp = {}
             itemDict = item.__dict__
@@ -1037,8 +1057,8 @@ class Computer_Dialogue():
             slot_value = self.slot_value
         print("get slot table", slot_value)
         res = {}
-        op_dict = {'<=': '小于', '=': '', '>=': '大于', '!=': '不要'}
-        order = {'!=': 0, '=': 2, '<=': 1, '>=': 1}
+        op_dict = {'<=': '小于', '=': '', '>=': '大于', '!=': '不要', '>': '大于', '<': '小于'}
+        order = {'!=': 0, '=': 2, '<=': 1, '>=': 1, '<': 1, '>': 1}
         for slot in slot_value:
             if slot in ['experience', 'function']:
                 continue

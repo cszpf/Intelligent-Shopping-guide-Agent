@@ -66,6 +66,7 @@ def split_all(s, target=',.?，。？！!'):
             line = ''
     if line != '':
         sent.append(line)
+    sent = [line for line in sent if line != '']
     return sent
 
 
@@ -322,16 +323,28 @@ class Camera_Dialogue():
         :param morewhat:(target,positive) : ('价格',1) ,positive>0 means adjust higher value
         :return:None
         '''
-        print("do adjust:", morewhat)
         result = self.get_result()
+        print("do adjust:", morewhat)
         print(result)
-        if morewhat[0] in adjustable_slot:
-            upper = max([item[morewhat[0]] for item in result if morewhat[0] in item])
-            lower = min([item[morewhat[0]] for item in result if morewhat[0] in item])
-            if morewhat[1] > 0:
-                self.slot_value[morewhat[0]] = [(upper, '>=')]
+        if morewhat[0] in adjustableSlot:
+            value = [item[morewhat[0]] for item in result if morewhat[0] in item]
+            value = sorted(value, reverse=True)
+            upper = max(value)
+            lower = min(value)
+            if len(value) > 1:
+                upper = value[1]
+                lower = value[-2]
+            if upper == lower:
+                # 全部都是一样的值,执行严格大于
+                if morewhat[1] > 0:
+                    self.slot_value[morewhat[0]] = [(upper, '>')]
+                else:
+                    self.slot_value[morewhat[0]] = [(lower, '<')]
             else:
-                self.slot_value[morewhat[0]] = [(lower, '<=')]
+                if morewhat[1] > 0:
+                    self.slot_value[morewhat[0]] = [(upper, '>=')]
+                else:
+                    self.slot_value[morewhat[0]] = [(lower, '=<')]
         self.change_state('result')
 
     def adjust_confirm(self, sentence):
@@ -1019,8 +1032,8 @@ class Camera_Dialogue():
             slot_value = self.slot_value
         print("get slot table", slot_value)
         res = {}
-        op_dict = {'<=': '小于', '=': '', '>=': '大于', '!=': '不要'}
-        order = {'!=': 0, '=': 2, '<=': 1, '>=': 1}
+        op_dict = {'<=': '小于', '=': '', '>=': '大于', '!=': '不要', '>': '大于', '<': '小于'}
+        order = {'!=': 0, '=': 2, '<=': 1, '>=': 1, '<': 1, '>': 1}
         for slot in slot_value:
             if slot in ['experience', 'function']:
                 continue
