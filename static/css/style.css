@@ -290,10 +290,9 @@ i.logout:before {
     height: 100%;
     width: 80%;
     float: left;
-    background-color: rgb(247, 247, 247);
+    background-color: rgb(221, 221, 221, 0.68);
     border-bottom: 1px gray solid;
 }
-
 
 /*chat_main*/
 
@@ -302,7 +301,7 @@ i.logout:before {
     height: -moz-calc(100% - 40px);
     height: -webkit-calc(100% - 40px);
     height: calc(100% - 40px);
-    background-color: rgb(247, 247, 247);
+    background-color: rgb(221, 221, 221, 0);
 }
 
 .message_box {
@@ -313,7 +312,7 @@ i.logout:before {
     height: -webkit-calc(100% - 200px);
     height: calc(100% - 200px);
     overflow: auto;
-    background-color: rgb(247, 247, 247);
+    background-color: rgb(221, 221, 221, 0);
 }
 
 .msg_item {
