@@ -1016,7 +1016,23 @@ class Phone_Dialogue():
                 t['type'] = t['type'].replace(word, labelToTag[word])
         print("change tag name:", tag)
         tag = self.slot_validate_check(tag)
-        return tag
+        slot_count = defaultdict(lambda: 0)
+        for slot in tag:
+            for label in tagToLabel:
+                if label in slot['type']:
+                    slot_count[label] += 1
+                    break
+        tag_ = []
+        for slot in tag:
+            for label in tagToLabel:
+                if label in slot['type']:
+                    if slot_count[label] > 1 and slot['word'] == 'whatever':
+                        pass
+                    else:
+                        tag_.append(slot)
+                    break
+        print("squeeze slot:", tag_)
+        return tag_
 
     def search(self, slot_value_table):
         '''
