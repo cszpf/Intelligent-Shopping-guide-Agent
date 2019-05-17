@@ -181,7 +181,7 @@ class Camera_Dialogue():
         self.ask_slot = ""
         self.expected = ''
         self.result_list = None
-        self.choice = {}
+        self.choice = []
         self.morewhat = None
         self.show_result = False
         self.finish = False
@@ -211,7 +211,8 @@ class Camera_Dialogue():
             'prefix': self.prefix,
             'preset': self.preset,
             'offset': self.result_offset,
-            'current_commit': self.current_commit_sv
+            'current_commit': self.current_commit_sv,
+            'choice': self.choice
         }
         return json.dumps(model)
 
@@ -234,6 +235,7 @@ class Camera_Dialogue():
         self.preset = m['preset']
         self.result_offset = m['offset']
         self.current_commit_sv = m['current_commit']
+        self.choice = m['choice']
         if self.state == 'result':
             res = self.search(self.slot_value)
             self.result_list = res
@@ -249,7 +251,7 @@ class Camera_Dialogue():
         self.ask_slot = ""
         self.expected = ''
         self.result_list = None
-        self.choice = {}
+        self.choice = []
         self.morewhat = None
         self.show_result = False
         self.finish = False
@@ -273,7 +275,7 @@ class Camera_Dialogue():
             self.last_state = self.state
         else:
             self.last_state = last_state
-        if state in ['result', 'confirm_choice']:
+        if state in ['result', 'confirm_choice', 'done']:
             self.show_result = True
         else:
             self.show_result = False
@@ -455,7 +457,7 @@ class Camera_Dialogue():
                 self.change_state('confirm_end')
                 return
 
-    def confirm_end(self,sentence):
+    def confirm_end(self, sentence):
         intention = self.nlu.intention_predict(sentence)
         if intention == 'answer_yes':
             self.change_state('done')
@@ -535,7 +537,7 @@ class Camera_Dialogue():
             if self.ask_slot != '':
                 if self.extract_none:
                     self.extract_none = False
-                    res = self.prefix + get_random_sentence(fail_slot[self.ask_slot])+'。'
+                    res = self.prefix + get_random_sentence(fail_slot[self.ask_slot]) + '。'
                     self.prefix = res
 
                 res = self.prefix + get_random_sentence(ask_slot[self.ask_slot])
@@ -614,8 +616,12 @@ class Camera_Dialogue():
 
         if self.state == 'done':
             sentence_list = ["本次服务已结束,谢谢您的使用", "小助手成功完成任务啦，我们下次再见～", "小助手服务结束了哦～谢谢客官的支持！"]
+            prefix = ''
+            if len(self.choice) > 0:
+                prefix = '这是客官选择的商品,'
             self.finish = True
-            return get_random_sentence(sentence_list)
+
+            return prefix + get_random_sentence(sentence_list)
 
         if self.state == 'confirm_end':
             sentence_list = ["请问是否要终止本轮对话?", "检测到结束倾向，客官是否结束对话？", "请问客官是想要结束搜索吗？"]
@@ -817,21 +823,21 @@ class Camera_Dialogue():
         :param sentence: user input
         :return:result index
         '''
-        # 1. 通过第几个的方式来选择 
+        # 1. 通过第几个的方式来选择
         if len(self.result_list) == 0:
             return False
         pattern = re.compile('^([一二三四五12345])$')
         m = pattern.search(sentence)
         if (m):
             index = trans_number(m.group(1))
-            if index > len(self.list):
+            if index > len(self.result_list):
                 return False
             if '倒数' in sentence or '最后' in sentence:
                 index = -index
             if index > 0:
-                self.choice = self.result_list[index - 1]
+                self.choice = self.get_result([self.result_list[index - 1]])
             else:
-                self.choice = self.result_list[index]
+                self.choice = self.get_result(self.result_list[index])
             return True
 
         pattern = re.compile('[第|最后]([一二三四五12345])')
@@ -843,14 +849,14 @@ class Camera_Dialogue():
             if '倒数' in sentence or '最后' in sentence:
                 index = -index
             if index > 0:
-                self.choice = self.result_list[index - 1]
+                self.choice = self.get_result([self.result_list[index - 1]])
             else:
-                self.choice = self.result_list[index]
+                self.choice = self.get_result([self.result_list[index]])
             return True
         else:
             intent = self.nlu.requirement_predict(sentence)
             if intent == 'whatever':
-                self.choice = self.result_list[0]
+                self.choice = self.get_result([self.result_list[0]])
                 return True
             else:
                 for word in whatever_word:
@@ -992,19 +998,20 @@ class Camera_Dialogue():
 
         return self.result_list
 
-    def get_result(self):
+    def get_result(self,result_list = None):
         return_slot = ['name', 'price', 'type', 'level', 'pixel', 'screen', 'shutter']
         res = []
         frame = ''
         level = ''
-        print("slot table:",self.slot_value)
+        print("slot table:", self.slot_value)
 
         if 'frame' in self.slot_value and len(self.slot_value['frame']) > 0:
             frame = self.slot_value['frame'][0][0]
         if 'level' in self.slot_value and len(self.slot_value['level']) > 0:
             level = self.slot_value['level'][0][0]
 
-        result_list = self.result_list
+        if result_list is None:
+            result_list = self.result_list
         for item in result_list:
             temp = {}
             itemDict = item.__dict__
@@ -1014,10 +1021,10 @@ class Camera_Dialogue():
                         temp[key] = itemDict[key]
                     elif itemDict[key] is not None:
                         temp[key] = itemDict[key]
-                    if key == 'level' and level!='' and level!='whatever':
-                        temp[key] =level
-                    if key == 'frame' and frame!='' and frame!='whatever':
-                        temp[key] =frame
+                    if key == 'level' and level != '' and level != 'whatever':
+                        temp[key] = level
+                    if key == 'frame' and frame != '' and frame != 'whatever':
+                        temp[key] = frame
 
             res.append(temp)
         return res
