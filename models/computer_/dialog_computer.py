@@ -43,7 +43,7 @@ def check_sentiment_polarity(s):
     :param s: input sentence
     :return: hit_word,level(up/mid/down/none)
     '''
-    mid_word = ['中等', '差不多', '一般', '正常', '普通', '够用']
+    mid_word = ['中等', '差不多', '正常', '普通', '够用']
     up_word = ['贵', '高', '大', '好']
     down_word = ['便宜', '小', '低配', '糟糕', '少', '差']
     no_word = ['不要', '不是', '否定', '否认', '不对', '不可以', '不行', '别', '否', '不', '没']
