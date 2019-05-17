@@ -347,7 +347,7 @@ class Phone_Dialogue():
                 if morewhat[1] > 0:
                     self.slot_value[morewhat[0]] = [(upper, '>=')]
                 else:
-                    self.slot_value[morewhat[0]] = [(lower, '=<')]
+                    self.slot_value[morewhat[0]] = [(lower, '<=')]
         self.change_state('result')
 
     def adjust_confirm(self, sentence):
